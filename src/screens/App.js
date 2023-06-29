@@ -13,11 +13,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider } from "react-redux";
 import { store } from "../../store";
-<<<<<<< HEAD
-import  Enquiry, { Feedback, Query } from "./enquirymanagement/EnquiryManagement";
-=======
-import Enquiry, { Feedback, Query } from "./EnquiryManagement";
->>>>>>> 19d5a9f798d8358f6355059bdba4fbd50af8031a
+import Enquiry, { Feedback, Query } from "./enquirymanagement/EnquiryManagement";
 import EventUpdate from "./EventUpdate/EventUpdate";
 
 const stack = createNativeStackNavigator();
