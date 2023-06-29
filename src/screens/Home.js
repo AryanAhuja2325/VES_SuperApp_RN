@@ -21,69 +21,58 @@ const Card = ({ title }) => {
     );
 };
 
-const Home = ({ navigation }) => {
-    
-    const user = useAppSelector(state => state.profile.data);
-    const [apiData, setData] = useState([]);
-    //     Alumni and Mentorship
-    //     Attendance
-    // Events Update
-    // Enquiry Management / FAQs / Feedback
-    //     Fees
-    //     PhotoGallery
-   
-    const modules = [
-        {
-            id: 1,
-            title: 'Alumni and Mentorship',
-        },
-        {
-            id: 2,
-            title: 'Attendance'
-        },
-        {
-            id: 3,
-            title: 'Events Update'
-        },
-        {
-            id: 4,
-            title: 'Enquiry Management'
-        },
-        {
-            id: 5,
-            title: 'Fees'
-        },
-        {
-            id: 6,
-            title: 'Photo Gallery'
-        },
-        {
-            id: 7,
-           
-             title:"About Us"
-             
-        },
-    ]
-    
-    
 
-   
+const modules = [
+    {
+        id: 1,
+        title: 'Alumni and Mentorship',
+        login: ['Student', 'Teacher']
+    },
+    {
+        id: 2,
+        title: 'Attendance',
+        login: ['Student', 'Parent', 'Teacher']
+    },
+    {
+        id: 3,
+        title: 'Events Update',
+        login: ['Student']
+    },
+    {
+        id: 4,
+        title: 'Enquiry Management',
+        login: ['Student', 'Parent', 'Teacher']
+    },
+    {
+        id: 5,
+        title: 'Fees',
+        login: ['Parent']
+    },
+    {
+        id: 6,
+        title: 'Photo Gallery',
+        login: ['Student', 'Teacher']
+    },
+    {
+        id: 7,
+        title: "About Us",
+        login: ['Student', 'Parent',]
+    },
+]
+
+
+
+const Home = ({ navigation }) => {
+
+    const user = useAppSelector(state => state.profile.data);
+    const [data, setData] = useState([]);
+
+
     useEffect(() => {
-        console.log(user)
+        const filtered = modules.filter(module => module.login.includes(user.loginType));
+        setData(filtered);
     }, []);
 
-    // const getData = () => {
-    //     fetch('https://myjsons.com/v/39e41248')
-    //         .then(data => data.json())
-    //         .then(response => {
-    //             setData(response)
-    //         })
-    //         .catch(error => {
-    //             Alert.alert("Warning")
-    //         })
-    // }
-   
-    
     const renderCard = ({ item }) => {
         return (
 
@@ -98,13 +87,13 @@ const Home = ({ navigation }) => {
                             Alert.alert("Warning", "You are not allowed to access this feature")
                         }
                     }
-                     else if(item.title=='Events Update'){
+                    else if (item.title == 'Events Update') {
                         navigation.navigate("EventUpdate")
                     }
-                    else if(item.title =='About Us')
-                    navigation.navigate("AboutUs")
-                    else if(item.title=='Enquiry Management')
-                    navigation.navigate("Queries/Feedback")
+                    else if (item.title == 'About Us')
+                        navigation.navigate("AboutUs")
+                    else if (item.title == 'Enquiry Management')
+                        navigation.navigate("Queries/Feedback")
                 }}
             >
 
@@ -134,14 +123,14 @@ const Home = ({ navigation }) => {
             <View style={styles.body}>
                 <View style={styles.main}>
                     <FlatList
-                        data={modules}
+                        data={data}
                         renderItem={renderCard}
                         keyExtractor={(item) => item.id}
                         contentContainerStyle={styles.flatlistContent}
                     />
                 </View>
             </View>
-            
+
         </View>
     )
 }
@@ -294,5 +283,5 @@ export default Home;
 
 
 
-  
-  
+
+

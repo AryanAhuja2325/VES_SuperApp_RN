@@ -1,29 +1,30 @@
 import React, { useState } from "react";
-import { SafeAreaView, Text, TextInput, TouchableOpacity, View, Alert, StyleSheet } from 'react-native';
+import { SafeAreaView, Text, TextInput, TouchableOpacity, View, Alert, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 
 const Enquiry = ({ navigation }) => {
-    
+
 
     return (
         <SafeAreaView style={styles.container}>
             <View>
                 <TouchableOpacity onPress={() => {
-                    navigation.navigate("Query");}}
+                    navigation.navigate("Query");
+                }}
                     style={{
-                    backgroundColor: '#E7B909',
-                    borderRadius: 8,
-                    padding: 16,
-                    marginBottom: 16,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 4,
-                    elevation: 2,
-                    marginHorizontal: 30,
-                    marginVertical: 300,
-                    width: '80%',
-                }}>
+                        backgroundColor: '#E7B909',
+                        borderRadius: 8,
+                        padding: 16,
+                        marginBottom: 16,
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.2,
+                        shadowRadius: 4,
+                        elevation: 2,
+                        marginHorizontal: 30,
+                        marginVertical: 300,
+                        width: '80%',
+                    }}>
                     <Text style={{
                         color: '#B02A30',
                         fontWeight: 'bold',
@@ -33,21 +34,22 @@ const Enquiry = ({ navigation }) => {
                     }}>Post a Query</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => {
-                    navigation.navigate("Feedback");}}
+                    navigation.navigate("Feedback");
+                }}
                     style={{
-                    backgroundColor: '#E7B909',
-                    borderRadius: 8,
-                    padding: 16,
-                    marginBottom: 16,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 4,
-                    elevation: 2,
-                    marginHorizontal: 30,
-                    marginVertical: 50,
-                    width: '80%'
-                }}>
+                        backgroundColor: '#E7B909',
+                        borderRadius: 8,
+                        padding: 16,
+                        marginBottom: 16,
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.2,
+                        shadowRadius: 4,
+                        elevation: 2,
+                        marginHorizontal: 30,
+                        marginVertical: 50,
+                        width: '80%'
+                    }}>
                     <Text style={{
                         color: '#B02A30',
                         fontSize: 20,
@@ -70,70 +72,70 @@ export default Enquiry;
 export const Query = () => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-  
+
     const submitData = async () => {
-      const usedata = {
-        Title: title,
-        Description: description
-      };
-  
-      if (title || description) {
-        await firestore().collection('Query').add(usedata);
-        setTitle("");
-        setDescription("");
-        Alert.alert("Query submitted");
-      } else {
-        Alert.alert("Please write a query");
-      }
+        const usedata = {
+            Title: title,
+            Description: description
+        };
+
+        if (title || description) {
+            await firestore().collection('Query').add(usedata);
+            setTitle("");
+            setDescription("");
+            Alert.alert("Query submitted");
+        } else {
+            Alert.alert("Please write a query");
+        }
     };
-  
+
     return (
-      <SafeAreaView style={styles.container}>
-        <View>
-          <TextInput
-            name="queryTitle"
-            style={{
-                width: '80%',
-                borderRadius: 10,
-                height: 50,
-                fontSize: 20,
-                borderColor: 'white',
-                borderWidth: 1,
-                marginBottom: 20,
-                paddingHorizontal: 10,
-                marginHorizontal: 40,
-                marginVertical: 150,
-                color: 'white',
-                fontWeight: 'bold',
-            }}
-            placeholder="Query Title"
-            value={title}
-            onChangeText={value => setTitle(value)}
-            placeholderTextColor="white"
-          />
-          <TextInput
-            name="Description"
-            style={styles.input}
-            placeholder="Description"
-            value={description}
-            onChangeText={value => setDescription(value)}
-            placeholderTextColor="white"
-            multiline
-            numberOfLines={6}
-          />
-  
-          <TouchableOpacity
-            onPress={submitData}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>Submit</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+        <KeyboardAvoidingView style={styles.container}>
+            <View>
+                <TextInput
+                    name="queryTitle"
+                    style={{
+                        width: '80%',
+                        borderRadius: 10,
+                        height: 50,
+                        fontSize: 20,
+                        borderColor: 'white',
+                        borderWidth: 1,
+                        marginBottom: 20,
+                        paddingHorizontal: 10,
+                        marginHorizontal: 40,
+                        marginVertical: 90,
+                        color: 'white',
+                        fontWeight: 'bold',
+                    }}
+                    placeholder="Query Title"
+                    value={title}
+                    onChangeText={value => setTitle(value)}
+                    placeholderTextColor="white"
+                />
+                <TextInput
+                    name="Description"
+                    style={styles.input}
+                    placeholder="Description"
+                    value={description}
+                    onChangeText={value => setDescription(value)}
+                    placeholderTextColor="white"
+                    multiline
+                    numberOfLines={6}
+                />
+
+                <TouchableOpacity
+                    onPress={submitData}
+                    style={styles.button}
+                >
+                    <Text style={styles.buttonText}>Submit</Text>
+                </TouchableOpacity>
+            </View>
+        </KeyboardAvoidingView>
     );
-  };
-  
- 
+};
+
+
 
 
 export const Feedback = () => {
@@ -159,7 +161,7 @@ export const Feedback = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View>
+            <KeyboardAvoidingView>
                 <TextInput
                     name="Description"
                     style={styles.input}
@@ -168,7 +170,7 @@ export const Feedback = () => {
                     onChangeText={handleFeedbackChange}
                     placeholderTextColor="white"
                     multiline
-            numberOfLines={6}
+                    numberOfLines={6}
                 />
                 <TouchableOpacity
                     onPress={submitData}
@@ -176,7 +178,7 @@ export const Feedback = () => {
                 >
                     <Text style={styles.buttonText}>Submit</Text>
                 </TouchableOpacity>
-            </View>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }
