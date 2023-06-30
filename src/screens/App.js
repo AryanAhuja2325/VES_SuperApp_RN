@@ -15,6 +15,8 @@ import { Provider } from "react-redux";
 import { store } from "../../store";
 import Enquiry, { Feedback, Query } from "./enquirymanagement/EnquiryManagement";
 import EventUpdate from "./EventUpdate/EventUpdate";
+import FAQ from "./FAQ/FAQ";
+
 
 const stack = createNativeStackNavigator();
 
@@ -72,6 +74,11 @@ const App = () => {
                     <stack.Screen
                         name='Feedback'
                         component={Feedback}
+                        options={{ headerShown: true }}>
+                    </stack.Screen>
+                    <stack.Screen
+                        name='FAQs'
+                        component={FAQ}
                         options={{ headerShown: true }}>
                     </stack.Screen>
                 </stack.Navigator>
