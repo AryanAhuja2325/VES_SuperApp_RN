@@ -58,6 +58,27 @@ const modules = [
         title: "About Us",
         login: ['Student', 'Parent',]
     },
+    {
+        id: 8,
+        title: 'FAQs',
+        login: ['Student', 'Parent', 'Teacher']
+    },
+    {
+        id: 9,
+        title: 'Faculty Load',
+        login: ['Teacher']
+    },
+    {
+        id: 10,
+        title: 'Holiday Calender',
+        login: ['Student', 'Teacher']
+    },
+    {
+        id: 11,
+        title: 'Stationary Supply Hub',
+        login: ['Student', 'Parent']
+    },
+
 ]
 
 
