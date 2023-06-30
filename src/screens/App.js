@@ -14,9 +14,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider } from "react-redux";
 import { store } from "../../store";
 import Alumni from "./alumni/Alumni";
-import Enquiry, { Feedback, Query } from "./EnquiryManagement";
+import Enquiry,{Query,Feedback} from "./enquirymanagement/EnquiryManagement";
 import EventUpdate from "./EventUpdate/EventUpdate";
 import Fees from "./fees/Fees";
+import FAQ from "./FAQ/FAQ";
 
 const stack = createNativeStackNavigator();
 
@@ -84,6 +85,11 @@ const App = () => {
                     <stack.Screen
                         name='Fees'
                         component={Fees}
+                        options={{ headershown: true }}>
+                    </stack.Screen>
+                    <stack.Screen
+                        name='FAQs'
+                        component={FAQ}
                         options={{ headershown: true }}>
                     </stack.Screen>
                 </stack.Navigator>
