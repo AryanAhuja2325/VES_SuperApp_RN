@@ -1,18 +1,23 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Dimensions, } from 'react-native';
+
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
+const imageHeight = (windowWidth * 2100) / 800;
+
+
 const styles = StyleSheet.create({
-    container: {
-      flexGrow: 1,
-  
-      backgroundColor: '#912929',
-     
-    },
+
+ 
+    container: {},
     content: {
       paddingTop: 20,
       paddingBottom: 40,
     },
     image: {
-      width: 450,
-      height: 450,
+      width: '100%',
+      height: imageHeight,
       marginBottom: 20,
       alignSelf: 'center',
       paddingHorizontal: 20,
@@ -26,6 +31,8 @@ const styles = StyleSheet.create({
       color:'#700000',
       paddingHorizontal: 20,
       paddingBottom: 20,
+      
+      
       
     },
     description: {
@@ -92,13 +99,16 @@ const styles = StyleSheet.create({
       },
       
       coloredSection: {
-        flex: 1,
+   
         backgroundColor: '#FFFFCC', 
       },
       coloredSection1: {
-        flex: 1,
+  
         backgroundColor: '#faeb16', 
       },
         
     });
     export default styles;
+
+
+    
