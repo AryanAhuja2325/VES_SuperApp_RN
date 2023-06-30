@@ -4,13 +4,12 @@ import Login from './Login';
 import Home from './Home';
 import SignUp from './SignUp';
 import Gallery from './gallery/Gallery';
-//import Style from './screens/gallery/Style';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider } from 'react-redux';
 import { store } from '../../store';
-import Infra from './gallery/Infra';
-import Event from './gallery/Event';
+// import Infra from './gallery/Infra';
+// import Event from './gallery/Event';
 const stack = createNativeStackNavigator();
 
 const App = () => {
@@ -22,8 +21,6 @@ const App = () => {
 					<stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
 					<stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
 					<stack.Screen name="Gallery" component={Gallery} options={{ headerShown: true }} />
-					<stack.Screen name="Event" component={Event} options={{ headerShown: false }} />
-					<stack.Screen name="Infra" component={Infra} options={{ headerShown: false }} />
 				</stack.Navigator>
 			</NavigationContainer>
 		</Provider>
