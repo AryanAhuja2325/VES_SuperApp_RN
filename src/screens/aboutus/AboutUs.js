@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, Linking, ScrollView, TouchableOpacity } from 'react-native';
 import styles from './Aboutus.style';
 
+
   
 
 const AboutUs = () => {
@@ -106,32 +107,32 @@ const AboutUs = () => {
         </View>
         
       
-        <View style={{flexDirection: 'row'}} >
+        <View style={{flexDirection: 'row', justifyContent: 'center'}} >
       <TouchableOpacity onPress={() => handleImagePress('https://www.instagram.com/vespolytechnic_0004/')}>
         
         <Image
-          source={require('../assets/imgs/instagram.png')}
-          style={{ width: 50, height: 50, marginRight: 15 }}
+          source={require('../../assets/imgs/instagram.png')}
+          style={{ width: 50, height: 50, marginRight: 15,  }}
         />
       </TouchableOpacity>
       
       <TouchableOpacity onPress={() => handleImagePress('https://youtube.com/@VESPolytechnic')}>
         <Image
-          source={require('../assets/imgs/Youtube.png')}
+          source={require('../../assets/imgs/Youtube.png')}
           style={{ width: 50, height: 50, marginRight: 15}}
         />
       </TouchableOpacity>
         
       <TouchableOpacity onPress={() => handleImagePress('https://www.facebook.com/profile.php?id=100063678624978&mibextid=ZbWKwL')}>
         <Image
-          source={require('../assets/imgs/facebook.png')}
+          source={require('../../assets/imgs/facebook.png')}
           style={{ width: 50, height: 50, marginRight: 15 }}
         />
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() =>  handleImagePress('https://www.linkedin.com/school/ves-polytechnic/') }>
         <Image
-          source={require('../assets/imgs/linkkedin.png')} 
+          source={require('../../assets/imgs/linkkedin.png')} 
           style={{ width: 50, height: 50, marginRight: 15 }}
         />
       </TouchableOpacity>
