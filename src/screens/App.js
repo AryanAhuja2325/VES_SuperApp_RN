@@ -13,17 +13,10 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider } from "react-redux";
 import { store } from "../../store";
-<<<<<<< HEAD
-import Enquiry, { Feedback, Query } from "./enquirymanagement/EnquiryManagement";
-import EventUpdate from "./EventUpdate/EventUpdate";
-import FAQ from "./FAQ/FAQ";
-
-=======
 import Alumni from "./alumni/Alumni";
 import Enquiry, { Feedback, Query } from "./EnquiryManagement";
 import EventUpdate from "./EventUpdate/EventUpdate";
 import Fees from "./fees/Fees";
->>>>>>> 162b63346b8ff7875cc866ced26fccb7f7c689d3
 
 const stack = createNativeStackNavigator();
 
@@ -89,15 +82,9 @@ const App = () => {
                         options={{ headerShown: true }}>
                     </stack.Screen>
                     <stack.Screen
-<<<<<<< HEAD
-                        name='FAQs'
-                        component={FAQ}
-                        options={{ headerShown: true }}>
-=======
                         name='Fees'
                         component={Fees}
                         options={{ headershown: true }}>
->>>>>>> 162b63346b8ff7875cc866ced26fccb7f7c689d3
                     </stack.Screen>
                 </stack.Navigator>
             </NavigationContainer>
