@@ -1,9 +1,11 @@
 import { configureStore, combineReducers, CombinedState, AnyAction } from '@reduxjs/toolkit'
 import profileSlice from './slice/profileSlice'
+import cartSlice from './slice/cartSlice';
 // ...
 
 const combinedReducer = combineReducers({
-    profile: profileSlice
+    profile: profileSlice,
+    cart: cartSlice
 })
 
 const rootReducer = (state: CombinedState<any>, action: AnyAction) => {
@@ -14,7 +16,7 @@ const rootReducer = (state: CombinedState<any>, action: AnyAction) => {
     return combinedReducer(state, action);
 }
 export const store = configureStore({
-  reducer: rootReducer,
+    reducer: rootReducer,
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

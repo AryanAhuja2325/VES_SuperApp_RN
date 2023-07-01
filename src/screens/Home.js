@@ -109,12 +109,12 @@ const Home = ({ navigation }) => {
                     else if (item.title == 'Events Update') {
                         navigation.navigate("EventUpdate")
                     }
-                    else if (item.title == 'About Us'){
+                    else if (item.title == 'About Us')
                         navigation.navigate("AboutUs")
-                    }
-                    else if (item.title == 'Enquiry Management'){
-                        navigation.navigate("Queries/Feedback")}
-                        
+                    else if (item.title == 'Enquiry Management')
+                        navigation.navigate("Queries/Feedback")
+                    else if (item.title == 'Stationary Supply Hub')
+                        navigation.navigate("Stationary")
                     else if (item.title == 'Alumni and Mentorship')
                         navigation.navigate("Alumni")
                     else if (item.title == 'Fees')

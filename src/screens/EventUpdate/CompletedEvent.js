@@ -1,13 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import { View, Text, FlatList, Image, TouchableOpacity, } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import Style from "./EventUpdate.styles";
-import { useAppSelector } from "../../../store/hook";
-
-const EventUpdate = ({ navigation }) => {
+const CompletedEvent = () => {
     const [mydata, setmydata] = useState([])
-    const [isVisible, setIsVisible] = useState(false);
-    const user = useAppSelector(state => state.profile.data);
     useEffect(() => {
         getDatabase()
     }, [])
@@ -20,19 +16,13 @@ const EventUpdate = ({ navigation }) => {
         } catch (error) {
             console.log('Error getting data:', error);
         }
-        checkUser()
-    }
-
-    const checkUser = () => {
-        if (user.loginType == 'Teacher') {
-            setIsVisible(true)
-        }
     }
     const renderItems = ({ item }) => {
         const firestoreTimestamp = item.Eventdate;
         const firestoreDate = firestoreTimestamp && firestoreTimestamp.toDate ? firestoreTimestamp.toDate() : null;
         const currentDate = new Date();
-        if (firestoreDate && firestoreDate.getTime() > currentDate.getTime()||item.Eventdate>currentDate.getTime()) {
+        if (firestoreDate && firestoreDate.getTime() < currentDate.getTime() || item.Eventdate > currentDate.getTime()) {
+            console.log('Rendering item:', item);
             return (
                 <View>
                     <View>
@@ -57,11 +47,10 @@ const EventUpdate = ({ navigation }) => {
         }
         return null;
     }
-
     return (
         <View style={Style.mainView}>
             <View style={Style.view}>
-                <Text style={Style.text}>Events!!</Text>
+                <Text style={Style.text}>Completed Events!!</Text>
             </View>
 
             <FlatList
@@ -69,23 +58,7 @@ const EventUpdate = ({ navigation }) => {
                 renderItem={renderItems}
                 keyExtractor={(item) => item.id}
             />
-            {isVisible && (
-                <TouchableOpacity
-                    style={Style.button}
-                    onPress={() => navigation.navigate('AddEvent')}>
-                    <Text style={Style.text}>Add Event</Text>
-                </TouchableOpacity>
-            )
-            }
-             <Text></Text>
-            <TouchableOpacity
-                    style={Style.button}
-                    onPress={() => navigation.navigate('CompletedEvent')}>
-                    <Text style={Style.text}>Completed Events</Text>
-                </TouchableOpacity>
-
         </View>
-
     )
 }
-export default EventUpdate
+export default CompletedEvent
