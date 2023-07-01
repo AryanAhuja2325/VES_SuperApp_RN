@@ -14,7 +14,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider } from "react-redux";
 import { store } from "../../store";
 import Alumni from "./alumni/Alumni";
-import Enquiry,{Query,Feedback} from "./enquirymanagement/EnquiryManagement";
+import Enquiry,{Query,Feedback} from "./Enquiry/enquiry";
 import EventUpdate from "./EventUpdate/EventUpdate";
 import Fees from "./fees/Fees";
 import FAQ from "./FAQ/FAQ";
