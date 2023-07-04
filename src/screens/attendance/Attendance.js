@@ -12,7 +12,7 @@ import styles from './Attendance.styles';
 
 const Attendance = ({ navigation }) => {
     return (
-        <View style={styles.main}>
+        <View >
             <Text style={styles.heading}>Attendance</Text>
             <View style={styles.container}>
                 <TouchableOpacity

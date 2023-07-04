@@ -1,11 +1,12 @@
 import { StyleSheet } from 'react-native';
+import { Dimensions } from 'react-native';
 
+const windowWidth = Dimensions.get("window").width;
 const styles = StyleSheet.create({
     container: {
         height: '100%',
         flexDirection: 'row',
         justifyContent: 'center',
-        backgroundColor: '#fef7d7',
         paddingTop: 20
     },
     imageBackground: {
@@ -13,9 +14,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         resizeMode: 'cover',
-    },
-    main: {
-        backgroundColor: '#a82c2c',
     },
     image: {
         width: 200,
@@ -26,33 +24,28 @@ const styles = StyleSheet.create({
     heading: {
         fontSize: 35,
         fontWeight: 'bold',
-        color: '#fbe682',
+        color: 'black',
         marginBottom: 16,
         marginLeft: 10,
         marginTop: 10
     },
     clickable: {
-        width: 150,
-        height: 200,
+        height: '20%',
+        width: windowWidth / 2 - 20,
+        flex: 1,
         backgroundColor: 'white',
         borderRadius: 8,
         marginVertical: 10,
         marginHorizontal: 20,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
+        shadowColor: '#rgb(145, 41, 40)',
         shadowRadius: 3.84,
-        elevation: 5,
-        backgroundColor: '#2a9d8f'
+        elevation: 10,
     },
     cardTitle: {
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 8,
-        color: '#000000'
+        color: 'rgb(145, 41, 40)'
     },
     cardText: {
         fontSize: 16,

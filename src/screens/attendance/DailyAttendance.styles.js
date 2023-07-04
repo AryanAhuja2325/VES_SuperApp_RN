@@ -5,20 +5,19 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         padding: 16,
-        backgroundColor: '#912929'
     },
     title: {
         fontSize: 35,
         fontWeight: 'bold',
         marginBottom: 15,
-        color: '#fbe98d'
+        color: 'black'
     },
     label: {
         fontSize: 16,
         fontWeight: 'bold',
         marginRight: 8,
         marginTop: 10,
-        color: 'white'
+        color: 'rgb(145, 41, 40)'
     },
     card: {
         width: 300,
@@ -31,13 +30,13 @@ const styles = StyleSheet.create({
         fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 8,
-        color: 'white'
+        color: 'black'
     },
     heading1: {
         fontSize: 35,
         fontWeight: 'bold',
         marginBottom: 8,
-        color: '#fdf1b7'
+        color: 'rgb(145, 41, 40)'
     },
     buttonP: {
         backgroundColor: 'green',
@@ -75,6 +74,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 4,
         marginBottom: 20,
+        elevation:10,
+        shadowColor:'rgb(145, 41, 40)'
     },
 });
 
