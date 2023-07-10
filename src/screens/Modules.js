@@ -64,6 +64,11 @@ const modules = [
         title: 'Placement',
         login: ['Student', 'Parent']
     },
+    {
+        id: 15,
+        title: 'GroupChat',
+        login: ['Student', 'Parent']
+    },
 ]
 
 export default modules;

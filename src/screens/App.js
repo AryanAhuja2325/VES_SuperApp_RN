@@ -41,6 +41,7 @@ import ImageGrid from "./photoGallery";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { white } from "../utils/color"
 import Calendar from "./holidayCalendar/HolidayCalendar";
+import GroupChat from "./Groupchat/Groupchat";
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -273,12 +274,18 @@ const App = () => {
                     <stack.Screen
                         name='Checkout'
                         component={Checkout}
-                        options={{ headershown: true }}>
+                        options={({ navigation }) => ({
+                            headerShown: true,
+                            header: () => <CustomHeader navigation={navigation} title="Checkout" />
+                        })}>
                     </stack.Screen>
                     <stack.Screen
                         name='Orders'
                         component={Orders}
-                        options={{ headershown: true }}>
+                        options={({ navigation }) => ({
+                            headerShown: true,
+                            header: () => <CustomHeader navigation={navigation} title="Orders" />
+                        })}>
                     </stack.Screen>
 
                     <stack.Screen
@@ -300,7 +307,18 @@ const App = () => {
                     <stack.Screen
                         name='Placement'
                         component={Placement}
-                        options={{ headerShown: true }}
+                        options={({ navigation }) => ({
+                            headerShown: true,
+                            header: () => <CustomHeader navigation={navigation} title="Placement" />
+                        })}
+                    />
+                    <stack.Screen
+                        name='GroupChat'
+                        component={GroupChat}
+                        options={({ navigation }) => ({
+                            headerShown: true,
+                            header: () => <CustomHeader navigation={navigation} title="VES Chat" />
+                        })}
                     />
                 </stack.Navigator>
             </NavigationContainer>

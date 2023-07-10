@@ -78,6 +78,9 @@ const Home = ({ navigation }) => {
                     else if (item.title == 'Placement') {
                         navigation.navigate("Placement")
                     }
+                    else if (item.title == 'GroupChat') {
+                        navigation.navigate("GroupChat")
+                    }
                 }
 
                 }>
