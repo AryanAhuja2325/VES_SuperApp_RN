@@ -4,10 +4,14 @@ import * as COLOR from '../utils/color'
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 16,
+        paddingHorizontal: 10,
+        paddingVertical: 20,
         backgroundColor: '#fff'
+    },
+
+    submitContainer: {
+        alignItems: 'center',
+        alignContent: 'center'
     },
 
     picker: {
@@ -37,7 +41,7 @@ const styles = StyleSheet.create({
     },
 
     inputCaptcha: {
-        width: '50%',
+        width: '40%',
         height: 35,
         borderWidth: 1,
         borderColor: '#000',
@@ -51,9 +55,9 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 5,
-        marginBottom: 20,
+        marginBottom: 30,
         marginHorizontal: 20,
-        elevation: 10
+        elevation: 10,
     },
 
     text: {
@@ -70,7 +74,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginVertical: 16,
-        color: COLOR.grey,
+        color: COLOR.gray,
         textDecorationLine: 'line-through'
     },
 
@@ -78,13 +82,21 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 30
+        marginBottom: 30,
+        textAlign: 'center'
     },
 
     icon: {
-        marginLeft: 20
-    }
+        marginLeft: 15,
+        marginRight: 10
+    },
 
+    radioButtonContainer: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        marginBottom: 10,
+    },
 });
 
 export default styles;

@@ -20,7 +20,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Provider } from "react-redux";
 import { store } from "../../store";
 import Alumni from "./alumni/Alumni";
-import Enquiry, { Feedback, Query } from "./EnquiryManagement";
+import Enquiry, { Feedback, Query } from "./enquirymanagement/Enquirymanagement";
 import StationarySupply from "./stationarySupply/StationarySupply";
 import Details from "./stationarySupply/Details";
 import Cart from "./stationarySupply/Cart";
@@ -42,6 +42,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { white } from "../utils/color"
 import Calendar from "./holidayCalendar/HolidayCalendar";
 import GroupChat from "./Groupchat/Groupchat";
+import Blog from "./blog";
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -125,7 +126,10 @@ const App = () => {
                     <stack.Screen
                         name='SignUp'
                         component={SignUp}
-                        options={{ headerShown: false }}
+                        options={({ navigation }) => ({
+                            headerShown: true,
+                            header: () => <CustomHeader navigation={navigation} title="SignUp" />,
+                        })}
                     />
                     <stack.Screen
                         name='Alumni'
@@ -318,6 +322,14 @@ const App = () => {
                         options={({ navigation }) => ({
                             headerShown: true,
                             header: () => <CustomHeader navigation={navigation} title="VES Chat" />
+                        })}
+                    />
+                    <stack.Screen
+                        name='Blog'
+                        component={Blog}
+                        options={({ navigation }) => ({
+                            headerShown: true,
+                            header: () => <CustomHeader navigation={navigation} title="VES Blog" />
                         })}
                     />
                 </stack.Navigator>

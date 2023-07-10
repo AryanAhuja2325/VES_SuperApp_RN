@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { black, maroon, white } from '../../utils/color';
 
 const styles = StyleSheet.create({
   container: {
@@ -6,12 +7,12 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   sectionContainer: {
-    backgroundColor: 'white',
+    backgroundColor: white,
     marginBottom: 16,
     padding: 16,
   },
   sectionHeader: {
-    backgroundColor: 'maroon',
+    backgroundColor: maroon,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -21,16 +22,16 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'white',
+    color: white,
   },
   arrowIcon: {
     fontSize: 18,
-    color: 'white',
+    color:white,
   },
   sectionContent: {},
   text: {
     marginBottom: 8,
-    color: 'black', // Update the text color here
+    color: black, 
   },
   image: {
     width: '100%',

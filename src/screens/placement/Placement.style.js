@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import { black, blue, maroon, white } from '../../utils/color'
 
 const styles = StyleSheet.create({
     container: {
@@ -17,7 +18,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     coloredSection1: {
-        backgroundColor: '#f2f2f2',
+        backgroundColor: white,
         padding: 10,
         marginVertical: 10,
     },
@@ -27,7 +28,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginTop: 10,
         marginBottom: 5,
-        color: '#700000',
+        color: black,
     },
     section: {
         alignSelf: 'stretch',
@@ -37,29 +38,50 @@ const styles = StyleSheet.create({
        fontSize: 25,
         fontWeight: 'bold',
         marginBottom: 5,
-        color: '#700000',
+        color: maroon,
     },
     contactText: {
         fontSize: 20,
         marginBottom: 5,
-        color: '#0000ff',
+        color: blue,
         textDecorationLine: 'underline',
     },
-    clickedText: {
-        color: '#ff0000',
-    },
+    
     academicYear: {
-        color: '#0000ff',
+        color: blue,
         textDecorationLine: 'underline',
         marginBottom: 8,
         fontSize: 20,
     },
     aboutText: {
-        color: '#000000',
+        color: black,
         fontSize: 16,
         marginBottom: 10,
         
       },
+       pdfContainer: {
+    alignItems: 'center',
+    marginBottom: 16,
+    
+       },
+  pdfYear: {
+    fontSize: 14,
+    marginTop: 8,
+    color: black,
+  },
+  placementDetailsContainer: {
+    flexDirection: 'row',
+    marginLeft: 20,
+    marginHorizontal:50,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+
+  },
+  pdfMargin: {
+    marginTop:10,
+    marginRight: 60,
+    width: '100%',
+  },
 });
 
 export default styles;

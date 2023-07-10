@@ -13,6 +13,8 @@ const cyan = 'rgb(0, 149, 154)'
 const lightblue = 'rgb(88,240,245)'
 const lightgreen = 'rgb(0, 205, 149)'
 const highlightgreen = 'rgb(30, 234, 64 )'
+const yellow = '#faeb16'
 
-export { shadowcolor, desctext, white, titletext, black, blue, green, red, lightgray, maroon, gray, cyan, lightblue, lightgreen, highlightgreen };
+export { shadowcolor, desctext, white, titletext, black, blue, green, red, lightgray, maroon, gray, cyan, lightblue, lightgreen, highlightgreen, yellow };
+
 

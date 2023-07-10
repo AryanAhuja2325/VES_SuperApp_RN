@@ -1,4 +1,5 @@
 import {StyleSheet } from 'react-native';
+import { black, blue, gray, green, red, white } from '../../utils/color';
 
 const styles = StyleSheet.create({
   container: {
@@ -9,17 +10,17 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
     marginBottom: 8,
-    color: '#1d1d1f',
+    color: black,
   },
   heading: {
     fontSize: 15,
     fontWeight: 'bold',
     marginBottom: 16,
-    color: '#1d1d1f',
+    color: black,
   },
   tableBorderStyle: {
     borderWidth: 2,
-    borderColor: '#000',
+    borderColor: black,
   },
   tableHeader: {
     height: 30, 
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 18,
-    color: '#1d1d1f',
+    color: black ,
     
   },
   dayHeading: {
@@ -36,36 +37,31 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 20,
     marginBottom: 10,
-    color: '#0398fc',
+    color: blue,
   },
   tableRow: {
     flexDirection: 'row',
-  },
-  dayRow: {
-    backgroundColor: '#e6f2ff',
-  },
-  defaultRow: {
-    backgroundColor: '#ffffff',
   },
   dayText: {
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 14,
-    color: 'blue',
+    color: blue,
   },
+  
   cellText: {
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 17,
   },
   subjectText: {
-    color: '#fc0703', 
+    color: red, 
   },
   classText: {
-    color: '#013220', 
+    color: black, 
   },
   timingText: {
-    color: '#b603fc', 
+    color: green, 
   },
 });
 export default styles;

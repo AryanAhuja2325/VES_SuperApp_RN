@@ -1,8 +1,9 @@
 import { StyleSheet } from 'react-native';
+import { black, maroon, white } from '../../utils/color';
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'white',
+        backgroundColor: white,
         flex: 1
     },
     faqContainer: {
@@ -13,13 +14,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 10,
         paddingHorizontal: 15,
-        backgroundColor: '#B02A30',
+        backgroundColor: maroon,
     },
     headerText: {
         flex: 1,
         fontWeight: 'bold',
         fontSize: 20,
-        color: '#E7B909'
+        color: white,
     },
     icon: {
         fontSize: 25,
@@ -31,12 +32,12 @@ const styles = StyleSheet.create({
     },
     answerText: {
         fontSize: 14,
-        color: 'black',
+        color: black,
         marginVertical: 5,
     },
     questionText: {
         fontSize: 16,
-        color: 'black',
+        color: black,
         fontWeight: 'bold',
     }
 

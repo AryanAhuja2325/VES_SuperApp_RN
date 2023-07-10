@@ -1,4 +1,5 @@
 import {StyleSheet, Dimensions, } from 'react-native';
+import {black, blue, green, maroon,red,yellow} from '../../utils/color';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       marginTop: 10,
       marginBottom: 5,
-      color:'#700000',
+      color:maroon,
       paddingHorizontal: 20,
       paddingBottom: 20,
       
@@ -39,7 +40,7 @@ const styles = StyleSheet.create({
       fontSize: 16,
       marginBottom: 10,
       textAlign: 'justify',
-      color: '#000000',
+      color: black,
       paddingHorizontal: 20,
       paddingBottom: 20,
       
@@ -57,14 +58,14 @@ const styles = StyleSheet.create({
       fontSize: 18,
       marginRight: 10,
       textAlign: 'justify',
-      color:'#000000',
+      color:black,
       paddingHorizontal: 20,
       paddingBottom: 20,
     },
     programIntake: {
       fontSize: 16,
       fontWeight: 'bold',
-      color:'#000000',
+      color:black,
       paddingHorizontal: 20,
       paddingBottom: 20,
     },
@@ -73,13 +74,13 @@ const styles = StyleSheet.create({
       fontStyle: 'italic',
       marginBottom: 10,
       textAlign: 'justify',
-      color:'#d303fc',
+      color: red,
       paddingHorizontal: 20,
       paddingBottom: 20,
     },
     link: {
       fontSize: 16,
-      color: 'blue',
+      color: blue,
       marginBottom: 5,
     },
     heading1: {
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
       fontSize: 20,
       fontWeight: 'bold',
       marginTop: 10,
-      color:'#700000',
+      color:maroon,
     },
       heading2: {
         flexDirection:'row',
@@ -95,16 +96,16 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: 'bold',
         marginBottom: 5,
-        color:'#700000',
+        color:maroon,
       },
       
       coloredSection: {
    
-        backgroundColor: '#FFFFCC', 
+        backgroundColor: yellow, 
       },
       coloredSection1: {
   
-        backgroundColor: '#faeb16', 
+        backgroundColor: yellow, 
       },
         
     });
