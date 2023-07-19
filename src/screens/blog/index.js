@@ -144,6 +144,7 @@ const Blog = ({ navigation }) => {
         }
     };
 
+
     const deleteItem = () => {
         try {
             const documentRef = firestore()

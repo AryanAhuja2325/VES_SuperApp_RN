@@ -1,47 +1,67 @@
 import { StyleSheet } from "react-native";
+import { black, maroon, shadowcolor, white } from "../../utils/color";
+import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
 
 const styles = StyleSheet.create({
     imageContainer: {
-        marginBottom: 20,
+        backgroundColor: 'white',
+        shadowColor: shadowcolor,
+        width: '100%',
+        overflow: 'hidden',
+        marginBottom: responsiveHeight(3),
+        borderRadius: 10,
+        elevation: 5
+    },
+    location: {
+        fontSize: 14,
+        color: black,
+        paddingHorizontal: responsiveWidth(1)
+    },
+    bottomView: {
+        flexDirection: 'row',
+        paddingHorizontal: responsiveWidth(2),
+        borderTopWidth: 1
+    },
+    share: {
+        position: 'absolute',
+        right: 1,
+        paddingHorizontal: responsiveWidth(2),
     },
     title: {
         fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 10,
-        color: 'black'
+        color: black,
+        paddingHorizontal: responsiveWidth(1)
     },
-    container: {
-        paddingHorizontal: 5,
-    },
+
     image: {
-        width: 100,
-        height: 100,
-        margin: 5,
+        // width: "100%",
+        borderColor: '#fff',
+        height: responsiveHeight(56),
+        width: responsiveWidth(100),
     },
+
+
     main: {
         flex: 1,
-        padding: 16
+        padding: 10
     },
 
-    modalContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    dropdown: {
+        width: responsiveWidth(95),
+    },
+    dropdownText: {
+        fontSize: 24,
+        color: black,
+
+    },
+    dropdownStyle: {
+        maxHeight: responsiveHeight(30),
+        width: responsiveWidth(90),
+        borderRadius: 5,
+        elevation: 10,
     },
 
-    modalImage: {
-        width: '80%',
-        height: '80%',
-        resizeMode: 'contain',
-    },
-
-    caption: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: 'white',
-        textAlign: 'center',
-    },
 });
 
 export default styles;

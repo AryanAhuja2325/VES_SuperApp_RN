@@ -71,6 +71,11 @@ const modules = [
     },
     {
         id: 15,
+        title: 'Chat',
+        login: ['Parent', 'Teacher', 'Student']
+    },
+    {
+        id: 16,
         title: 'Exam Schedule',
         login: ['Student', 'Teacher']
     },

@@ -1,85 +1,178 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, Animated } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './PhotoGallery.styles';
+import { useAppSelector } from '../../../store/hook';
+import { black, red } from '../../utils/color';
+import Share from 'react-native-share';
+import ModalDropdown from 'react-native-modal-dropdown';
 
 const ImageGrid = () => {
     const [imageArrays, setImageArrays] = useState([]);
-    const [modalVisible, setModalVisible] = useState(false);
-    const [selectedImage, setSelectedImage] = useState('');
-    const [selectedImageType, setSelectedImageType] = useState('');
+    const [likes, setLikes] = useState({});
+    const [isLiked, setIsLiked] = useState(false);
+    const [selectedItem, setSelectedItem] = useState('Architecture College');
+    const user = useAppSelector((state) => state.profile.data);
 
-    const handleClick = (image, title) => {
-        setSelectedImage(image);
-        setModalVisible(true);
-        setSelectedImageType(title)
+    const fetchImageArrays = async (selectedItem) => {
+        try {
+            const snapshot = await firestore().collection('Photos').where('imageTitle', '==', selectedItem).get();
+            const fetchedDocuments = snapshot.docs.map((doc) => ({
+                docId: doc.id,
+                ...doc.data(),
+            }));
+
+            const likesSnapshot = await firestore().collection('Photos').get();
+            const likesData = {};
+            likesSnapshot.docs.forEach((doc) => {
+                likesData[doc.id] = doc.data().likes;
+            });
+
+            setImageArrays(fetchedDocuments);
+            setLikes(likesData);
+
+            if (fetchedDocuments.length > 0) {
+                setSelectedItem(fetchedDocuments[0].imageTitle);
+            }
+        } catch (error) {
+            console.log('Error fetching image arrays:', error);
+        }
     };
 
     useEffect(() => {
-        // Fetch image arrays from Firebase
-        const fetchImageArrays = async () => {
-            try {
-                const snapshot = await firestore().collection('Images').get();
-                const data = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    title: doc.data().imageTitle,
-                    images: doc.data().imageURL,
-                }));
-
-                setImageArrays(data);
-            } catch (error) {
-                console.log('Error fetching image arrays:', error);
-            }
-        };
-
-        fetchImageArrays();
+        fetchImageArrays(selectedItem);
     }, []);
 
+
+    const shareImage = async (imagePath) => {
+        try {
+            const shareOptions = {
+                title: 'Share Image',
+                url: imagePath,
+                type: 'image/png',
+                social: Share.Social.WHATSAPP,
+            };
+
+            await Share.open(shareOptions);
+
+            console.log('Image shared successfully');
+        } catch (error) {
+            console.log('Share error:', error.message);
+        }
+    };
+
+    const handleTitleChange = (index, value) => {
+        setSelectedItem(value);
+        fetchImageArrays(value);
+    };
+
+    const handleLike = async (docId) => {
+        try {
+            const postRef = firestore().collection('Photos').doc(docId);
+            const postSnapshot = await postRef.get();
+            if (!postSnapshot.exists) {
+                throw new Error('Post does not exist.');
+            }
+
+            const postData = postSnapshot.data();
+            if (!postData || !postData.likedBy) {
+                throw new Error('Likedby property not found in post data.');
+            }
+
+            const likedBy = postData.likedBy;
+
+            if (!likedBy.includes(user.email)) {
+                // User has not liked the post, add like
+                await postRef.update({
+                    likes: firestore.FieldValue.increment(1),
+                    likedBy: firestore.FieldValue.arrayUnion(user.email),
+                });
+
+                setLikes((prevLikes) => ({
+                    ...prevLikes,
+                    [docId]: (prevLikes[docId] || 0) + 1,
+                }));
+                setIsLiked(true);
+            } else {
+                // User has already liked the post, remove like
+                await postRef.update({
+                    likes: firestore.FieldValue.increment(-1),
+                    likedBy: firestore.FieldValue.arrayRemove(user.email),
+                });
+
+                setLikes((prevLikes) => ({
+                    ...prevLikes,
+                    [docId]: (prevLikes[docId] || 0) - 1,
+                }));
+                setIsLiked(false);
+            }
+            fetchImageArrays(selectedItem);
+        } catch (error) {
+            console.error('Error liking post:', error);
+        }
+    };
+
+    const renderLikeIcon = (like) => {
+        const isLiked = like || false;
+        return isLiked ? (
+
+            <Icon name="heart" size={24} color={red} />
+        ) : (
+            <Icon name="heart-outline" size={24} color={black} />
+        );
+    };
+
     const renderItem = ({ item }) => {
-        const title = item.title;
+        // const title = item.imageTitle;
+        const maintitle = item.mainTitle;
+        // const imageId = item.id;
+        const like = item.likes;
+
         return (
             <View style={styles.imageContainer}>
-                <Text style={styles.title}>{item.title}</Text>
-                <FlatList
-                    data={item.images}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity onPress={() => handleClick(item, title)}>
-                            <Image
-                                source={{ uri: item }}
-                                style={styles.image}
-                                resizeMode='cover'
-                            />
-                        </TouchableOpacity>
-                    )}
-                    keyExtractor={(item, index) => index.toString()}
-                    numColumns={3}
-                    contentContainerStyle={styles.container}
-                />
+                <View style={{ borderBottomWidth: 1 }}>
+                    <Text style={styles.title}>Vivekanand Education</Text>
+                    <Text style={styles.location}>{maintitle}</Text>
+
+                </View>
+                <Image source={{ uri: item.imageURL }} style={styles.image} resizeMode='stretch' />
+                <View style={styles.bottomView}>
+                    <TouchableOpacity onPress={() => handleLike(item.docId)}>
+                        {renderLikeIcon(like)}
+                        <Text>{like} likes</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => shareImage(item.imageURL)}
+                        style={styles.share}
+                    >
+                        <Icon name="share-social-sharp" size={24} color={black} />
+                    </TouchableOpacity>
+                </View>
             </View>
         );
+    };
 
-    }
     return (
         <View style={styles.main}>
+            <ModalDropdown
+                options={[
+                    "VESIT", "VESP", "Architecture College", "Convocation Ceremony", "Womens Day", "Cricket Camp", "Music Room", "Guru Purnima", "Play Group", "Pharmacy College", "Law College"
+                ]}
+                defaultValue={selectedItem}
+                onSelect={handleTitleChange}
+                style={styles.dropdown}
+                textStyle={styles.dropdownText}
+                dropdownStyle={styles.dropdownStyle}
+                customItemContainerStyle={{ justifyContent: 'center' }}
+                labelStyle={{ textAlign: 'center', justifyContent: 'center' }}
+            />
             <FlatList
                 data={imageArrays}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
             />
-
-            <Modal
-                visible={modalVisible}
-                transparent={true}
-                animationType='slide'
-            >
-                <TouchableOpacity
-                    style={styles.modalContainer}
-                    onPress={() => setModalVisible(false)}
-                >
-                    <Image source={{ uri: selectedImage }} style={styles.modalImage} />
-                    <Text style={styles.caption}>{selectedImageType}</Text>
-                </TouchableOpacity>
-            </Modal>
         </View>
     );
 };

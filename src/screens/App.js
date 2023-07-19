@@ -26,6 +26,7 @@ import Details from "./stationarySupply/Details";
 import Cart from "./stationarySupply/Cart";
 import Fees from "./fees/Fees";
 import Splash from "./splash";
+import Chat from "./groupchat/chat";
 
 import HolidayCalendar from './holidayCalendar/HolidayCalendar';
 import FAQ from "./FAQs/faqs";
@@ -316,6 +317,14 @@ const App = () => {
                         options={({ navigation }) => ({
                             headerShown: true,
                             header: () => <CustomHeader navigation={navigation} title="VES Blog" />
+                        })}
+                    />
+                    <stack.Screen
+                        name='Chat'
+                        component={Chat}
+                        options={({ navigation }) => ({
+                            headerShown: true,
+                            header: () => <CustomHeader navigation={navigation} title="VES Chat" />
                         })}
                     />
                     <stack.Screen

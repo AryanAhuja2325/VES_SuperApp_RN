@@ -81,6 +81,9 @@ const Home = ({ navigation }) => {
                     else if (item.title == 'Blog') {
                         navigation.navigate("Blog")
                     }
+                    else if (item.title == 'Chat') {
+                        navigation.navigate("Chat")
+                    }
                     else if (item.title == 'Exam Schedule') {
                         navigation.navigate("Exam")
                     }

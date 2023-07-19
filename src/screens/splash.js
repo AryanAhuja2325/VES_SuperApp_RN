@@ -38,8 +38,6 @@ const Splash = () => {
                     navigation.navigate("HomeScreen");
                 }, 1000);
             }
-
-
         } catch (error) {
             console.log('Error:', error);
         }

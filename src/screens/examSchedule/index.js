@@ -17,7 +17,6 @@ import { useAppSelector } from '../../../store/hook';
 import DocumentPicker from 'react-native-document-picker';
 import * as COLORS from '../../utils/color'
 import ModalDropdown from 'react-native-modal-dropdown';
-import PdfThumbnail from "react-native-pdf-thumbnail";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NewIcon from 'react-native-vector-icons/AntDesign';
 
