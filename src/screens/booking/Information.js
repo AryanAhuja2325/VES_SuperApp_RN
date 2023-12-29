@@ -21,6 +21,7 @@ import moment, { duration } from 'moment';
 import 'moment-timezone';
 import { useAppSelector } from '../../../store/hook';
 import firestore from '@react-native-firebase/firestore';
+import Loading from '../../components/header/loading';
 
 const Information = ({ route }) => {
 
@@ -32,6 +33,8 @@ const Information = ({ route }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [booking, setBooking] = useState({});
   const [documents, setDocuments] = useState({});
+  const [loading, setLoading] = useState(false);
+
 
   const generateTimeSlots = (startTime, endTime, duration) => {
     const slots = [];
@@ -137,6 +140,7 @@ const Information = ({ route }) => {
   
   const bookRequest = async () => {
     try {
+      setLoading(true);
       const collectionRef = firestore().collection("Booking");
       const documentRef = collectionRef.doc(data.id);
 
@@ -195,6 +199,7 @@ const Information = ({ route }) => {
     } catch (error) {
       console.error('Error fetching and updating booking data from Firestore:', error);
     }
+    setLoading(false)
   };
 
 
@@ -243,7 +248,8 @@ const Information = ({ route }) => {
             transparent={false}
             onRequestClose={() => setModalVisible(false)}
           >
-            <View style={styles.modalContainer}>
+            {!loading&&(
+              <View style={styles.modalContainer}>
               <View style={styles.modalHeader}>
                 <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
                   <Ionicons name={'arrow-back-circle-outline'} size={25} color={COLORS.white} />
@@ -326,6 +332,10 @@ const Information = ({ route }) => {
                 </View>
               </ScrollView>
             </View>
+            )}
+            {loading && (
+                    <Loading/>
+                  )}
           </Modal>
         </View>
       </View>
