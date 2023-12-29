@@ -1,4 +1,4 @@
-
+import * as COLORS from '../../utils/color';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
@@ -23,6 +23,14 @@ export const styles = StyleSheet.create({
         color: 'white',
         alignSelf: 'center',
         paddingVertical: 10,
+    },
+
+    label1: {
+        fontSize: 18,
+        color: 'white',
+        alignSelf: 'center',
+        paddingVertical: 10,
+        fontWeight: 'bold'
     },
 
     header: {

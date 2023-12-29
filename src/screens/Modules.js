@@ -95,6 +95,10 @@ const studentmodule = [
         id: 9,
         title: 'Fitness And Health',
     },
+    {
+        id: 10,
+        title: 'Fees'
+    }
 ]
 const parentmodule = [
     {

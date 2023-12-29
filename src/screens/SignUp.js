@@ -415,31 +415,31 @@ const SignUp = ({ navigation }) => {
                 }
                 {
                     loginType == 'TPO' ?
-                    <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Your Institute:</Text>
-                    <View style={{ flexDirection: 'row' }}>
-                        <ModalDropdown
-                            options={[
-                                "VES College of Arts, Science & Commerce (Autonomous)",
-                                "VES Institute of Technology",
-                                "VES College of Architecture",
-                                "VES College of Pharmacy",
-                                "VES POLYTECHNIC",
-                                "VES College of Law",
-                            ]}
-                            defaultValue={selectedItem}
-                            onSelect={handleTitleChange}
-                            textStyle={styles.dropdownText}
-                            dropdownStyle={styles.dropdownStyle}
-                            dropdownTextStyle={styles.dropdownTextStyle}
-                        // customItemContainerStyle={{ justifyContent: 'center' }}
-                        // labelStyle={{ textAlign: 'center', justifyContent: 'center' }}
-                        />
-                        <Ionicon name={'chevron-down'} size={20} style={{ position: 'absolute', right: 1, padding: 10 }} />
-                    </View>
-                </View>
-                :
-                null
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.label}>Your Institute:</Text>
+                            <View style={{ flexDirection: 'row' }}>
+                                <ModalDropdown
+                                    options={[
+                                        "VES College of Arts, Science & Commerce (Autonomous)",
+                                        "VES Institute of Technology",
+                                        "VES College of Architecture",
+                                        "VES College of Pharmacy",
+                                        "VES POLYTECHNIC",
+                                        "VES College of Law",
+                                    ]}
+                                    defaultValue={selectedItem}
+                                    onSelect={handleTitleChange}
+                                    textStyle={styles.dropdownText}
+                                    dropdownStyle={styles.dropdownStyle}
+                                    dropdownTextStyle={styles.dropdownTextStyle}
+                                // customItemContainerStyle={{ justifyContent: 'center' }}
+                                // labelStyle={{ textAlign: 'center', justifyContent: 'center' }}
+                                />
+                                <Ionicon name={'chevron-down'} size={20} style={{ position: 'absolute', right: 1, padding: 10 }} />
+                            </View>
+                        </View>
+                        :
+                        null
                 }
 
                 <View style={styles.captchaContainer}>
