@@ -153,16 +153,15 @@ const TPOmodule = [
 const Adminmodule = [
     {
         id: 1,
-        title: 'View Bookings'
-    },
-    {
-        id: 2,
-        title: 'view'
-    },
-    {
-        id: 3,
         title: 'Venue'
     }
 ]
 
-export { guestmodule, teachermodule, studentmodule, parentmodule, TPOmodule, Adminmodule };
+const Principalmodule = [
+    {
+        id: 1,
+        title: 'View Booking'
+    },
+]
+
+export { guestmodule, teachermodule, studentmodule, parentmodule, TPOmodule, Adminmodule, Principalmodule };

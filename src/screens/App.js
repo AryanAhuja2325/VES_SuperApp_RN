@@ -51,7 +51,9 @@ import WelcomeUser from './WelcomeUser';
 import Booking from './booking';
 import Information from './booking/Information';
 import Previous from './booking/Previous';
-import Venue from './Admin/Venue';
+import Venue from './Admin/Venue/Venue';
+import ViewBooking from './Principal/View Booking/ViewBooking';
+
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -537,6 +539,17 @@ const App = () => {
               ),
             })}
           />
+            <stack.Screen
+            name="ViewBooking"
+            component={ViewBooking}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="View Bookings" />
+              ),
+            })}
+          />
+          
         </stack.Navigator>
       </NavigationContainer>
     </Provider>
