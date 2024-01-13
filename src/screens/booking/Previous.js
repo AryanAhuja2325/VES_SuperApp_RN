@@ -12,6 +12,7 @@ import firestore from '@react-native-firebase/firestore';
 import { useAppSelector } from '../../../store/hook';
 import LinearGradient from 'react-native-linear-gradient';
 import Icons from 'react-native-vector-icons/MaterialIcons';
+import axios from 'axios';
 
 const HorizontalLine = () => {
   return <View style={styles.line} />;
@@ -25,39 +26,22 @@ const Previous = ({ route }) => {
 
   const fetchUserBookings = async () => {
     try {
-      const fetchedUserBookings = [];
-
-      const snapshot = await firestore().collection('Booking').get();
-
-      if (snapshot.empty) {
-        console.log('No documents found.');
-        return;
+      let response;
+      if (user.loginType == 'Admin') {
+        response = await axios.get(`http://192.168.56.1:3000/api/booking/allBookings`);
       }
-
-      snapshot.forEach((doc) => {
-        const bookingData = doc.data();
-        const filteredBookings = bookingData.bookings.filter(
-          (booking) => booking.bookedBy === user.email
-        );
-
-        if (filteredBookings.length > 0) {
-          fetchedUserBookings.push({
-            id: doc.id,
-            ...bookingData,
-            bookings: filteredBookings,
-          });
-        }
-      });
+      else {
+        response = await axios.get(`http://192.168.56.1:3000/api/booking/userBookings/${user.email}`);
+      }
+      const fetchedUserBookings = response.data;
 
       fetchedUserBookings.forEach((booking) => {
-        booking.bookings.sort((a, b) => {
-          return a.date.toDate() - b.date.toDate();
-        });
+        booking.bookings.sort((a, b) => a.date - b.date);
       });
 
       setDocuments(fetchedUserBookings);
     } catch (error) {
-      console.error('Error fetching user bookings:', error);
+      console.error('Error fetching user bookings:', error.message);
     }
   };
 
@@ -66,67 +50,38 @@ const Previous = ({ route }) => {
   }, [user.email]);
 
   const deleteBooking = async (documentId, bookingToDelete) => {
-    const docRef = firestore().collection('Booking').doc(documentId);
-
     try {
-      const doc = await docRef.get();
-
-      if (doc.exists) {
-        let bookingsArray = doc.data().bookings || [];
-
-        const indexToDelete = bookingsArray.findIndex(
-          (booking) => booking.bookingId === bookingToDelete.bookingId
-        );
-
-        if (indexToDelete !== -1) {
-          const bookingDate = bookingToDelete.bookedOn.toDate();
-          const currentDate = new Date();
-          const timeDifference = currentDate.getTime() - bookingDate.getTime();
-          const daysDifference = timeDifference / (1000 * 3600 * 24);
-
-          if (daysDifference > 2) {
-            Alert.alert(
-              'Cannot Cancel Booking',
-              'You cannot cancel a booking made more than 2 days ago.'
-            );
-          } else {
-            Alert.alert(
-              'Cancel Booking',
-              'Are you sure you want to cancel this booking?',
-              [
-                {
-                  text: 'Cancel',
-                  style: 'cancel',
-                },
-                {
-                  text: 'OK',
-                  onPress: async () => {
-                    bookingsArray.splice(indexToDelete, 1);
-                    await docRef.update({
-                      bookings: bookingsArray,
-                    });
-                    await fetchUserBookings();
-                    Alert.alert(
-                      'Booking Canceled',
-                      'Your booking has been canceled successfully.'
-                    );
-                  },
-                },
-              ],
-              { cancelable: false }
-            );
-          }
-        } else {
-          console.log('Booking not found.');
-        }
-      } else {
-        console.log('Document does not exist.');
-      }
+      Alert.alert(
+        'Cancel Booking',
+        'Are you sure you want to cancel this booking?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'OK',
+            onPress: async () => {
+              const response = await axios.post(`http://192.168.56.1:3000/api/booking/cancelBooking/${documentId}`, bookingToDelete);
+              if (response.status == 200) {
+                Alert.alert("Success", "Booking cancelled successfully");
+                fetchUserBookings();
+              }
+              else if (status == 400) {
+                Alert.alert("Error", "Cannot cancel booking made more that 2 days ago");
+              }
+              else {
+                Alert.alert("Network Error", "Please try again")
+              }
+            },
+          },
+        ],
+        { cancelable: false }
+      );
     } catch (error) {
       console.error('Error deleting booking:', error);
     }
   };
-
   const dateOptions = {
     year: 'numeric',
     month: 'long',
@@ -178,64 +133,91 @@ const Previous = ({ route }) => {
         style={styles.searchInput}
         placeholder="Search by Booking ID"
         value={searchQuery}
-        onChangeText={(text) => { handleTextChange(text) }}
+        onChangeText={(text) => {
+          handleTextChange(text);
+        }}
       />
-      {documents.map((booking) => (
-        booking.bookings.map((individual) => (
-          <View key={individual.id}>
-            {currentDate < individual.date.toDate() && (
-              <View key={individual.id} style={styles.card}>
-                <LinearGradient
-                  colors={['#EFBF38', '#F5DE7A']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={{ ...styles.gradient }}
-                >
-                  <View>
-                    <View style={styles.textContainer}>
-                      <Text style={styles.text}>Booked By: </Text>
-                      <Text style={styles.record}>{user.firstName} {user.lastName}</Text>
-                      <TouchableOpacity
-                        style={styles.icon}
-                        onPress={() => deleteBooking(booking.id, individual)}
-                      >
-                        <Icons name='delete' size={25} color='black' />
-                      </TouchableOpacity>
+
+      {documents.length === 0 ? (
+        <View style={styles.noBookingsContainer}>
+          <Text style={styles.noBookingsText}>No bookings found</Text>
+        </View>
+      ) : (
+        documents.map((booking) => (
+          booking.bookings.map((individual) => (
+            <View key={individual.id}>
+              {individual.date && currentDate < new Date(individual.date) && (
+                <View key={individual.id} style={styles.card}>
+                  <LinearGradient
+                    colors={['#EFBF38', '#F5DE7A']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={{ ...styles.gradient }}
+                  >
+                    <View>
+                      <View style={styles.textContainer}>
+                        <Text style={styles.text}>Booked By: </Text>
+                        <Text style={styles.record}>
+                          {user.firstName} {user.lastName}
+                        </Text>
+                        <TouchableOpacity
+                          style={styles.icon}
+                          onPress={() => deleteBooking(booking._id, individual)}
+                        >
+                          <Icons name="delete" size={25} color="black" />
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.textContainer}>
+                        <Text style={styles.text}>Venue: </Text>
+                        <Text style={styles.record}>{booking.name}</Text>
+                      </View>
+                      <View style={styles.textContainer}>
+                        <Text style={styles.text}>Date: </Text>
+                        <Text style={styles.record}>
+                          {individual.date
+                            ? new Date(individual.date).toLocaleString(
+                              'en-US',
+                              dateOptions
+                            )
+                            : 'N/A'}
+                        </Text>
+                      </View>
+                      <View style={styles.textContainer}>
+                        <Text style={styles.text}>Time: </Text>
+                        <Text style={[styles.record, { color: '#228B22' }]}>
+                          {individual.time &&
+                            individual.time.startTime &&
+                            individual.time.endTime ? (
+                            new Date(individual.time.startTime).toLocaleString('en-US', timeOptions) == '12:00 AM' &&
+                              new Date(individual.time.endTime).toLocaleString('en-US', timeOptions) == '11:00 PM' ? (
+                              'Full Day'
+                            ) : (
+                              <>
+                                {new Date(
+                                  individual.time.startTime
+                                ).toLocaleString('en-US', timeOptions)}-{' '}
+                                {new Date(
+                                  individual.time.endTime
+                                ).toLocaleString('en-US', timeOptions)}
+                              </>
+                            )
+                          ) : (
+                            'N/A'
+                          )}
+                        </Text>
+                      </View>
+                      <View style={styles.textContainer}>
+                        <Text style={styles.text}>Booking Id: </Text>
+                        <Text style={styles.record}>{individual.bookingId}</Text>
+                      </View>
                     </View>
-                    <View style={styles.textContainer}>
-                      <Text style={styles.text}>Venue: </Text>
-                      <Text style={styles.record}>{booking.name}</Text>
-                    </View>
-                    <View style={styles.textContainer}>
-                      <Text style={styles.text}>Date: </Text>
-                      <Text style={styles.record}>
-                        {individual.date
-                          .toDate()
-                          .toLocaleString('en-US', dateOptions)}
-                      </Text>
-                    </View>
-                    <View style={styles.textContainer}>
-                      <Text style={styles.text}>Time: </Text>
-                      <Text style={[styles.record, { color: '#228B22' }]}>
-                        {individual.time.startTime
-                          .toDate()
-                          .toLocaleString('en-US', timeOptions)}-{' '}
-                        {individual.time.endTime
-                          .toDate()
-                          .toLocaleString('en-US', timeOptions)}
-                      </Text>
-                    </View>
-                    <View style={styles.textContainer}>
-                      <Text style={styles.text}>Booking Id: </Text>
-                      <Text style={styles.record}>{individual.bookingId}</Text>
-                    </View>
-                  </View>
-                </LinearGradient>
-              </View>
-            )}
-          </View>
+                  </LinearGradient>
+                </View>
+              )}
+            </View>
+          ))
         ))
-      ))}
+      )}
 
       <HorizontalLine />
       <TouchableOpacity onPress={toggleElapsedExpand}>
@@ -244,58 +226,98 @@ const Previous = ({ route }) => {
           <Text style={styles.header}>{isElapsedExpanded ? '-' : '+'}</Text>
         </View>
       </TouchableOpacity>
-      {isElapsedExpanded && documents.map((booking) => (
-        booking.bookings.map((individual) => (
-          <View key={individual.id}>
-            {currentDate >= individual.date.toDate() && (
-              <View key={individual.id} style={styles.card}>
-                <LinearGradient
-                  colors={['#DDDDDD', '#CCCCCC']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={{ ...styles.gradient }}
-                >
-                  <View>
-                    <View style={styles.textContainer}>
-                      <Text style={styles.text}>Booked By: </Text>
-                      <Text style={styles.record}>{user.firstName} {user.lastName}</Text>
-                    </View>
-                    <View style={styles.textContainer}>
-                      <Text style={styles.text}>Venue: </Text>
-                      <Text style={styles.record}>{booking.name}</Text>
-                    </View>
-                    <View style={styles.textContainer}>
-                      <Text style={styles.text}>Date: </Text>
-                      <Text style={styles.record}>
-                        {individual.date
-                          .toDate()
-                          .toLocaleString('en-US', dateOptions)}
-                      </Text>
-                    </View>
-                    <View style={styles.textContainer}>
-                      <Text style={styles.text}>Time: </Text>
-                      <Text style={[styles.record, { color: '#228B22' }]}>
-                        {individual.time.startTime
-                          .toDate()
-                          .toLocaleString('en-US', timeOptions)}-{' '}
-                        {individual.time.endTime
-                          .toDate()
-                          .toLocaleString('en-US', timeOptions)}
-                      </Text>
-                    </View>
-                    <View style={styles.textContainer}>
-                      <Text style={styles.text}>Booking Id: </Text>
-                      <Text style={styles.record}>{individual.bookingId}</Text>
-                    </View>
+
+      {isElapsedExpanded && documents.length > 0 && (
+        documents.map((booking) => (
+          booking.bookings.map((individual) => (
+            <View key={individual.id}>
+              {individual.date &&
+                currentDate >= new Date(individual.date) && (
+                  <View key={individual.id} style={styles.card}>
+                    <LinearGradient
+                      colors={['#DDDDDD', '#CCCCCC']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={{ ...styles.gradient }}
+                    >
+                      <View>
+                        <View style={styles.textContainer}>
+                          <Text style={styles.text}>Booked By: </Text>
+                          <Text style={styles.record}>
+                            {user.firstName} {user.lastName}
+                          </Text>
+                        </View>
+                        <View style={styles.textContainer}>
+                          <Text style={styles.text}>Venue: </Text>
+                          <Text style={styles.record}>{booking.name}</Text>
+                        </View>
+                        <View style={styles.textContainer}>
+                          <Text style={styles.text}>Date: </Text>
+                          <Text style={styles.record}>
+                            {individual.date
+                              ? new Date(individual.date).toLocaleString(
+                                'en-US',
+                                dateOptions
+                              )
+                              : 'N/A'}
+                          </Text>
+                        </View>
+                        {/* <View style={styles.textContainer}>
+                          <Text style={styles.text}>Time: </Text>
+                          <Text style={[styles.record, { color: '#228B22' }]}>
+                            {individual.time && individual.time.startTime
+                              ? new Date(
+                                individual.time.startTime
+                              ).toLocaleString('en-US', timeOptions)
+                              : 'N/A'}-{' '}
+                            {individual.time && individual.time.endTime
+                              ? new Date(
+                                individual.time.endTime
+                              ).toLocaleString('en-US', timeOptions)
+                              : 'N/A'}
+                          </Text>
+                        </View> */}
+                        <View style={styles.textContainer}>
+                          <Text style={styles.text}>Time: </Text>
+                          <Text style={[styles.record, { color: '#228B22' }]}>
+                            {individual.time &&
+                              individual.time.startTime &&
+                              individual.time.endTime ? (
+                              new Date(individual.time.startTime.toLocaleString('en-US', timeOptions)) === '12:00 AM' &&
+                                new Date(individual.time.endTime.toLocaleString('en-US', timeOptions)) === '11:00 PM' ? (
+                                'Full Day'
+                              ) : (
+                                <>
+                                  {new Date(
+                                    individual.time.startTime
+                                  ).toLocaleString('en-US', timeOptions)}-{' '}
+                                  {new Date(
+                                    individual.time.endTime
+                                  ).toLocaleString('en-US', timeOptions)}
+                                </>
+                              )
+                            ) : (
+                              'N/A'
+                            )}
+                          </Text>
+                        </View>
+                        <View style={styles.textContainer}>
+                          <Text style={styles.text}>Booking Id: </Text>
+                          <Text style={styles.record}>
+                            {individual.bookingId}
+                          </Text>
+                        </View>
+                      </View>
+                    </LinearGradient>
                   </View>
-                </LinearGradient>
-              </View>
-            )}
-          </View>
+                )}
+            </View>
+          ))
         ))
-      ))}
+      )}
     </ScrollView>
-  )
+  );
+
 };
 
 export default Previous;

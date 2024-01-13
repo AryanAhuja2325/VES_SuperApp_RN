@@ -150,7 +150,19 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         marginTop: 10
-    }
+    },
+
+
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black overlay
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loaderContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 
 })
 

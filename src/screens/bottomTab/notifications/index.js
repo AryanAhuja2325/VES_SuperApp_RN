@@ -1,60 +1,51 @@
-import React, { useState, useEffect } from "react";
-import {
-    View,
-    Text,
-    FlatList,
-    TouchableOpacity,
-    Linking,
-    ScrollView
-} from "react-native";
-import firestore from '@react-native-firebase/firestore';
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, FlatList, TouchableOpacity, Linking, TextInput } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import axios from "axios";
 import styles from "./Notifications.style";
+import { useAppSelector } from '../../../../store/hook';
 
 const Notifications = () => {
     const [notifications, setNotifications] = useState([]);
+    const user = useAppSelector(state => state.profile.data);
 
     const getData = async () => {
         try {
-            const querySnanpshot = await firestore()
-                .collection('Notification')
-                .get()
-
-            const data = querySnanpshot.docs.map((doc) => doc.data());
-            data.sort((a, b) => b.date.toDate() - a.date.toDate())
-            setNotifications(data);
+            const data = await axios.get("http://192.168.56.1:3000/api/notifications");
+            setNotifications(data.data);
         } catch (error) {
-            console.log(error);
+            console.log(error)
         }
-    }
+    };
+
 
     const renderCard = ({ item }) => {
-        const date = item.date.toDate()
-        const formatted = date.toLocaleDateString()
+        const date = new Date(item.date);
+        const formatted = date.toLocaleDateString();
         return (
-            // <ScrollView style={styles.main}>
             <View style={styles.container}>
                 <View style={styles.card}>
                     <Text style={styles.heading}>{item.title} </Text>
                     <Text style={styles.desc}>{item.desc} </Text>
-                    {
-                        item.link ?
-                            <TouchableOpacity
-                                onPress={() => Linking.openURL(item.link)}
-                            >
-                                <Text style={styles.link}>{item.link} </Text>
-                            </TouchableOpacity>
-                            : null
-                    }
+                    {item.link ? (
+                        <TouchableOpacity onPress={() => Linking.openURL(item.link)}>
+                            <Text style={styles.link}>{item.link} </Text>
+                        </TouchableOpacity>
+                    ) : null}
                     <Text style={styles.date}>{formatted}</Text>
                 </View>
             </View>
-            // </ScrollView>
-        )
-    }
+        );
+    };
 
-    useEffect(() => {
-        getData();
-    }, [])
+    useFocusEffect(
+        useCallback(() => {
+            getData();
+            return () => {
+            };
+        }, [])
+    );
+
 
     return (
         <View>

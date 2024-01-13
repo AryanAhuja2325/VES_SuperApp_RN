@@ -60,14 +60,22 @@ const styles = StyleSheet.create({
         marginTop: 30,
         width: '70%'
     },
+    fullButtonContainer: {
+        backgroundColor: 'rgb(145,41,40)',
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginTop: 10,
+        width: '70%'
+    },
     buttonText: {
         color: '#ffffff',
         fontSize: 16,
         fontWeight: 'bold',
     },
     qtyContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: 'column',
 
     },
     slide: {
@@ -77,7 +85,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     image: {
-        width:'100%',
+        width: '100%',
         height: '100%',
         resizeMode: 'cover',
     },
@@ -98,7 +106,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     modalHeaderTextContainer: {
-        flex: 1, 
+        flex: 1,
         alignItems: 'center'
     },
     closeButton: {
@@ -113,13 +121,13 @@ const styles = StyleSheet.create({
         marginTop: 30,
         alignItems: 'center'
     },
-    
-    selectText:{ padding: 10, fontWeight: 'bold', color: COLORS.shadowcolor, fontSize: 20,},
 
-    table:{
-        flex: 1, 
-        marginTop: 10, 
-        marginLeft: 5, 
+    selectText: { padding: 10, fontWeight: 'bold', color: COLORS.shadowcolor, fontSize: 20, },
+
+    table: {
+        flex: 1,
+        marginTop: 10,
+        marginLeft: 5,
         marginRight: 5,
     },
     tableHeading:

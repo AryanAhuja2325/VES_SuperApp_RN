@@ -1,63 +1,73 @@
 import React, { useEffect, useState } from 'react';
-import {
-    View,
-    Text,
-    FlatList,
-    TouchableOpacity,
-    Image,
-} from 'react-native';
+import { View, Text, SectionList, TouchableOpacity, Image } from 'react-native';
 import styles from './booking.styles';
-import firestore from '@react-native-firebase/firestore';
+import axios from 'axios';
 import { useAppSelector } from '../../../store/hook';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-
 
 const Booking = ({ navigation }) => {
     const user = useAppSelector(state => state.profile.data);
-    const [documents, setDocuments] = useState([]);
+    const [sections, setSections] = useState([]);
 
     const getData = async () => {
         try {
-            const snapshot = await firestore().collection('Booking').get();
+            const response = await axios.get('http://192.168.56.1:3000/api/booking');
+            const fetchedDocuments = response.data;
 
-            const fetchedDocuments = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-
-            setDocuments(fetchedDocuments);
+            const categorizedVenues = categorizeVenues(fetchedDocuments);
+            setSections(categorizedVenues);
         } catch (error) {
             console.error('Error fetching documents:', error);
         }
     };
 
+    const categorizeVenues = (venues) => {
+        const categorized = {};
+        venues.forEach((venue) => {
+            const category = venue.institute || 'Uncategorized';
+            if (!categorized[category]) {
+                categorized[category] = [];
+            }
+            categorized[category].push(venue);
+        });
+
+        const sectionsArray = Object.keys(categorized).map((category) => ({
+            title: category,
+            data: categorized[category],
+        }));
+
+        return sectionsArray;
+    };
+
     useEffect(() => {
         getData();
-    }, [])
+    }, []);
 
     const renderCard = ({ item }) => (
         <TouchableOpacity
             style={[
                 styles.productContainer,
-                item.prodID % 2 === 0 ? styles.fullWidthItem : styles.halfWidthItem
+                item.prodID % 2 === 0 ? styles.fullWidthItem : styles.halfWidthItem,
             ]}
             onPress={() => navigation.navigate('Information', { data: item })}
         >
             <Image style={styles.productImage} source={{ uri: item.images[0] }} />
             <Text style={styles.productName}>{item.name}</Text>
-
         </TouchableOpacity>
+    );
+
+    const renderSectionHeader = ({ section: { title } }) => (
+        <View style={styles.sectionHeader}>
+            <Text style={styles.sectionHeaderText}>{title}</Text>
+        </View>
     );
 
     return (
         <View style={styles.container}>
-            <View style={styles.headingview}>
-                <Text style={styles.heading}>Venues</Text>
-            </View>
-            <FlatList
-                data={documents}
+            <SectionList
+                sections={sections}
+                keyExtractor={(item) => item._id}
                 renderItem={renderCard}
-                keyExtractor={(item) => item}
+                renderSectionHeader={renderSectionHeader}
                 numColumns={2}
                 contentContainerStyle={styles.productList}
             />
@@ -66,7 +76,6 @@ const Booking = ({ navigation }) => {
                     ? "View Bookings"
                     : "View Your Bookings"}
                 </Text>
-                {/* <Icon name="pending_actions" size={30} color="white" /> */}
             </TouchableOpacity>
         </View>
     );

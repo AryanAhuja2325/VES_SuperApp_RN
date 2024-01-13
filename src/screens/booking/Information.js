@@ -22,6 +22,7 @@ import firestore from '@react-native-firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 import 'react-native-get-random-values';
 import Loading from '../../components/header/loading';
+import axios from 'axios';
 
 const Information = ({ route }) => {
   const user = useAppSelector((state) => state.profile.data);
@@ -33,18 +34,17 @@ const Information = ({ route }) => {
   const [documents, setDocuments] = useState({});
   const today = new Date();
   const minDate = today.toISOString().split('T')[0];
-  const [allBookingIds, setAllBookingIds] = useState([]);
   const [selectedDateObjects, setSelectedDateObjects] = useState([]);
   const [disabledTimeSlots, setDisabledTimeSlots] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null)
   const [loading, setLoading] = useState(false);
-
+  const [isFullDaySelected, setIsFullDaySelected] = useState(false);
 
   const generateTimeSlots = (startTime, endTime, duration) => {
     const slots = [];
     const format = 'h:mm A';
-    const start = moment(startTime, 'h:mm A');
-    const end = moment(endTime, 'h:mm A');
+    const start = moment(startTime, format);
+    const end = moment(endTime, format);
     const timeSlotDuration = moment.duration(duration, 'minutes');
 
     let slotStart = start.clone();
@@ -63,6 +63,7 @@ const Information = ({ route }) => {
     return slots;
   };
 
+
   const resetModalState = () => {
     setSelectedDates({});
     setSelectedItems([]);
@@ -70,6 +71,46 @@ const Information = ({ route }) => {
     setDisabledTimeSlots([]);
     setSelectedDateObjects([]);
     setSelectedDate(null);
+  };
+
+  const bookFullDay = async () => {
+    try {
+      if (!selectedDate) {
+        Alert.alert('Error', 'Please select a date before booking full day.');
+        return;
+      }
+
+      setLoading(true);
+
+      const formattedSelectedDate = moment(selectedDate).format('YYYY-MM-DD');
+      const fullDayTimeSlot = {
+        start: '00:00:00',
+        end: '23:00:00',
+      };
+
+      const response = await axios.post(`http://192.168.56.1:3000/api/booking/bookRequest/${data._id}`, {
+        selectedDates: { [formattedSelectedDate]: { selected: true } },
+        selectedItems: [fullDayTimeSlot],
+        user: { email: user.email },
+        bookingId: generateId(),
+      });
+
+      if (response.data.message) {
+        Alert.alert('Booking Successful');
+        setSelectedDates([]);
+        setSelectedItems([]);
+        setSelectedDate(null);
+      } else if (response.data.error) {
+        Alert.alert('Booking conflicts found. Please choose a different time slot.');
+      }
+    } catch (error) {
+      console.error('Error during booking:', error);
+      if (error.response) {
+        console.error('Error Response:', error.response.data);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
 
@@ -80,78 +121,129 @@ const Information = ({ route }) => {
 
   const fetchBookingsForDate = async (date) => {
     try {
-      const snapshot = await firestore()
-        .collection('Booking')
-        .doc(data.id)
-        .get();
-
-      if (snapshot.exists) {
-        const bookingData = snapshot.data();
-        setDocuments(bookingData);
-
-        const bookingsForDate = bookingData.bookings.filter(
-          (booking) =>
-            moment(booking.date.toDate()).isSame(moment(date), 'day')
-        );
-
-        return bookingsForDate;
-      } else {
-        console.log('Document not found.');
-        return [];
-      }
+      const formattedDate = moment(date).format('YYYY-MM-DD');
+      const response = await axios.get(`http://192.168.56.1:3000/api/booking/bookingsForDate/${data._id}/${formattedDate}`);
+      const fetchedBookings = response.data;
+      return fetchedBookings;
     } catch (error) {
-      console.error('Error fetching booking data:', error);
+      console.error(`Error fetching bookings for date ${date}:`, error);
       return [];
     }
   };
 
   const onDayPress = async (day) => {
-    const date = day.dateString;
-    const bookingsForDate = await fetchBookingsForDate(date);
+    const clickedDate = day.dateString;
 
-    setSelectedDate(date);
-    const updatedDates = {
-      [date]: { selected: true },
-    };
-    setSelectedDates(updatedDates);
+    if (selectedDate === clickedDate) {
+      resetModalState();
+    } else {
+      try {
+        const bookingsForDate = await fetchBookingsForDate(clickedDate);
 
-    setSelectedDates(updatedDates);
+        setSelectedDate(clickedDate);
+        const updatedDates = {
+          [clickedDate]: { selected: true },
+        };
+        setSelectedDates(updatedDates);
 
-    const updatedDateObjects = Object.keys(updatedDates).map((dateString) => new Date(dateString));
-    setSelectedDateObjects(updatedDateObjects);
+        const updatedDateObjects = Object.keys(updatedDates).map((dateString) => new Date(dateString));
+        setSelectedDateObjects(updatedDateObjects);
 
-    const updatedTimeSlots = timeSlots.map((timeSlot, index, array) => {
-      const isTimeSlotAvailable =
-        !bookingsForDate.some((booking) => {
-          const bookingStartTime = moment(booking.time.startTime.toDate());
-          const bookingEndTime = moment(booking.time.endTime.toDate());
+        const bookedTimeSlots = bookingsForDate.length > 0 ? bookingsForDate[0].bookings : [];
 
-          const selectedStartTime = moment(
-            `${date} ${timeSlot.start}`,
-            'YYYY-MM-DD h:mm A'
-          );
-          const selectedEndTime = moment(
-            `${date} ${timeSlot.end}`,
-            'YYYY-MM-DD h:mm A'
-          );
+        const updatedTimeSlots = generateTimeSlots(
+          moment().startOf('day'),
+          moment().endOf('day'),
+          60
+        );
+        const hasTimetable = data && data.timetable && data.timetable.length > 0 && isVenueTimetableAvailable(moment(clickedDate).format('dddd'));
 
-          return (
-            selectedStartTime.isSame(bookingEndTime) &&
-            selectedEndTime.isSame(bookingStartTime)
-          );
+        const disabledSlots = hasTimetable
+          ? disableTimeSlotsBasedOnTimetable(clickedDate, updatedTimeSlots)
+          : updatedTimeSlots.map((timeSlot) => ({ ...timeSlot, isInTimeTable: false }));
+
+        setTimeSlots(disabledSlots);
+
+        const finalTimeSlots = disabledSlots.map((timeSlot) => {
+          let isTimeSlotAvailable = true;
+
+          if (bookedTimeSlots.length > 0) {
+            isTimeSlotAvailable = !bookedTimeSlots.some((bookedSlot) => {
+              const bookedStartTime = new Date(bookedSlot.time.startTime);
+              const bookedEndTime = new Date(bookedSlot.time.endTime);
+
+              if (bookedStartTime && bookedEndTime) {
+                const formattedTimeSlot = {
+                  start: moment(`${clickedDate} ${timeSlot.start}`, 'YYYY-MM-DD h:mm A').toDate(),
+                  end: moment(`${clickedDate} ${timeSlot.end}`, 'YYYY-MM-DD h:mm A').toDate(),
+                };
+
+                return (
+                  (formattedTimeSlot.start >= bookedStartTime && formattedTimeSlot.start < bookedEndTime) ||
+                  (formattedTimeSlot.end > bookedStartTime && formattedTimeSlot.end <= bookedEndTime) ||
+                  (formattedTimeSlot.start <= bookedStartTime && formattedTimeSlot.end >= bookedEndTime)
+                );
+              }
+              return false;
+            });
+          }
+
+          return {
+            ...timeSlot,
+            isAvailable: isTimeSlotAvailable,
+          };
         });
 
-      if (index > 0 && array[index - 1].isBooked) {
-        isTimeSlotAvailable = false;
+        setTimeSlots(finalTimeSlots);
+      } catch (error) {
+        console.error('Error in onDayPress:', error);
       }
+    }
+  };
+
+  const isVenueTimetableAvailable = (selectedDay) => {
+    const timetableForDay = data.timetable.find((entry) => entry.day.toLowerCase() === selectedDay.toLowerCase());
+    return !!timetableForDay;
+  };
+
+  const disableTimeSlotsBasedOnTimetable = (selectedDate, timeSlots) => {
+    const selectedDay = moment(selectedDate).format('dddd').toLowerCase();
+
+    if (!data || !data.timetable || !data.timetable.length) {
+      return timeSlots.map((timeSlot) => ({
+        ...timeSlot,
+        isInTimeTable: false,
+      }));
+    }
+
+    const timetableForDay = data.timetable.find((entry) => entry.day.toLowerCase() === selectedDay);
+
+    if (!timetableForDay) {
+      return timeSlots.map((timeSlot) => ({
+        ...timeSlot,
+        isInTimeTable: false,
+      }));
+    }
+
+    const timetableSlots = timetableForDay.slots || [];
+
+    return timeSlots.map((timeSlot) => {
+      const slotStart = moment(`${selectedDate} ${timeSlot.start}`, 'YYYY-MM-DD h:mm A');
+      const slotEnd = moment(`${selectedDate} ${timeSlot.end}`, 'YYYY-MM-DD h:mm A');
+      const isOverlapping = timetableSlots.some((timetableSlot) => {
+        const timetableSlotStart = moment(`${selectedDate} ${timetableSlot.startTime}`, 'YYYY-MM-DD h:mm A');
+        const timetableSlotEnd = moment(`${selectedDate} ${timetableSlot.endTime}`, 'YYYY-MM-DD h:mm A');
+        return (
+          (slotStart.isSameOrBefore(timetableSlotStart) && slotEnd.isAfter(timetableSlotStart)) ||
+          (slotStart.isSameOrAfter(timetableSlotStart) && slotStart.isBefore(timetableSlotEnd))
+        );
+      });
 
       return {
         ...timeSlot,
-        isAvailable: isTimeSlotAvailable,
+        isInTimeTable: isOverlapping,
       };
     });
-
-    setTimeSlots(updatedTimeSlots);
   };
 
   useEffect(() => {
@@ -161,11 +253,6 @@ const Information = ({ route }) => {
     const slots = generateTimeSlots(start, end, duration);
     setTimeSlots(slots);
   }, []);
-
-  const generateTime = (time, date) => {
-    const formattedTime = moment(`${date} ${time}`, 'YYYY-MM-DD h:mm A');
-    return firestore.Timestamp.fromDate(formattedTime.toDate());
-  };
 
   useEffect(() => {
     const start = moment().startOf('day');
@@ -177,12 +264,10 @@ const Information = ({ route }) => {
       const isAvailable = isTimeSlotAvailable(timeSlot);
       timeSlot.isAvailable = isAvailable;
 
-      // Check if the previous slot is booked and the current slot is adjacent
       if (index > 0 && !array[index - 1].isAvailable && isAdjacentSlotDisabled(array[index - 1], timeSlot)) {
         timeSlot.isAvailable = false;
       }
 
-      // Check if the current slot is booked and the next slot is adjacent
       if (index < array.length - 1 && !array[index + 1].isAvailable && isAdjacentSlotDisabled(timeSlot, array[index + 1])) {
         array[index + 1].isAvailable = false;
       }
@@ -209,91 +294,40 @@ const Information = ({ route }) => {
   const bookRequest = async () => {
     try {
       setLoading(true);
-      const collectionRef = firestore().collection("Booking");
-      const documentRef = collectionRef.doc(data.id);
 
-      const doc = await documentRef.get();
+      const formattedSelectedDate = moment(selectedDate).format('YYYY-MM-DD');
+      const formattedSelectedItems = selectedItems.map(item => ({
+        start: moment(`${formattedSelectedDate} ${item.start}`, 'YYYY-MM-DD h:mm A').format('HH:mm:ss'),
+        end: moment(`${formattedSelectedDate} ${item.end}`, 'YYYY-MM-DD h:mm A').format('HH:mm:ss'),
+      }));
 
-      if (doc.exists) {
-        const bookingData = doc.data();
-        setDocuments(bookingData);
 
-        const selectedDate = Object.keys(selectedDates)[0];
+      const response = await axios.post(`http://192.168.56.1:3000/api/booking/bookRequest/${data._id}`, {
+        selectedDates: { [formattedSelectedDate]: { selected: true } },
+        selectedItems: formattedSelectedItems,
+        user: { email: user.email },
+        bookingId: generateId(),
+      });
 
-        const conflicts = selectedItems.some((timeSlot) => {
-          const formattedStartTime = moment(`${selectedDate} ${timeSlot.start}`, 'YYYY-MM-DD h:mm A');
-          const formattedEndTime = moment(`${selectedDate} ${timeSlot.end}`, 'YYYY-MM-DD h:mm A');
 
-          return bookingData.bookings.some((existingBooking) => {
-            const existingStartTime = moment(existingBooking.time.startTime.toDate());
-            const existingEndTime = moment(existingBooking.time.endTime.toDate());
-
-            return (
-              formattedStartTime.isBefore(existingEndTime) && formattedEndTime.isAfter(existingStartTime)
-            );
-          });
-        });
-
-        if (!conflicts) {
-          const newBookings = await Promise.all(
-            selectedItems.map(async (timeSlot) => {
-              const formattedStartTime = moment(`${selectedDate} ${timeSlot.start}`, 'YYYY-MM-DD h:mm A');
-              const formattedEndTime = moment(`${selectedDate} ${timeSlot.end}`, 'YYYY-MM-DD h:mm A');
-
-              return {
-                bookedBy: user.email,
-                date: firestore.Timestamp.fromDate(new Date(selectedDate)),
-                time: {
-                  startTime: firestore.Timestamp.fromDate(formattedStartTime.toDate()),
-                  endTime: firestore.Timestamp.fromDate(formattedEndTime.toDate()),
-                },
-                bookedOn: firestore.Timestamp.fromDate(new Date()),
-                bookingId: await generateId(),
-              };
-            })
-          );
-
-          const updatedBookings = [...bookingData.bookings, ...newBookings];
-          const updatedBookingData = {
-            ...bookingData,
-            bookings: updatedBookings,
-          };
-
-          await documentRef.set(updatedBookingData);
-          Alert.alert('Booking Successful');
-          setSelectedDates([]);
-          setSelectedItems([]);
-          setSelectedDate(null);
-
-          const refreshedDoc = await documentRef.get();
-          setDocuments(refreshedDoc.data());
-        } else {
-          Alert.alert(
-            'Booking conflicts found. Please choose a different time slot.'
-          );
-        }
+      if (response.data.message) {
+        Alert.alert('Booking Successful');
+        setSelectedDates([]);
+        setSelectedItems([]);
+        setSelectedDate(null);
+      } else if (response.data.error) {
+        Alert.alert('Booking conflicts found. Please choose a different time slot.');
       }
     } catch (error) {
-      console.error('Error fetching and updating booking data from Firestore:', error);
+      console.error('Error during booking:', error);
+      if (error.response) {
+        console.error('Error Response:', error.response.data);
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false)
   };
 
-  const doTimeSlotsOverlap = (slotA, slotB) => {
-    const startA = moment(slotA.start, 'h:mm A');
-    const endA = moment(slotA.end, 'h:mm A');
-    const startB = moment(slotB.start, 'h:mm A');
-    const endB = moment(slotB.end, 'h:mm A');
-
-    return startA.isBefore(endB) && endA.isAfter(startB);
-  };
-
-  const areTimeSlotsAdjacent = (slotA, slotB) => {
-    const endA = moment(slotA.end, 'h:mm A');
-    const startB = moment(slotB.start, 'h:mm A');
-
-    return endA.isSame(startB);
-  };
 
   const isTimeSlotAvailable = (timeSlot) => {
     const selectedDate = Object.keys(selectedDates)[0];
@@ -301,26 +335,30 @@ const Information = ({ route }) => {
       return false;
     }
 
-    const selectedStartTime = moment(`${selectedDate} ${timeSlot.start}`, 'YYYY-MM-DD h:mm A');
-    const selectedEndTime = moment(`${selectedDate} ${timeSlot.end}`, 'YYYY-MM-DD h:mm A');
+    const selectedStartTime = new Date(`${selectedDate} ${timeSlot.start}`);
+    const selectedEndTime = new Date(`${selectedDate} ${timeSlot.end}`);
 
     const existingBookings = documents?.bookings || [];
 
     return !existingBookings.some((booking) => {
-      const bookingStartTime = moment(booking.time.startTime.toDate());
-      const bookingEndTime = moment(booking.time.endTime.toDate());
+      if (booking.time && booking.time.startTime && booking.time.endTime) {
+        const bookingStartTime = moment(booking.time.startTime.toDate());
+        const bookingEndTime = moment(booking.time.endTime.toDate());
 
-      const isOverlap = doTimeSlotsOverlap(
-        { start: selectedStartTime, end: selectedEndTime },
-        { start: bookingStartTime, end: bookingEndTime }
-      );
+        const isOverlap = (
+          selectedStartTime < bookingEndTime &&
+          selectedEndTime > bookingStartTime
+        );
 
-      const isAdjacent = areTimeSlotsAdjacent(
-        { start: selectedStartTime, end: selectedEndTime },
-        { start: bookingStartTime, end: bookingEndTime }
-      );
+        const isAdjacent = (
+          selectedEndTime.getTime() === bookingStartTime.getTime() ||
+          selectedStartTime.getTime() === bookingEndTime.getTime()
+        );
 
-      return isOverlap || isAdjacent;
+        return isOverlap || isAdjacent;
+      } else {
+        return false;
+      }
     });
   };
 
@@ -338,9 +376,10 @@ const Information = ({ route }) => {
   }, [selectedDates, documents]);
 
   const renderItem = ({ item }) => {
-    const isAvailable = isTimeSlotAvailable(item);
+    const isAvailable = item.isAvailable;
     const isSelected = selectedItems.includes(item);
-
+    const isBooked = item.isBooked;
+    const isInTimeTable = item.isInTimeTable;
     return (
       <TouchableOpacity
         onPress={() => {
@@ -352,15 +391,19 @@ const Information = ({ route }) => {
           styles.timeSlot,
           {
             backgroundColor: isSelected ? 'lightblue' : 'white',
-            opacity: isAvailable ? 1 : 0.5,
+            opacity: isAvailable && !isInTimeTable ? 1 : 0.5,
+            borderColor: isBooked ? 'red' : 'black',
           },
         ]}
-        disabled={!isAvailable}
+        disabled={isInTimeTable || !isAvailable}
       >
         <Text>{item.start} - {item.end}</Text>
       </TouchableOpacity>
+
     );
   };
+
+
 
   return (
     <ScrollView style={styles.mainview}>
@@ -385,7 +428,16 @@ const Information = ({ route }) => {
             <Text style={styles.venueLocation}>Location: {data.institute}</Text>
           </TouchableOpacity>
           <Text style={styles.venueDescription}>{data.desc}</Text>
-          <View style={styles.qtyContainer}></View>
+          {data.facilities ?
+            <View style={styles.qtyContainer}>
+              <Text>Faciltites:</Text>
+              {data.facilities.map((facility, index) => (
+                <View key={index}>
+                  <Text>{`${index + 1}) ${facility}`}</Text>
+                </View>
+              ))}
+            </View>
+            : null}
           <TouchableOpacity style={styles.buttonContainer} onPress={() => setModalVisible(true)}>
             <Text style={styles.buttonText}>BOOK</Text>
           </TouchableOpacity>
@@ -429,6 +481,14 @@ const Information = ({ route }) => {
                     <TouchableOpacity onPress={bookRequest} style={styles.buttonContainer}>
                       <Text style={styles.buttonText}>Book</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={bookFullDay}
+                      style={styles.fullButtonContainer}
+                      disabled={selectedItems.length > 0 ? true : false}
+                    >
+                      <Text style={styles.buttonText}>Book Full Day</Text>
+                    </TouchableOpacity>
+
 
                     <View style={{ flexDirection: 'row' }}>
                       {Object.keys(selectedDates).length > 0 && (

@@ -10,6 +10,7 @@ import styles from './StationarySupply.styles';
 import firestore from '@react-native-firebase/firestore';
 import { useAppSelector } from '../../../store/hook';
 import Icons from 'react-native-vector-icons/MaterialIcons'
+import axios from 'axios';
 
 const StationarySupply = ({ navigation }) => {
 
@@ -21,16 +22,11 @@ const StationarySupply = ({ navigation }) => {
 
     const getData = async () => {
         try {
-            const snapshot = await firestore().collection('Products').get();
-
-            const fetchedDocuments = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-
-            setDocuments(fetchedDocuments);
+            const data = await axios.get('http://192.168.56.1:3000/api/stationary/products');
+            console.log(data)
+            setDocuments(data.data);
         } catch (error) {
-            console.error('Error fetching documents:', error);
+            console.log(error)
         }
     };
 

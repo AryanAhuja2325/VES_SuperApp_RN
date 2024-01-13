@@ -109,8 +109,14 @@ const Home = ({ navigation }) => {
         case 'Booking':
           navigation.navigate('Booking');
           break;
-        case 'Venue':
+        case 'Add Venue':
           navigation.navigate('Venue');
+          break;
+        case 'View Bookings':
+          navigation.navigate('Previous Bookings');
+          break;
+        case 'Send Notification':
+          navigation.navigate('Send Notification');
           break;
         default:
           break;

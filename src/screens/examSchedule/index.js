@@ -19,6 +19,7 @@ import * as COLORS from '../../utils/color'
 import ModalDropdown from 'react-native-modal-dropdown';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NewIcon from 'react-native-vector-icons/AntDesign';
+import axios from 'axios';
 
 const Exam = () => {
     const [open, setOpen] = useState(false);
@@ -43,70 +44,57 @@ const Exam = () => {
             });
 
             const fileName = documentPickerResponse.name;
-            setFileName(fileName)
-            const storageRef = storage().ref().child(`pdfs/${fileName}`);
-
+            setFileName(fileName);
             const fileUri = documentPickerResponse.uri;
-            const response = await fetch(fileUri);
-            const blob = await response.blob();
 
-            await storageRef.put(blob);
+            setFileUri(fileUri);
+            setAddBtnVisible(true);
+        } catch (error) {
+            console.log('Error uploading PDF:', error);
+        }
+    };
 
-            const downloadURL = await storageRef.getDownloadURL();
-            setFileUri(downloadURL)
-            setAddBtnVisible(true)
+    const handleAddPdf = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('uploadedBy', user.email);
+            formData.append('title', title);
+            formData.append('institute', institute);
+            formData.append('file', {
+                uri: fileUri,
+                name: fileName,
+                type: 'application/pdf',
+            });
 
+            await axios.post('http://192.168.56.1:3000/api/examSchedule/upload-pdf', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            Alert.alert('Success', 'File uploaded successfully');
+            setVisibleModal(false);
         } catch (error) {
             console.log('Error uploading PDF:', error);
         }
     };
 
 
-    const handleAddPdf = () => {
-        const file = {
-            uploadedBy: user.email,
-            uploadedOn: new Date(),
-            title: title,
-            institute: institute,
-            url: fileUri
-        }
 
-        firestore()
-            .collection('Exams')
-            .add(file)
-            .then(() => {
-                Alert.alert("Success", "File uploaded successfully")
-            })
-        setVisibleModal(false);
-
-    }
 
     const getData = async () => {
         try {
-            if (user.loginType == 'Teacher') {
-                const snapshot = await firestore().collection('Exams').get();
+            const userType = user.loginType;
+            const institute = user.institute;
 
-                const docs = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data()
-                }))
-                setExams(docs)
-            }
-
-            else {
-                const snapshot = await firestore().collection('Exams').where('institute', '==', user.institute).get();
-
-                const docs = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data()
-                }))
-                setExams(docs)
-            }
-
+            const response = await axios.get(`http://192.168.56.1:3000/api/examSchedule/getData?loginType=${userType}&institute=${institute}`);
+            console.log(response.data)
+            setExams(response.data);
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
+
 
     useEffect(() => {
         getData()
@@ -119,14 +107,14 @@ const Exam = () => {
             [
                 {
                     text: "Yes, I'm sure",
-                    onPress: () => {
-                        firestore()
-                            .collection('Exams')
-                            .doc(id)
-                            .delete()
-                            .then(() => {
-                                Alert.alert("Success", "Document deleted successfully")
-                            })
+                    onPress: async () => {
+                        try {
+                            await axios.delete(`http://192.168.56.1:3000/api/examSchedule/deleteDoc/${id}`);
+                            Alert.alert("Success", "Document deleted successfully");
+                            getData(); // Refresh the data after deletion
+                        } catch (error) {
+                            console.log('Error deleting document:', error);
+                        }
                     },
                     style: 'destructive',
                 },
@@ -140,38 +128,43 @@ const Exam = () => {
     }
 
 
-    const displayCards = ({ item }) => {
 
+    const displayCards = ({ item }) => {
         return (
             <View style={styles.card}>
                 <View style={styles.row}>
                     <Text style={styles.cardTitle}>{item.title} - {item.institute}</Text>
-                    {
-                        user.loginType == 'Teacher' ?
-                            <TouchableOpacity onPress={() => deleteDoc(item.id)}>
-                                <Icon name='delete' size={26} color={COLORS.black} />
-                            </TouchableOpacity>
-
-                            :
-                            null
-                    }
+                    {user.loginType === 'Teacher' ? (
+                        <TouchableOpacity onPress={() => deleteDoc(item._id)}>
+                            <Icon name='delete' size={26} color={COLORS.black} />
+                        </TouchableOpacity>
+                    ) : null}
                 </View>
                 <HorizontalLine />
-                <TouchableOpacity style={styles.downloadButton} onPress={() => {
-                    Linking.openURL(item.url)
-                }}>
+                <TouchableOpacity
+                    style={styles.downloadButton}
+                    onPress={() => {
+                        Linking.openURL(item.url);
+                    }}
+                >
                     <NewIcon name='pdffile1' color={COLORS.black} size={40} />
                     <Text style={styles.downloadButtonText}>Click here to download</Text>
                 </TouchableOpacity>
                 <Text style={styles.cardInfo}>Uploaded by: {item.uploadedBy}</Text>
-                <Text style={styles.cardInfo}>Uploaded on: {item.uploadedOn.toDate().toLocaleDateString()}</Text>
-                {
-                    user.loginType == 'Teacher' ? <Text style={styles.cardInfo}>Institute: {item.institute}</Text> : null
-                }
-
+                <Text style={styles.cardInfo}>
+                    Uploaded on: {formatDate(item.uploadedOn)}
+                </Text>
+                {user.loginType === 'Teacher' ? <Text style={styles.cardInfo}>Institute: {item.institute}</Text> : null}
             </View>
-        )
-    }
+        );
+    };
+
+    const formatDate = (date) => {
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        return new Date(date).toLocaleDateString('en-GB', options);
+    };
+
+
 
     return (
         <View style={styles.main}>

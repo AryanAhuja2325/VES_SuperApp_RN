@@ -32,7 +32,7 @@ const Style = StyleSheet.create({
     image: {
         width: "100%",
         height: 200,
-        resizeMode:'contain',
+        resizeMode: 'contain',
         alignSelf: 'center',
         borderColor: white,
         margin: 10
@@ -57,6 +57,16 @@ const Style = StyleSheet.create({
     },
     date: {
         textAlign: 'right'
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black overlay
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loaderContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 })
 

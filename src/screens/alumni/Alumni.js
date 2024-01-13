@@ -2,6 +2,7 @@ import firestore from '@react-native-firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, View, SafeAreaView, ScrollView } from 'react-native';
 import styles from './Alumni.styles';
+import axios from 'axios';
 
 
 const Alumni = () => {
@@ -10,16 +11,9 @@ const Alumni = () => {
         useEffect(() => {
                 const fetchAlumniData = async () => {
                         try {
-                                const alumniRef = firestore().collection('Alumni');
-                                const querySnapshot = await alumniRef.get();
-                                const data = querySnapshot.docs.map((doc) => ({
-                                        id: doc.id,
-                                        image: doc.data().image,
-                                        description: doc.data().description,
-                                        name: doc.data().name,
-                                        role: doc.data().role,
-                                }));
-                                setAlumniData(data);
+                                const data = await axios.get('http://192.168.56.1:3000/api/alumni');
+                                console.log(data)
+                                setAlumniData(data.data);
                         } catch (error) {
                                 console.log('Error fetching alumni Data:', error);
                         }

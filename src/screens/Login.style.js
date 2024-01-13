@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: blue
     },
-    
+
     logo: {
         width: responsiveWidth(100),
         height: responsiveHeight(50),
@@ -148,6 +148,17 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         paddingHorizontal: 10,
         borderRadius: 10,
+    },
+
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black overlay
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loaderContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 
 

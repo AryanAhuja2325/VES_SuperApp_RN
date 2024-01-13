@@ -52,6 +52,7 @@ import Booking from './booking';
 import Information from './booking/Information';
 import Previous from './booking/Previous';
 import Venue from './Admin/Venue';
+import SendNotification from './bottomTab/notifications/SendNotification';
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -534,6 +535,16 @@ const App = () => {
               headerShown: true,
               header: () => (
                 <CustomHeader navigation={navigation} title="Venue" />
+              ),
+            })}
+          />
+          <stack.Screen
+            name="Send Notification"
+            component={SendNotification}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Send Notification" />
               ),
             })}
           />

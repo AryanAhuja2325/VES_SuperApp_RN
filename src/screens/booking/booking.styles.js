@@ -46,6 +46,15 @@ const styles = StyleSheet.create({
         shadowColor: 'rgb(145,41,40)',
         backgroundColor: 'white',
     },
+    sectionHeader: {
+        marginHorizontal: 10,
+        felx: 1
+    },
+    sectionHeaderText: {
+        color: 'black',
+        fontSize: 20,
+        textDecorationLine: 'underline'
+    },
     productImage: {
         width: '100%',
         height: 100,

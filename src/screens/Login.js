@@ -1,19 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image, Alert, KeyboardAvoidingView, ImageBackground, Modal } from 'react-native';
+import React, { useState } from 'react';
+import {
+    View,
+    TextInput,
+    TouchableOpacity,
+    Text,
+    StyleSheet,
+    Image,
+    Alert,
+    KeyboardAvoidingView,
+    ImageBackground,
+    Modal,
+    ActivityIndicator,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import firestore from '@react-native-firebase/firestore';
 import { useAppDispatch } from '../../store/hook';
 import { setUserProfile, setModules } from '../../store/slice/profileSlice';
 import styles from './Login.style';
-import modules from './Modules';
+import {
+    teachermodule,
+    studentmodule,
+    guestmodule,
+    parentmodule,
+    TPOmodule,
+    Adminmodule,
+} from './Modules';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import { black, gray } from '../utils/color';
-import { teachermodule, studentmodule, guestmodule, parentmodule, TPOmodule, Adminmodule } from './Modules';
-import { compare } from 'react-native-bcrypt';
-import auth from '@react-native-firebase/auth'
+import auth from '@react-native-firebase/auth';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
+import axios from 'axios';
 
 const Login = ({ navigation }) => {
     const [email, setEmail] = useState('');
@@ -23,97 +40,64 @@ const Login = ({ navigation }) => {
     const [otp, setOtp] = useState();
     const [verificationId, setVerificationId] = useState();
     const [otpVisible, setOtpVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const dispatch = useAppDispatch();
 
     const handleLogin = async () => {
         if (!email || !password) {
-            Alert.alert("Error", "Fields cannot be empty");
+            Alert.alert('Error', 'Fields cannot be empty');
         } else {
-            const users = firestore().collection('Users');
+            try {
+                setIsLoading(true);
 
-            const querySnapshot = await users
-                .where('email', '==', email)
-                .limit(1)
-                .get();
+                const response = await axios.post('http://192.168.56.1:3000/api/login', { email, password });
 
-            if (querySnapshot.empty) {
-                Alert.alert("Error", "User not found");
-                return;
-            }
-
-            const user = querySnapshot.docs[0].data();
-            const hashedPassword = user.password;
-
-            compare(password, hashedPassword, async (error, isMatch) => {
-                if (isMatch) {
+                if (response.status === 200) {
+                    const user = response.data.user;
                     dispatch(setUserProfile(user));
-                    if (user.loginType == 'Student') {
-                        dispatch(setModules([
-                            {
-                                id: '1',
-                                title: 'Student Components',
-                                data: [...studentmodule]
-                            },
-                            {
-                                id: '2',
-                                title: 'Basic Components',
-                                data: [...guestmodule]
-                            }
-                        ]));
+
+                    let modules;
+                    if (user.loginType === 'Student') {
+                        modules = [
+                            { id: '1', title: 'Student Components', data: [...studentmodule] },
+                            { id: '2', title: 'Basic Components', data: [...guestmodule] },
+                        ];
+                    } else if (user.loginType === 'Teacher') {
+                        modules = [
+                            { id: '1', title: 'Teacher Components', data: [...teachermodule] },
+                            { id: '2', title: 'Basic Components', data: [...guestmodule] },
+                        ];
+                    } else if (user.loginType === 'Parent') {
+                        modules = [
+                            { id: '1', title: 'Parent Components', data: [...parentmodule] },
+                            { id: '2', title: 'Basic Components', data: [...guestmodule] },
+                        ];
+                    } else if (user.loginType === 'TPO') {
+                        modules = [{ id: '1', title: 'TPO Components', data: [...TPOmodule] }];
+                    } else if (user.loginType === 'Admin') {
+                        modules = [{ id: '1', title: 'Admin Components', data: [...Adminmodule] }];
                     }
-                    else if (user.loginType == 'Teacher') {
-                        dispatch(setModules([
-                            {
-                                id: '1',
-                                title: 'Teacher Components',
-                                data: [...teachermodule]
-                            },
-                            {
-                                id: '2',
-                                title: 'Basic Components',
-                                data: [...guestmodule]
-                            }
-                        ]));
-                    }
-                    else if (user.loginType == 'Parent') {
-                        dispatch(setModules([
-                            {
-                                id: '1',
-                                title: 'Parent Components',
-                                data: [...parentmodule]
-                            },
-                            {
-                                id: '2',
-                                title: 'Basic Components',
-                                data: [...guestmodule]
-                            }
-                        ]));
-                    }
-                    else if (user.loginType == 'TPO') {
-                        dispatch(setModules([
-                            {
-                                id: '1',
-                                title: 'TPO Components',
-                                data: [...TPOmodule]
-                            },
-                        ]));    
-                    }
-                    else if (user.loginType == 'Admin') {
-                        dispatch(setModules([
-                            {
-                                id: '1',
-                                title: 'Admin Components',
-                                data: [...Adminmodule]
-                            }]))
-                    }
+
+                    dispatch(setModules(modules));
 
                     navigation.navigate('HomeScreen');
-                    await AsyncStorage.setItem("userData", JSON.stringify(user));
+                    await AsyncStorage.setItem('userData', JSON.stringify(user));
                 } else {
-                    Alert.alert("Error", "Invalid email or password");
+                    if (response.data.error === 'User Not Found') {
+                        Alert.alert('Error', 'User not found. Please check your email and try again.');
+                    } else if (response.data.error === 'Invalid email or password') {
+                        Alert.alert('Error', 'Invalid password. Please check your password and try again.');
+                    } else {
+                        Alert.alert('Error', response.data.error || 'Login failed');
+                    }
                 }
-            });
+            } catch (error) {
+                console.error(error);
+                Alert.alert('Error', 'An unexpected error occurred');
+            } finally {
+                setIsLoading(false);
+            }
         }
     };
 
@@ -122,141 +106,94 @@ const Login = ({ navigation }) => {
     };
 
     const resendOtp = () => {
-        sendOtp()
-        setOtp()
-    }
+        sendOtp();
+        setOtp();
+    };
+
     const sendOtp = async () => {
         try {
-            const users = firestore().collection('Users');
+            const response = await axios.post('http://192.168.56.1:3000/api/login/getUserByEmail', { email });
 
-            const querySnapshot = await users
-                .where('email', '==', email)
-                .limit(1)
-                .get();
+            if (response.status === 200) {
+                const user = response.data.user;
 
-            if (querySnapshot.empty) {
-                Alert.alert("Error", "User not found");
-                return;
+                const confirmation = await auth().signInWithPhoneNumber('+91' + user.phoneNo);
+                setVerificationId(confirmation);
+
+                Alert.alert('Success', 'OTP has been sent to your registered mobile number');
+                setOtpVisible(true);
+            } else {
+                Alert.alert('Error', 'User not found');
             }
-
-            const user = querySnapshot.docs[0].data();
-
-            const confirmation = await auth().signInWithPhoneNumber('+91' + user.phoneNo);
-            setVerificationId(confirmation);
-
-            Alert.alert("Success", "OTP has been sent to your registered mobile number");
-            setOtpVisible(true);
         } catch (error) {
-            console.log(error);
-            Alert.alert("Error", "Cannot Send OTP right Now, Please try again later")
+            console.error(error);
+            Alert.alert('Error', 'Cannot Send OTP right now, Please try again later');
         }
     };
 
     const handleVerifyOTP = async () => {
         try {
-            const confirmation = await verificationId.confirm(otp)
+            const confirmation = await verificationId.confirm(otp);
 
             if (confirmation) {
-                const users = firestore().collection('Users');
+                const response = await axios.post('http://192.168.56.1:3000/api/login/getUserByEmail', { email });
 
-                const querySnapshot = await users
-                    .where('email', '==', email)
-                    .limit(1)
-                    .get();
+                if (response.status === 200) {
+                    const user = response.data.user;
 
-                const user = querySnapshot.docs[0].data();
+                    dispatch(setUserProfile(user));
 
-                dispatch(setUserProfile(user));
-                if (user.loginType == 'Student') {
-                    dispatch(setModules([
-                        {
-                            id: '1',
-                            title: 'Student Components',
-                            data: [...studentmodule]
-                        },
-                        {
-                            id: '2',
-                            title: 'Basic Components',
-                            data: [...guestmodule]
-                        }
-                    ]));
-                }
-                else if (user.loginType == 'Teacher') {
-                    dispatch(setModules([
-                        {
-                            id: '1',
-                            title: 'Teacher Components',
-                            data: [...teachermodule]
-                        },
-                        {
-                            id: '2',
-                            title: 'Basic Components',
-                            data: [...guestmodule]
-                        }
-                    ]));
-                }
-                else if (user.loginType == 'Parent') {
-                    dispatch(setModules([
-                        {
-                            id: '1',
-                            title: 'Parent Components',
-                            data: [...parentmodule]
-                        },
-                        {
-                            id: '2',
-                            title: 'Basic Components',
-                            data: [...guestmodule]
-                        }
-                    ]));
-                }
-                else if (user.loginType == 'TPO') {
-                    dispatch(setModules([
-                        {
-                            id: '1',
-                            title: 'TPO Components',
-                            data: [...TPOmodule]
-                        },
-                    ]));
-                }
-                else if (user.loginType == 'Admin') {
-                    dispatch(setModules([
-                        {
-                            id: '1',
-                            title: 'Admin Components',
-                            data: [...Adminmodule]
-                        },
-                    ]));
-                }
+                    let modules;
+                    if (user.loginType === 'Student') {
+                        modules = [
+                            { id: '1', title: 'Student Components', data: [...studentmodule] },
+                            { id: '2', title: 'Basic Components', data: [...guestmodule] },
+                        ];
+                    } else if (user.loginType === 'Teacher') {
+                        modules = [
+                            { id: '1', title: 'Teacher Components', data: [...teachermodule] },
+                            { id: '2', title: 'Basic Components', data: [...guestmodule] },
+                        ];
+                    } else if (user.loginType === 'Parent') {
+                        modules = [
+                            { id: '1', title: 'Parent Components', data: [...parentmodule] },
+                            { id: '2', title: 'Basic Components', data: [...guestmodule] },
+                        ];
+                    } else if (user.loginType === 'TPO') {
+                        modules = [{ id: '1', title: 'TPO Components', data: [...TPOmodule] }];
+                    } else if (user.loginType === 'Admin') {
+                        modules = [{ id: '1', title: 'Admin Components', data: [...Adminmodule] }];
+                    }
 
-                navigation.navigate('HomeScreen');
-                await AsyncStorage.setItem("userData", JSON.stringify(user));
+                    dispatch(setModules(modules));
+
+                    navigation.navigate('HomeScreen');
+                    await AsyncStorage.setItem('userData', JSON.stringify(user));
+                } else {
+                    Alert.alert('Error', 'User not found');
+                }
             } else {
                 Alert.alert('Error', 'Invalid OTP');
             }
         } catch (error) {
-            console.log('Otp====>>>', otp);
-            console.log('Error====>>>', error);
+            console.error('Otp====>>>', otp);
+            console.error('Error====>>>', error);
             Alert.alert('Error', 'Invalid OTP');
         }
     };
-
-
 
     return (
         <KeyboardAvoidingView style={styles.container}>
             <View style={styles.backgroundView}>
                 <ImageBackground
                     source={require('../assets/imgs/Swami_Login.png')}
-                    style={styles.logo}
-                >
+                    style={styles.logo}>
                     <View style={styles.logoView}>
                         <Image
                             source={require('../assets/imgs/ves_logo_name.png')}
                             style={styles.logoImg}
                         />
                     </View>
-
-
                 </ImageBackground>
             </View>
             <View style={styles.textView}>
@@ -272,7 +209,6 @@ const Login = ({ navigation }) => {
                         onChangeText={setEmail}
                         placeholderTextColor={'grey'}
                         keyboardType='email-address'
-
                     />
                 </View>
 
@@ -310,7 +246,7 @@ const Login = ({ navigation }) => {
                     <Text style={styles.nullaccount}>Don't have an account? </Text>
                     <TouchableOpacity
                         onPress={() => {
-                            navigation.navigate("SignUp");
+                            navigation.navigate('SignUp');
                         }}
                     >
                         <Text style={styles.lower}>Signup!</Text>
@@ -337,46 +273,51 @@ const Login = ({ navigation }) => {
                         />
                     </View>
 
-                    {
-                        otpVisible ?
-                            <View>
-                                <View style={styles.inputContainer}>
-                                    <Text style={styles.label}>Enter OTP:</Text>
-                                    <TextInput
-                                        style={styles.otpInput}
-                                        placeholder="Enter OTP Sent to your verified number"
-                                        value={otp}
-                                        onChangeText={setOtp}
-                                        placeholderTextColor={gray}
-                                        color={black}
-                                        keyboardType='phone-pad'
-                                    />
-                                </View>
-                                <TouchableOpacity
-                                    style={styles.button}
-                                    onPress={handleVerifyOTP}
-                                >
-                                    <Text style={styles.buttonText}>Verify and Login</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={styles.button}
-                                    onPress={sendOtp}
-                                >
-                                    <Text style={styles.buttonText}>Resend OTP</Text>
-                                </TouchableOpacity>
+                    {otpVisible ? (
+                        <View>
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.label}>Enter OTP:</Text>
+                                <TextInput
+                                    style={styles.otpInput}
+                                    placeholder="Enter OTP Sent to your verified number"
+                                    value={otp}
+                                    onChangeText={setOtp}
+                                    placeholderTextColor={gray}
+                                    color={black}
+                                    keyboardType='phone-pad'
+                                />
                             </View>
-                            :
+                            <TouchableOpacity
+                                style={styles.button}
+                                onPress={handleVerifyOTP}
+                            >
+                                <Text style={styles.buttonText}>Verify and Login</Text>
+                            </TouchableOpacity>
+
                             <TouchableOpacity
                                 style={styles.button}
                                 onPress={sendOtp}
                             >
-                                <Text style={styles.buttonText}>Send OTP</Text>
+                                <Text style={styles.buttonText}>Resend OTP</Text>
                             </TouchableOpacity>
-                    }
+                        </View>
+                    ) : (
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={sendOtp}
+                        >
+                            <Text style={styles.buttonText}>Send OTP</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </Modal>
-
+            {isLoading && (
+                <View style={styles.overlay}>
+                    <View style={styles.loaderContainer}>
+                        <ActivityIndicator size="large" color="#E5E4E2" />
+                    </View>
+                </View>
+            )}
         </KeyboardAvoidingView>
     );
 };

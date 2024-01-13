@@ -44,11 +44,38 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 6,
     },
+    button1: {
+        backgroundColor: 'rgb(145,41,40)',
+        paddingVertical: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginTop: 6,
+        marginBottom: 15
+    },
     buttonText: {
         color: '#ffffff',
         fontSize: 16,
         fontWeight: 'bold',
     },
+    imagePreview: {
+        width: 100,
+        height: 100,
+        marginRight: 10,
+        borderRadius: 8,
+    },
+    imagePreviewContainer: {
+        marginVertical: 10
+    },
+    facilityHeader: {
+        color: 'black',
+        fontSize: 20
+    },
+    facilityText: {
+        fontSize: 18
+    },
+    facilitiesContainer: {
+        marginVertical: 10
+    }
 });
 
 export default styles;

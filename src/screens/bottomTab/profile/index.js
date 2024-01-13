@@ -9,13 +9,14 @@ import {
     TextInput,
     Alert,
     StyleSheet,
-    ImageBackground
+    ImageBackground,
+    ActivityIndicator
 } from "react-native";
 import styles from "./Profile.styles";
-import { useAppSelector } from "../../../../store/hook";
+import { useAppSelector, useAppDispatch } from "../../../../store/hook";
 import * as COLORS from '../../../utils/color'
-import bcrypt from 'react-native-bcrypt'
-import firestore from '@react-native-firebase/firestore';
+import axios from "axios";
+import { setUserProfile } from '../../../../store/slice/profileSlice';
 
 const HorizontalLine = () => {
     return <View style={styles.line} />;
@@ -23,58 +24,48 @@ const HorizontalLine = () => {
 
 const Profile = () => {
     const user = useAppSelector(state => state.profile.data);
-    const [modalVisible, setModalVisible] = useState(false)
-    const [curPass, setCurPass] = useState('')
-    const [newPass, setNewPass] = useState('')
-    const [confirmPass, setConfirmPass] = useState('')
+    const dispatch = useAppDispatch();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [curPass, setCurPass] = useState('');
+    const [newPass, setNewPass] = useState('');
+    const [confirmPass, setConfirmPass] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const toggleModalVisible = () => {
-        setModalVisible(!modalVisible)
-    }
+        setModalVisible(!modalVisible);
+    };
 
-    const changePass = () => {
-        const hashedPassword = user.password;
+    const resetDataAndCloseModal = () => {
+        setCurPass('');
+        setNewPass('');
+        setConfirmPass('');
+        setModalVisible(false);
+    };
 
-        bcrypt.compare(curPass, hashedPassword, async (error, isMatch) => {
-            if (isMatch) {
-                if (newPass == curPass)
-                    Alert.alert("Error", "New password cannot be the same as old password")
+    const changePass = async () => {
+        try {
+            setLoading(true);
 
-                else {
-                    if (newPass != confirmPass)
-                        Alert.alert("Error", "Passwords do not match")
+            const response = await axios.post('http://192.168.56.1:3000/api/login/change-password', {
+                email: user.email,
+                curPass: curPass,
+                newPass: newPass,
+                confirmPass: confirmPass,
+            });
 
-                    else {
-                        const saltRounds = 5;
-                        try {
-                            const newHashedPassword = await new Promise((resolve, reject) => {
-                                bcrypt.hash(newPass, saltRounds, (error, hash) => {
-                                    if (error) {
-                                        reject(error);
-                                    } else {
-                                        resolve(hash);
-                                    }
-                                });
-                            });
-
-                            const docRef = await firestore().collection('Users').where('email', '==', user.email).get();
-                            docRef.forEach(async doc => {
-                                await doc.ref.update({
-                                    password: newHashedPassword,
-                                });
-                            });
-                        }
-
-                        catch (error) {
-                            console.log(error)
-                        }
-                    }
-                }
+            if (response.status === 200) {
+                Alert.alert("Success", "Password changed");
+                resetDataAndCloseModal();
             } else {
-                Alert.alert("Error", "Invalid Password");
+                Alert.alert("Error", response.data.error || "Failed to change password");
             }
-        });
-    }
+        } catch (error) {
+            console.error(error);
+            Alert.alert("Error", "An unexpected error occurred");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <View style={styles.main}>
@@ -164,9 +155,17 @@ const Profile = () => {
                         />
                     </View>
 
-                    <TouchableOpacity style={styles.button} onPress={changePass}>
-                        <Text style={styles.buttonText}>Change Password</Text>
-                    </TouchableOpacity>
+                    {loading ? (
+                        <View style={styles.overlay}>
+                            <View style={styles.loaderContainer}>
+                                <ActivityIndicator size="large" color="#E5E4E2" />
+                            </View>
+                        </View>
+                    ) : (
+                        <TouchableOpacity style={styles.button} onPress={changePass}>
+                            <Text style={styles.buttonText}>Change Password</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </Modal>
         </View>
@@ -174,3 +173,4 @@ const Profile = () => {
 }
 
 export default Profile;
+

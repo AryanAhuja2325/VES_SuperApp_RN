@@ -55,6 +55,10 @@ const teachermodule = [
     {
         id: 7,
         title: "Booking",
+    },
+    {
+        id: 8,
+        title: "Events Update",
     }
 ]
 
@@ -157,11 +161,11 @@ const Adminmodule = [
     },
     {
         id: 2,
-        title: 'view'
+        title: 'Add Venue'
     },
     {
         id: 3,
-        title: 'Venue'
+        title: 'Send Notification'
     }
 ]
 

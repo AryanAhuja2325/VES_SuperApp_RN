@@ -1,26 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useAppSelector } from '../../../store/hook';
-import firestore from '@react-native-firebase/firestore';
+import axios from 'axios';  // Import Axios
 import styles from './Orders.styles';
 
 const Orders = () => {
     const [orders, setOrders] = useState([]);
-    const user = useAppSelector(state => state.profile.data)
-    const getData = async () => {
+    const user = useAppSelector(state => state.profile.data);
+
+    const fetchDataFromServer = async () => {
         try {
-            const snapshot = await firestore().collection('Orders').where('email', '==', user.email).get();
-
-            const fetchedOrders = snapshot.docs.map((doc) => doc.data())
-
-            setOrders(fetchedOrders)
+            const response = await axios.get(`http://192.168.56.1:3000/api/stationary/orders/${user.email}`);
+            setOrders(response.data);
         } catch (error) {
-            console.error('Error fetching documents:', error);
+            console.error('Error fetching orders:', error);
         }
     };
 
     useEffect(() => {
-        getData();
+        fetchDataFromServer();
     }, []);
 
     const renderOrderItem = ({ item }) => (
@@ -29,7 +27,7 @@ const Orders = () => {
                 {item.items.map((order) => order.name).join("\n")}
             </Text>
             <Text style={styles.orderDate}>{item.netTotal} Rs</Text>
-            <Text style={styles.orderDate}>{new Date(item.date._seconds * 1000).toLocaleString()}</Text>
+            <Text style={styles.orderDate}>{new Date(item.date).toLocaleString()}</Text>
         </TouchableOpacity>
     );
 

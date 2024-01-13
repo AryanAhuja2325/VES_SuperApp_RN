@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, Animated, Touchable } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
+import axios from 'axios';
 import styles from './PhotoGallery.styles';
 import { useAppSelector } from '../../../store/hook';
-import { black, red } from '../../utils/color';
+import Icon from 'react-native-vector-icons/Ionicons';
 import Share from 'react-native-share';
 import ModalDropdown from 'react-native-modal-dropdown';
-import Ionicon from 'react-native-vector-icons/Ionicons'
+import Ionicon from 'react-native-vector-icons/Ionicons';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 
 const ImageGrid = () => {
@@ -19,24 +18,10 @@ const ImageGrid = () => {
 
     const fetchImageArrays = async (selectedItem) => {
         try {
-            const snapshot = await firestore().collection('Photos').where('imageTitle', '==', selectedItem).get();
-            const fetchedDocuments = snapshot.docs.map((doc) => ({
-                docId: doc.id,
-                ...doc.data(),
-            }));
-
-            const likesSnapshot = await firestore().collection('Photos').get();
-            const likesData = {};
-            likesSnapshot.docs.forEach((doc) => {
-                likesData[doc.id] = doc.data().likes;
-            });
-
-            setImageArrays(fetchedDocuments);
-            setLikes(likesData);
-
-            if (fetchedDocuments.length > 0) {
-                setSelectedItem(fetchedDocuments[0].imageTitle);
-            }
+            const response = await axios.get(`http://192.168.56.1:3000/api/photos?selectedItem=${selectedItem}`);
+            setImageArrays(response.data.images);
+            setLikes(response.data.likesData);
+            setIsLiked(false);
         } catch (error) {
             console.log('Error fetching image arrays:', error);
         }
@@ -44,8 +29,7 @@ const ImageGrid = () => {
 
     useEffect(() => {
         fetchImageArrays(selectedItem);
-    }, []);
-
+    }, [selectedItem]);
 
     const shareImage = async (imagePath) => {
         try {
@@ -71,85 +55,41 @@ const ImageGrid = () => {
 
     const handleLike = async (docId) => {
         try {
-            const postRef = firestore().collection('Photos').doc(docId);
-            const postSnapshot = await postRef.get();
-            if (!postSnapshot.exists) {
-                throw new Error('Post does not exist.');
-            }
-
-            const postData = postSnapshot.data();
-            if (!postData || !postData.likedBy) {
-                throw new Error('Likedby property not found in post data.');
-            }
-
-            const likedBy = postData.likedBy;
-
-            if (!likedBy.includes(user.email)) {
-
-                await postRef.update({
-                    likes: firestore.FieldValue.increment(1),
-                    likedBy: firestore.FieldValue.arrayUnion(user.email),
-                });
-
-                setLikes((prevLikes) => ({
-                    ...prevLikes,
-                    [docId]: (prevLikes[docId] || 0) + 1,
-                }));
-                setIsLiked(true);
-            } else {
-
-                await postRef.update({
-                    likes: firestore.FieldValue.increment(-1),
-                    likedBy: firestore.FieldValue.arrayRemove(user.email),
-                });
-
-                setLikes((prevLikes) => ({
-                    ...prevLikes,
-                    [docId]: (prevLikes[docId] || 0) - 1,
-                }));
-                setIsLiked(false);
-            }
+            await axios.post('http:192.168.56.1:3000/api/photos/likePost', { docId, user });
             fetchImageArrays(selectedItem);
+            setIsLiked(!isLiked);
         } catch (error) {
             console.error('Error liking post:', error);
         }
     };
 
-    const renderLikeIcon = (like) => {
-        const isLiked = like || false;
-        return isLiked ? (
 
-            <Icon name="heart" size={24} color={red} />
+    const renderLikeIcon = (like) => {
+        return isLiked ? (
+            <Icon name="heart" size={24} color={'red'} />
         ) : (
-            <Icon name="heart-outline" size={24} color={black} />
+            <Icon name="heart-outline" size={24} color={'black'} />
         );
     };
 
     const renderItem = ({ item }) => {
-        // const title = item.imageTitle;
         const maintitle = item.mainTitle;
-        // const imageId = item.id;
-        const like = item.likes;
+        const like = likes[item._id] || 0;
 
         return (
             <View style={styles.imageContainer}>
                 <View style={{ borderBottomWidth: 1 }}>
                     <Text style={styles.title}>Vivekanand Education</Text>
                     <Text style={styles.location}>{maintitle}</Text>
-
                 </View>
-                <Image source={{ uri: item.imageURL }} style={styles.image} resizeMode='stretch' />
+                <Image source={{ uri: item.imageURL }} style={styles.image} resizeMode="stretch" />
                 <View style={styles.bottomView}>
-                    <TouchableOpacity onPress={() => handleLike(item.docId)}>
+                    <TouchableOpacity onPress={() => handleLike(item._id)}>
                         {renderLikeIcon(like)}
                         <Text>{like} likes</Text>
                     </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={() => shareImage(item.imageURL)}
-                        style={styles.share}
-                    >
-                        <Icon name="share-social-sharp" size={24} color={black} />
+                    <TouchableOpacity onPress={() => shareImage(item.imageURL)} style={styles.share}>
+                        <Icon name="share-social-sharp" size={24} color={'black'} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -179,14 +119,14 @@ const ImageGrid = () => {
                     labelStyle={{ textAlign: 'center', justifyContent: 'center' }}
                     dropdownTextStyle={styles.dropdownTextStyle}
                 />
-                <Ionicon name={'chevron-down'} size={20} color={black} style={{ position: 'absolute', marginVertical: responsiveWidth(2.5), right: 1 }} />
+                <Ionicon name={'chevron-down'} size={20} color={'black'} style={{ position: 'absolute', marginVertical: responsiveWidth(2.5), right: 1 }} />
             </View>
             <FlatList
                 data={imageArrays}
                 renderItem={renderItem}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.docId}
             />
-        </View >
+        </View>
     );
 };
 
