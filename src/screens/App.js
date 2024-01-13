@@ -53,6 +53,8 @@ import Information from './booking/Information';
 import Previous from './booking/Previous';
 import Venue from './Admin/Venue';
 import SendNotification from './bottomTab/notifications/SendNotification';
+import Contact from './campusContact';
+import AddContact from './campusContact/addContact';
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -545,6 +547,26 @@ const App = () => {
               headerShown: true,
               header: () => (
                 <CustomHeader navigation={navigation} title="Send Notification" />
+              ),
+            })}
+          />
+          <stack.Screen
+            name="Campus Contact"
+            component={Contact}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Campus Contact" />
+              ),
+            })}
+          />
+          <stack.Screen
+            name="Add Contact"
+            component={AddContact}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Add Contact" />
               ),
             })}
           />

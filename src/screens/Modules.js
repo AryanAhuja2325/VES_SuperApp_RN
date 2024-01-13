@@ -23,6 +23,10 @@ const guestmodule = [
         id: 6,
         title: 'Blog',
     },
+    {
+        id: 7,
+        title: 'Campus Contact'
+    }
 
 ]
 
@@ -166,7 +170,52 @@ const Adminmodule = [
     {
         id: 3,
         title: 'Send Notification'
-    }
+    },
+    {
+        id: 4,
+        title: 'Venue'
+    },
+    {
+        id: 5,
+        title: 'Campus Contact'
+    },
+    {
+        id: 6,
+        title: 'Photo Gallery'
+    },
+    {
+        id: 7,
+        title: 'Alumni and Mentorship'
+    },
+    {
+        id: 8,
+        title: 'Enquiry Management'
+    },
+    {
+        id: 9,
+        title: 'AboutuS'
+    },
+    {
+        id: 10,
+        title: 'FAQs'
+    },
+    {
+        id: 11,
+        title: 'Blog'
+    },
+    {
+        id: 12,
+        title: 'Enquiry Management'
+    },
+    {
+        id: 13,
+        title: 'Holiday Calendar'
+    },
+    {
+        id: 14,
+        title: 'Exam Schedule'
+    },
+
 ]
 
 export { guestmodule, teachermodule, studentmodule, parentmodule, TPOmodule, Adminmodule };

@@ -118,6 +118,8 @@ const Home = ({ navigation }) => {
         case 'Send Notification':
           navigation.navigate('Send Notification');
           break;
+        case 'Campus Contact':
+          navigation.navigate('Campus Contact')
         default:
           break;
       }
