@@ -18,9 +18,9 @@ const ViewBooking = ({ route }) => {
   const [documents, setDocuments] = useState([]);
   const user = useAppSelector((state) => state.profile.data);
 
-  const fetchUserBookings = async () => {
+  const fetchAllBookings = async () => {
     try {
-      const fetchedUserBookings = [];
+      const fetchedBookings = [];
 
       const snapshot = await firestore().collection('Booking').get();
 
@@ -31,28 +31,23 @@ const ViewBooking = ({ route }) => {
 
       snapshot.forEach(doc => {
         const bookingData = doc.data();
-        const filteredBookings = bookingData.bookings.filter(
-          booking => booking.bookedBy === user.email,
-        );
-
-        if (filteredBookings.length > 0) {
-          fetchedUserBookings.push({
+        if (bookingData.bookings && Array.isArray(bookingData.bookings)) {
+          fetchedBookings.push({
             id: doc.id,
             ...bookingData,
-            bookings: filteredBookings,
           });
         }
       });
 
-      setDocuments(fetchedUserBookings)
+      setDocuments(fetchedBookings);
     } catch (error) {
-      console.error('Error fetching user bookings:', error);
+      console.error('Error fetching all bookings:', error);
     }
   };
 
   useEffect(() => {
-    fetchUserBookings();
-  }, [user.email]);
+    fetchAllBookings();
+  }, []);
 
   const deleteBooking = async (documentId, bookingToDelete) => {
     const docRef = firestore().collection('Booking').doc(documentId);
@@ -142,13 +137,13 @@ const ViewBooking = ({ route }) => {
                 <View>
                   <View style={styles.textContainer}>
                     <Text style={styles.text}>Booked By: </Text>
-                    <Text style={styles.record}>{user.firstName} {user.lastName}</Text>
-                    <TouchableOpacity
+                    <Text style={styles.record}>{individual.bookedBy}</Text>
+                    {/* <TouchableOpacity
                       style={styles.icon}
                       onPress={() => deleteBooking(booking.id, individual)}
                     >
                       <Icons name='delete' size={25} color='black' />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                   </View>
                   <View style={styles.textContainer}>
                     <Text style={styles.text}>Venue: </Text>

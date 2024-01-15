@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useAppDispatch } from '../../store/hook';
 import { setModules, setUserProfile } from '../../store/slice/profileSlice';
 import styles from './splash.style';
-import { parentmodule, guestmodule, studentmodule, teachermodule, TPOmodule, Adminmodule } from './Modules';
+import { parentmodule, guestmodule, studentmodule, teachermodule, TPOmodule, Adminmodule, Principalmodule } from './Modules';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import { black, white } from '../utils/color';
 const Splash = () => {
@@ -100,6 +100,14 @@ const Splash = () => {
                             id: '1',
                             title: 'Admin Components',
                             data: [...Adminmodule],
+                        }]))
+                }
+                else if (user.loginType == 'Principal') {
+                    dispatch(setModules([
+                        {
+                            id: '1',
+                            title: 'Principal Components',
+                            data: [...Principalmodule],
                         }]))
                 }
             }

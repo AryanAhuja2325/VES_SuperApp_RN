@@ -540,7 +540,7 @@ const App = () => {
             })}
           />
             <stack.Screen
-            name="ViewBooking"
+            name="View Booking"
             component={ViewBooking}
             options={({ navigation }) => ({
               headerShown: true,
@@ -549,7 +549,6 @@ const App = () => {
               ),
             })}
           />
-          
         </stack.Navigator>
       </NavigationContainer>
     </Provider>

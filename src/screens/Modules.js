@@ -162,6 +162,7 @@ const Principalmodule = [
         id: 1,
         title: 'View Booking'
     },
+
 ]
 
 export { guestmodule, teachermodule, studentmodule, parentmodule, TPOmodule, Adminmodule, Principalmodule };

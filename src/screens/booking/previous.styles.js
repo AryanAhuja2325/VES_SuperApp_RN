@@ -1,12 +1,12 @@
 import { StyleSheet } from "react-native";
-import { shadowcolor, white } from "../../utils/color";
+import * as COLORS from "../../utils/color";
 import { responsiveScreenWidth } from "react-native-responsive-dimensions";
 
 const styles = StyleSheet.create({
     card: {
         borderRadius: 16,
-        backgroundColor: white,
-        shadowColor: shadowcolor,
+        backgroundColor: COLORS.white,
+        shadowColor: COLORS.shadowcolor,
         elevation: 8,
         margin: 10,
 
@@ -19,8 +19,8 @@ const styles = StyleSheet.create({
     },
 
     gradient: {
-        flex: 1, // Ensure the LinearGradient takes up the entire card
-        borderRadius: 16, // Apply the borderRadius to the LinearGradient
+        flex: 1,
+        borderRadius: 16,
     },
 
     record: {
@@ -38,7 +38,37 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 4,
         bottom: 2,
-    }
+    },
+
+    header: {
+        fontWeight: '900',
+        color: COLORS.black,
+        marginLeft: 15,
+        fontSize: 20,
+        paddingVertical: 10,
+    },
+
+    line: {
+        borderBottomColor: COLORS.black,
+        borderBottomWidth: 1,
+        marginVertical: 5,
+    },
+
+    container: {
+        flex: 1,
+        flexDirection: 'row',
+
+    },
+
+    searchInput: {
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        borderRadius: 30,
+        paddingLeft: 10,
+        margin: 10,
+    },
+
 });
 
 export default styles;

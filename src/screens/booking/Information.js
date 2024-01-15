@@ -22,6 +22,7 @@ import firestore from '@react-native-firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 import 'react-native-get-random-values';
 import Loading from '../../components/header/loading';
+import PushNotification from 'react-native-push-notification';
 
 const Information = ({ route }) => {
   const user = useAppSelector((state) => state.profile.data);
@@ -206,12 +207,7 @@ const Information = ({ route }) => {
     }
   };
 
-  const handleNotification = () => {
-    PushNotification.localNotification({
-      title: 'Hello',
-      message: 'Notification triggered by button click',
-    });
-  }
+
 
   const bookRequest = async () => {
     try {
@@ -267,7 +263,24 @@ const Information = ({ route }) => {
           };
 
           await documentRef.set(updatedBookingData);
-          Alert.alert('Booking Successful');
+
+          const notificationMessage = `Thank you for booking, ${user.firstName}! You have booked ${data.name} `;
+    
+          PushNotification.localNotification({ 
+            title: 'Hello',
+            message: notificationMessage,
+          });
+          Alert.alert(
+            'Success!',
+            'Booking successfull!!',
+            [
+              {
+                text: 'OK',
+                onPress: () => {},
+              },
+            ],
+            { cancelable: false }
+          );
           setSelectedDates([]);
           setSelectedItems([]);
           setSelectedDate(null);
@@ -393,7 +406,7 @@ const Information = ({ route }) => {
           </TouchableOpacity>
           <Text style={styles.venueDescription}>{data.desc}</Text>
           <View style={styles.qtyContainer}></View>
-          <TouchableOpacity style={styles.buttonContainer} onPress={() => {setModalVisible(true), handleNotification()}}>
+          <TouchableOpacity style={styles.buttonContainer} onPress={() => setModalVisible(true)}>
             <Text style={styles.buttonText}>BOOK</Text>
           </TouchableOpacity>
 

@@ -8,7 +8,7 @@ const windowWidth = Dimensions.get("window").width;
 const windowheight = Dimensions.get("window").height;
 
 const styles = StyleSheet.create({
-
+ 
     view: {
         flex: 1,
     },
@@ -19,18 +19,15 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
     },
     contentContainer: {
-        height: windowheight + 400,
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        alignItems: 'baseline',
-        flexWrap: 'wrap'
-
+        alignItems: 'stretch',
+        flexWrap: 'wrap',
     },
     heading: {
         flexDirection: 'row',
         height: responsiveHeight(10),
         width: responsiveWidth(100),
-
     },
     greeting: {
         fontSize: 17,
