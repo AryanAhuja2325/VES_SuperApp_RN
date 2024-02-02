@@ -8,10 +8,8 @@ import {
   ImageBackground,
   TouchableOpacity,
   Image,
-  StyleSheet,
-  Touchable,
 } from 'react-native';
-import { useAppSelector } from '../../store/hook';
+import { useAppSelector } from '../store/hook';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './Home.styles';
 import { red, white, black, gray, maroon } from '../utils/color';
