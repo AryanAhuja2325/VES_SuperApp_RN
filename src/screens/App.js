@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { View, ImageBackground, Text } from 'react-native';
 import Login from './Login';
 import Home from './Home';
 import SignUp from './SignUp';
@@ -27,7 +26,6 @@ import AddJob from './placement/AddJob';
 import JobDetails from './placement/JobDetails';
 import Chat from './groupchat/chat';
 
-import HolidayCalendar from './holidayCalendar/HolidayCalendar';
 import FAQ from './FAQs/faqs';
 import Profile from './bottomTab/profile';
 import Notifications from './bottomTab/notifications';
@@ -54,7 +52,6 @@ import Booking from './booking';
 import Information from './booking/Information';
 import Previous from './booking/Previous';
 import Venue from './Admin/venues/Venue';
-import CareerPath from './careerPath/CareerPath';
 
 
 const stack = createNativeStackNavigator();
@@ -541,18 +538,6 @@ const App = () => {
               ),
             })}
           />
-
-          <stack.Screen
-            name="CareerPath"
-            component={CareerPath}
-            options={({ navigation }) => ({
-              headerShown: true,
-              header: () => (
-                <CustomHeader navigation={navigation} title="CareerPath" />
-              ),
-            })}
-          />
-
         </stack.Navigator>
       </NavigationContainer>
     </Provider>

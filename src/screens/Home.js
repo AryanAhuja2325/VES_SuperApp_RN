@@ -115,6 +115,12 @@ const Home = ({ navigation }) => {
         case 'CareerPath':
           navigation.navigate('CareerPath');
           break;
+          case 'Campus Contact':
+            navigation.navigate('Campus Contact');
+            break;
+          case 'Assignment Dashboard':
+            navigation.navigate('Assignment Dashboard')
+            break;
         default:
           break;
       }
