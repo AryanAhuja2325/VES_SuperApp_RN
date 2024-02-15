@@ -54,6 +54,7 @@ import Booking from './booking';
 import Information from './booking/Information';
 import Previous from './booking/Previous';
 import Venue from './Admin/venues/Venue';
+import CareerPath from './careerPath/CareerPath';
 
 
 const stack = createNativeStackNavigator();
@@ -540,6 +541,18 @@ const App = () => {
               ),
             })}
           />
+
+          <stack.Screen
+            name="CareerPath"
+            component={CareerPath}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="CareerPath" />
+              ),
+            })}
+          />
+
         </stack.Navigator>
       </NavigationContainer>
     </Provider>

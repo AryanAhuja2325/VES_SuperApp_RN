@@ -112,6 +112,9 @@ const Home = ({ navigation }) => {
         case 'Venue':
           navigation.navigate('Venue');
           break;
+        case 'CareerPath':
+          navigation.navigate('CareerPath');
+          break;
         default:
           break;
       }

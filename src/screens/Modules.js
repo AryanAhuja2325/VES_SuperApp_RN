@@ -95,7 +95,12 @@ const studentmodule = [
         id: 9,
         title: 'Fitness And Health',
     },
+    {
+        id: 8,
+        title: "CareerPath",
+    },
 ]
+
 const parentmodule = [
     {
         id: 1,
@@ -164,5 +169,4 @@ const Adminmodule = [
         title: 'Venue'
     }
 ]
-
 export { guestmodule, teachermodule, studentmodule, parentmodule, TPOmodule, Adminmodule };
