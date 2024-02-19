@@ -11,7 +11,7 @@ const Enquiry = ({ navigation }) => {
       Alert.alert("Error", "Write your feedback");
     } else {
       try {
-        const response = await axios.post('http://192.168.56.1:3000/api/feedback', {
+        const response = await axios.post('http://' + ip + ':3000/api/feedback', {
           email: user.email,
           description: Description,
         });
@@ -83,7 +83,7 @@ export const Query = () => {
       }
 
       try {
-        const response = await axios.post('http://192.168.56.1:3000/api/query', {
+        const response = await axios.post('http://' + ip + ':3000/api/query', {
           email: user.email,
           queryTypeToSend,
           description,

@@ -23,6 +23,8 @@ import {
     parentmodule,
     TPOmodule,
     Adminmodule,
+    vendorModules,
+    principalModules
 } from './Modules';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -31,6 +33,7 @@ import { black, gray } from '../utils/color';
 import auth from '@react-native-firebase/auth';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import axios from 'axios';
+import { ip } from '../utils/constant';
 
 const Login = ({ navigation }) => {
     const [email, setEmail] = useState('');
@@ -51,7 +54,7 @@ const Login = ({ navigation }) => {
             try {
                 setIsLoading(true);
 
-                const response = await axios.post('http://192.168.56.1:3000/api/login', { email, password });
+                const response = await axios.post(`http://${ip}:3000/api/login`, { email, password });
 
                 if (response.status === 200) {
                     const user = response.data.user;
@@ -77,6 +80,18 @@ const Login = ({ navigation }) => {
                         modules = [{ id: '1', title: 'TPO Components', data: [...TPOmodule] }];
                     } else if (user.loginType === 'Admin') {
                         modules = [{ id: '1', title: 'Admin Components', data: [...Adminmodule] }];
+                    }
+                    else if (user.loginType === 'Vendor') {
+                        modules = [
+                            { id: '1', title: 'Vendor Components', data: [...vendorModules] },
+                            { id: '2', title: 'Basic Components', data: [...guestmodule] },
+                        ];
+                    }
+                    else if (user.loginType === 'Principal') {
+                        modules = [
+                            { id: '1', title: 'Vendor Components', data: [...principalModules] },
+                            { id: '2', title: 'Basic Components', data: [...guestmodule] },
+                        ];
                     }
 
                     dispatch(setModules(modules));
@@ -112,7 +127,7 @@ const Login = ({ navigation }) => {
 
     const sendOtp = async () => {
         try {
-            const response = await axios.post('http://192.168.56.1:3000/api/login/getUserByEmail', { email });
+            const response = await axios.post(`http://${ip}:3000/api/login/getUserByEmail`, { email });
 
             if (response.status === 200) {
                 const user = response.data.user;
@@ -136,7 +151,7 @@ const Login = ({ navigation }) => {
             const confirmation = await verificationId.confirm(otp);
 
             if (confirmation) {
-                const response = await axios.post('http://192.168.56.1:3000/api/login/getUserByEmail', { email });
+                const response = await axios.post(`http://${ip}:3000/api/login/getUserByEmail`, { email });
 
                 if (response.status === 200) {
                     const user = response.data.user;
@@ -163,6 +178,18 @@ const Login = ({ navigation }) => {
                         modules = [{ id: '1', title: 'TPO Components', data: [...TPOmodule] }];
                     } else if (user.loginType === 'Admin') {
                         modules = [{ id: '1', title: 'Admin Components', data: [...Adminmodule] }];
+                    }
+                    else if (user.loginType === 'Vendor') {
+                        modules = [
+                            { id: '1', title: 'Vendor Components', data: [...vendorModules] },
+                            { id: '2', title: 'Basic Components', data: [...guestmodule] },
+                        ];
+                    }
+                    else if (user.loginType === 'Principal') {
+                        modules = [
+                            { id: '1', title: 'Vendor Components', data: [...principalModules] },
+                            { id: '2', title: 'Basic Components', data: [...guestmodule] },
+                        ];
                     }
 
                     dispatch(setModules(modules));

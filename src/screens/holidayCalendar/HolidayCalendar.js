@@ -1,32 +1,22 @@
-import React, { useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView } from "react-native";
 import ModalDropdown from "react-native-modal-dropdown";
 import styles from "./HolidayCalendar.Styles";
 import Icon from "react-native-vector-icons/Ionicons";
 import { black } from "../../utils/color";
+import axios from "axios";
 
 const Calendar = () => {
   const currentDate = new Date();
   const [year, setYear] = useState(currentDate.getFullYear());
   const [month, setMonth] = useState(currentDate.getMonth());
+  const [holidays, setHolidays] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const daysInWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
   const monthsOfYear = [
     "January", "February", "March", "April", "May", "June", "July",
     "August", "September", "October", "November", "December"
-  ];
-  // Indian Festivals aahet
-  const indianFestivals = [
-    { day: 14, month: 1, name: "Makar Sankranti" },
-    { day: 21, month: 3, name: "Holi" },
-    { day: 2, month: 4, name: "Ram Navami" },
-    { day: 14, month: 4, name: "Baisakhi" },
-    { day: 16, month: 8, name: "Ganesh Chaturthi" },
-    { day: 2, month: 10, name: "Gandhi Jayanti" },
-    { day: 4, month: 10, name: "Navaratri" },
-    { day: 14, month: 10, name: "Dussehra" },
-    { day: 4, month: 11, name: "Diwali" },
-    { day: 25, month: 12, name: "Christmas" },
   ];
 
   const getDaysInMonth = (year, month) => {
@@ -45,6 +35,26 @@ const Calendar = () => {
     setYear(parseInt(value));
   };
 
+  useEffect(() => {
+    const fetchHolidays = async () => {
+      try {
+        const response = await axios.get(
+          `https://calendarific.com/api/v2/holidays?&api_key=XFsKiNAxZYPluNxsx6hmHZ5wcEdDOR2Q&country=in&year=${year}&type=national`
+        );
+
+        const holidayData = response.data.response.holidays;
+        console.log(holidayData)
+        setHolidays(holidayData);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching holidays:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchHolidays();
+  }, [year]);
+
   const renderWeekdays = () => {
     return (
       <View style={styles.weekdays}>
@@ -55,11 +65,32 @@ const Calendar = () => {
     );
   };
 
+  const renderFestivalList = () => {
+    const festivalsInMonth = holidays.filter(
+      (holiday) => new Date(holiday.date.iso).getMonth() === month
+    );
+
+    return (
+      <View style={styles.festivalList}>
+        <Text style={styles.festivalTitle}>Festivals in {monthsOfYear[month]}</Text>
+        {festivalsInMonth.map((festival, index) => (
+          <View key={index} style={styles.festivalCard}>
+            <Text style={styles.festivalDate}>
+              {new Date(festival.date.iso).getDate()}/{month + 1}
+            </Text>
+            <Text style={styles.festivalName}>{festival.name}</Text>
+          </View>
+        ))}
+      </View>
+    );
+  };
+
   const renderCalendarDays = () => {
     const totalDays = getDaysInMonth(year, month);
     const firstDay = new Date(year, month, 1).getDay();
 
     const calendarDays = Array.from({ length: totalDays }, (_, index) => index + 1);
+
     return (
       <View style={styles.calendarDays}>
         {Array(firstDay)
@@ -68,16 +99,24 @@ const Calendar = () => {
             <Text key={`empty-${index}`} style={styles.emptyDay}></Text>
           ))}
         {calendarDays.map((day) => {
-          const isFestivalDay = indianFestivals.some(
-            (festival) => festival.day === day && festival.month === month + 1
-          );
+          const currentDate = new Date(year, month, day);
+
+          const isHoliday = holidays.some((holiday) => {
+            const holidayDate = new Date(holiday.date.iso);
+            return (
+              currentDate.getDate() === holidayDate.getDate() &&
+              currentDate.getMonth() === holidayDate.getMonth() &&
+              currentDate.getFullYear() === holidayDate.getFullYear()
+            );
+          });
+
           return (
             <Text
               key={day}
               style={[
                 styles.day,
-                new Date(year, month, day).getDay() === 0 ? styles.sunday : null,
-                isFestivalDay ? styles.festivalDay : null,
+                currentDate.getDay() === 0 ? styles.sunday : null,
+                isHoliday ? styles.festivalDay : null,
               ]}
             >
               {day}
@@ -88,32 +127,23 @@ const Calendar = () => {
     );
   };
 
-  const renderFestivalList = () => {
-    const festivalsInMonth = indianFestivals.filter(
-      (festival) => festival.month === month + 1
-    );
 
+
+  if (loading) {
     return (
-      <View style={styles.festivalList}>
-        <Text style={styles.festivalTitle}>Festivals in {monthsOfYear[month]}</Text>
-        {festivalsInMonth.map((festival, index) => (
-          <View key={index} style={styles.festivalCard}>
-            <Text style={styles.festivalDate}>{festival.day}/{festival.month}</Text>
-            <Text style={styles.festivalName}>{festival.name}</Text>
-          </View>
-        ))
-        }
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={black} />
       </View>
     );
-  };
+  }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.buttonview}>
+        <View style={styles.buttonView}>
           <TouchableOpacity onPress={handlePreviousMonth}>
             <Text style={styles.button}>
-              <Icon name="md-chevron-back-circle-outline" size={28} color={black} ></Icon>
+              <Icon name="md-chevron-back-circle-outline" size={28} color={black} />
             </Text>
           </TouchableOpacity>
         </View>
@@ -130,7 +160,7 @@ const Calendar = () => {
           textStyle={styles.dropdownText}
           dropdownStyle={styles.dropdownStyle}
         />
-        <View style={styles.buttonview}>
+        <View style={styles.buttonView}>
           <TouchableOpacity onPress={handleNextMonth}>
             <Text style={styles.button}>
               <Icon name="md-chevron-forward-circle-outline" size={28} color={black}></Icon>
@@ -143,8 +173,7 @@ const Calendar = () => {
         {renderCalendarDays()}
         {renderFestivalList()}
       </View>
-
-    </View>
+    </ScrollView>
   );
 };
 

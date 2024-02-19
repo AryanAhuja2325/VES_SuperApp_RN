@@ -55,6 +55,10 @@ import Venue from './Admin/Venue';
 import SendNotification from './bottomTab/notifications/SendNotification';
 import Contact from './campusContact';
 import AddContact from './campusContact/addContact';
+import AddProducts from './stationarySupply/AddProducts';
+import ApproveRequest from './Admin/approvalRequests';
+import ConfirmRequest from './Admin/confirmRequests';
+import ResumeGenerator from './placement/ResumeGenerator';
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -567,6 +571,46 @@ const App = () => {
               headerShown: true,
               header: () => (
                 <CustomHeader navigation={navigation} title="Add Contact" />
+              ),
+            })}
+          />
+          <stack.Screen
+            name="Add Products"
+            component={AddProducts}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Add Products" />
+              ),
+            })}
+          />
+          <stack.Screen
+            name="Approve Requests"
+            component={ApproveRequest}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Approve Pending Requests" />
+              ),
+            })}
+          />
+          <stack.Screen
+            name="Confirm Requests"
+            component={ConfirmRequest}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Confirm Approved Requests" />
+              ),
+            })}
+          />
+          <stack.Screen
+            name="Resume Generator"
+            component={ResumeGenerator}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Resume Generator" />
               ),
             })}
           />

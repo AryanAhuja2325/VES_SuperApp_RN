@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Alert,
@@ -15,6 +15,8 @@ import ImagePicker from 'react-native-image-crop-picker';
 import axios from 'axios';
 import styles from './Venue.styles';
 import ModalDropdown from 'react-native-modal-dropdown';
+import { useAppSelector } from '../../../../store/hook';
+import { ip } from '../../../utils/constant';
 
 const Venue = () => {
   const [name, setName] = useState('');
@@ -26,7 +28,6 @@ const Venue = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isImagesSelected, setIsImagesSelected] = useState(false);
   const [newFacility, setNewFacility] = useState('');
-
   const [timetable, setTimetable] = useState([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedDay, setSelectedDay] = useState('');
@@ -34,6 +35,13 @@ const Venue = () => {
   const [newStartTime, setNewStartTime] = useState('');
   const [newEndTime, setNewEndTime] = useState('');
   const [newActivity, setNewActivity] = useState('');
+  const user = useAppSelector(state => state.profile.data);
+
+  useEffect(() => {
+    if (user.loginType === 'Principal') {
+      setInstitute(user.institute);
+    }
+  }, [])
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -50,7 +58,6 @@ const Venue = () => {
         includeBase64: true,
       });
 
-      console.log('Selected images:', selectedImages);
       setSelectedImages(selectedImages);
       setIsImagesSelected(true);
     } catch (error) {
@@ -68,7 +75,7 @@ const Venue = () => {
 
   const handleSubmit = async () => {
     try {
-      if (!name || !institute || !description || !location || selectedImages.length === 0 || timetable.length === 0) {
+      if (!name || !institute || !description || !location || selectedImages.length === 0) {
         Alert.alert('Error', 'Please fill out all the fields, select at least one image, and enter the timetable before submitting.');
         return;
       }
@@ -92,9 +99,9 @@ const Venue = () => {
         });
       });
 
-      formData.append('timetable', JSON.stringify(timetable));
+      formData.append('timetable', JSON.stringify(Array.isArray(timetable) ? timetable : []));
 
-      const response = await axios.post('http://192.168.56.1:3000/api/venue/upload-data', formData, {
+      const response = await axios.post('http://' + ip + ':3000/api/venue/upload-data', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -132,57 +139,98 @@ const Venue = () => {
     Linking.openURL(mapsUrl);
   };
 
+  const isValidTimeFormat = (time) => {
+    const regex = /^(0?[1-9]|1[0-2]):[0-5][0-9] [APap][mM]$/;
+    return regex.test(time);
+  };
+
   const handleAddSlot = () => {
-    if (selectedDay.trim() !== '' && newStartTime.trim() !== '' && newEndTime.trim() !== '' && newActivity.trim() !== '') {
-      const existingDayIndex = timetable.findIndex(day => day.day === selectedDay.trim());
+    if (
+      selectedDay.trim() !== '' &&
+      newStartTime.trim() !== '' &&
+      newEndTime.trim() !== '' &&
+      newActivity.trim() !== ''
+    ) {
+      if (!isValidTimeFormat(newStartTime) || !isValidTimeFormat(newEndTime)) {
+        Alert.alert('Error', 'Invalid time format. Please use HH:MM AM/PM.');
+        return;
+      }
+
+      const startTimeString = newStartTime.trim();
+      const endTimeString = newEndTime.trim();
+
+      const existingDayIndex = timetable.findIndex((day) => day.day === selectedDay.trim());
 
       if (existingDayIndex !== -1) {
-        // Day already exists, add slot to existing day
         setTimetable((prevTimetable) => {
           const updatedTimetable = [...prevTimetable];
           updatedTimetable[existingDayIndex].slots.push({
-            startTime: newStartTime.trim(),
-            endTime: newEndTime.trim(),
+            startTime: startTimeString,
+            endTime: endTimeString,
             activity: newActivity.trim(),
           });
           return updatedTimetable;
         });
       } else {
-        // Day doesn't exist, create a new day with the slot
         setTimetable((prevTimetable) => [
           ...prevTimetable,
           {
             day: selectedDay.trim(),
-            slots: [{
-              startTime: newStartTime.trim(),
-              endTime: newEndTime.trim(),
-              activity: newActivity.trim(),
-            }],
+            slots: [
+              {
+                startTime: startTimeString,
+                endTime: endTimeString,
+                activity: newActivity.trim(),
+              },
+            ],
           },
         ]);
       }
 
-      // Clear input fields
       setNewStartTime('');
       setNewEndTime('');
       setNewActivity('');
     }
   };
 
+
+
   const confirmTimetable = () => {
-    if (selectedDay.trim() !== '' && dayTimetable.length > 0) {
-      setTimetable((prevTimetable) => [
-        ...prevTimetable,
-        {
-          day: selectedDay.trim(),
-          slots: [...dayTimetable],
-        },
-      ]);
-      setDayTimetable([]);
-      toggleModal();
+    if (timetable.length > 0) {
+      const isTimetableComplete = timetable.every((day) => day.slots.length > 0);
+
+      if (isTimetableComplete) {
+        setTimetable((prevTimetable) =>
+          prevTimetable.map((day) => ({ ...day, confirmed: true }))
+        );
+        toggleModal();
+      } else {
+        Alert.alert('Error', 'Please add at least one slot for each day before confirming.');
+      }
     } else {
-      Alert.alert('Error', 'Please structure the timetable for the selected day before confirming.');
+      Alert.alert('Error', 'Please add at least one slot before confirming.');
     }
+  };
+
+
+  const renderTimetable = () => {
+    return (
+      <View style={styles.timetableContainer}>
+        <Text style={styles.timetableHeader}>Time Table</Text>
+        {timetable.map((day, index) => (
+          <View key={index} style={styles.timetableDayContainer}>
+            <Text style={styles.timetableDay}>{day.day}</Text>
+            <View style={styles.timetableSlotsContainer}>
+              {day.slots.map((slot, slotIndex) => (
+                <View key={slotIndex} style={styles.timetableSlot}>
+                  <Text>{`${slot.startTime} - ${slot.endTime}: ${slot.activity}`}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        ))}
+      </View>
+    );
   };
 
   return (
@@ -194,12 +242,19 @@ const Venue = () => {
           placeholder="Name"
           style={styles.input}
         />
-        <TextInput
-          value={institute}
-          onChangeText={(text) => setInstitute(text)}
-          placeholder="Institute"
-          style={styles.input}
-        />
+        {
+          user.loginType !== 'Principal' ?
+            <ModalDropdown
+              options={['VESP', 'VESIT', 'VESIM', 'VEPS']}
+              onSelect={(index, value) => setInstitute(value)}
+              value={institute}
+              textStyle={styles.dropdownText}
+              dropdownStyle={styles.dropdownStyle}
+              dropdownTextStyle={styles.dropdownTextStyle}
+            >
+            </ModalDropdown> :
+            null
+        }
         <TextInput
           value={description}
           onChangeText={(text) => setDescription(text)}
@@ -256,7 +311,7 @@ const Venue = () => {
         <TouchableOpacity style={styles.button} onPress={toggleModal}>
           <Text style={styles.buttonText}>Add Time Table</Text>
         </TouchableOpacity>
-        {/* Modal for adding time slots */}
+        {renderTimetable()}
         <Modal
           visible={isModalVisible}
           animationType="slide"
@@ -266,33 +321,36 @@ const Venue = () => {
           <View style={styles.modalContainer}>
             <Text style={styles.modalHeader}>Add Time Slot</Text>
 
-            {/* Use ModalDropdown for day selection */}
             <ModalDropdown
-              options={['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']}
+              options={['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']}
               onSelect={(index, value) => setSelectedDay(value)}
               value={selectedDay}
+              textStyle={styles.dropdownText}
+              dropdownStyle={styles.dropdownStyle}
+              dropdownTextStyle={styles.dropdownTextStyle}
             >
-              <Text style={styles.dropdownText}>Select Day</Text>
             </ModalDropdown>
 
             <TextInput
               value={newStartTime}
               onChangeText={(text) => setNewStartTime(text)}
-              placeholder="Start Time"
+              placeholder="Start Time (HH:MM AM/PM)"
               style={styles.input}
             />
             <TextInput
               value={newEndTime}
               onChangeText={(text) => setNewEndTime(text)}
-              placeholder="End Time"
+              placeholder="End Time (HH:MM AM/PM)"
               style={styles.input}
             />
             <TextInput
               value={newActivity}
               onChangeText={(text) => setNewActivity(text)}
-              placeholder="Activity"
+              placeholder="Activity/Subject"
               style={styles.input}
             />
+
+            {renderTimetable()}
             <TouchableOpacity onPress={handleAddSlot} style={styles.button}>
               <Text style={styles.buttonText}>Add Slot</Text>
             </TouchableOpacity>
@@ -304,13 +362,10 @@ const Venue = () => {
             </TouchableOpacity>
           </View>
         </Modal>
-
-        {/* ... other components */}
-
         <TouchableOpacity onPress={handleSubmit} style={styles.button}>
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={resetForm} style={styles.button}>
+        <TouchableOpacity onPress={resetForm} style={styles.resetButton}>
           <Text style={styles.buttonText}>Reset</Text>
         </TouchableOpacity>
       </ScrollView>

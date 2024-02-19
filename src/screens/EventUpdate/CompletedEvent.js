@@ -3,6 +3,7 @@ import { View, Text, FlatList, Image, TouchableOpacity, } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import Style from "./EventUpdate.styles";
 import axios from "axios";
+import { ip } from "../../utils/constant";
 const CompletedEvent = ({ navigation }) => {
     const [mydata, setmydata] = useState([])
     useEffect(() => {
@@ -11,7 +12,7 @@ const CompletedEvent = ({ navigation }) => {
 
     const getDatabase = async () => {
         try {
-            const response = await axios.get('http://192.168.56.1:3000/api/eventUpdate/completed');
+            const response = await axios.get('http://' + ip + ':3000/api/eventUpdate/completed');
             setmydata(response.data);
         } catch (error) {
             console.log('Error getting data:', error);

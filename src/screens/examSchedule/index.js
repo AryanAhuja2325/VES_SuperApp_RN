@@ -20,6 +20,7 @@ import ModalDropdown from 'react-native-modal-dropdown';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NewIcon from 'react-native-vector-icons/AntDesign';
 import axios from 'axios';
+import { ip } from '../../utils/constant';
 
 const Exam = () => {
     const [open, setOpen] = useState(false);
@@ -66,7 +67,7 @@ const Exam = () => {
                 type: 'application/pdf',
             });
 
-            await axios.post('http://192.168.56.1:3000/api/examSchedule/upload-pdf', formData, {
+            await axios.post('http://' + ip + ':3000/api/examSchedule/upload-pdf', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -87,7 +88,7 @@ const Exam = () => {
             const userType = user.loginType;
             const institute = user.institute;
 
-            const response = await axios.get(`http://192.168.56.1:3000/api/examSchedule/getData?loginType=${userType}&institute=${institute}`);
+            const response = await axios.get(`http://${ip}:3000/api/examSchedule/getData?loginType=${userType}&institute=${institute}`);
             console.log(response.data)
             setExams(response.data);
         } catch (error) {
@@ -109,7 +110,7 @@ const Exam = () => {
                     text: "Yes, I'm sure",
                     onPress: async () => {
                         try {
-                            await axios.delete(`http://192.168.56.1:3000/api/examSchedule/deleteDoc/${id}`);
+                            await axios.delete(`http://${ip}:3000/api/examSchedule/deleteDoc/${id}`);
                             Alert.alert("Success", "Document deleted successfully");
                             getData(); // Refresh the data after deletion
                         } catch (error) {

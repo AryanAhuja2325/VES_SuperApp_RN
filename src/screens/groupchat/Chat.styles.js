@@ -5,6 +5,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f2f2f2',
+        marginTop: 10
     },
     header: {
         height: 50,
@@ -97,7 +98,17 @@ const styles = StyleSheet.create({
     },
     usernameText: {
         color: gray,
-    }
+    },
+    dateHeaderText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: 'grey',
+        backgroundColor: '#EFEFEF',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        marginBottom: 10,
+        alignSelf: 'center'
+    },
 
 });
 

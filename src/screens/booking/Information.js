@@ -23,6 +23,7 @@ import { v4 as uuidv4 } from 'uuid';
 import 'react-native-get-random-values';
 import Loading from '../../components/header/loading';
 import axios from 'axios';
+import { ip } from '../../utils/constant';
 
 const Information = ({ route }) => {
   const user = useAppSelector((state) => state.profile.data);
@@ -88,15 +89,17 @@ const Information = ({ route }) => {
         end: '23:00:00',
       };
 
-      const response = await axios.post(`http://192.168.56.1:3000/api/booking/bookRequest/${data._id}`, {
+      const response = await axios.post(`http://${ip}:3000/api/booking/bookRequest/${data._id}`, {
         selectedDates: { [formattedSelectedDate]: { selected: true } },
         selectedItems: [fullDayTimeSlot],
         user: { email: user.email },
         bookingId: generateId(),
+        institute: user.institute,
+        bookingInstitute: data.institute
       });
 
       if (response.data.message) {
-        Alert.alert('Booking Successful');
+        Alert.alert("Success", 'Request Sent to your Principal');
         setSelectedDates([]);
         setSelectedItems([]);
         setSelectedDate(null);
@@ -122,7 +125,7 @@ const Information = ({ route }) => {
   const fetchBookingsForDate = async (date) => {
     try {
       const formattedDate = moment(date).format('YYYY-MM-DD');
-      const response = await axios.get(`http://192.168.56.1:3000/api/booking/bookingsForDate/${data._id}/${formattedDate}`);
+      const response = await axios.get(`http://${ip}:3000/api/booking/bookingsForDate/${data._id}/${formattedDate}`);
       const fetchedBookings = response.data;
       return fetchedBookings;
     } catch (error) {
@@ -302,16 +305,19 @@ const Information = ({ route }) => {
       }));
 
 
-      const response = await axios.post(`http://192.168.56.1:3000/api/booking/bookRequest/${data._id}`, {
+      const response = await axios.post(`http://${ip}:3000/api/booking/bookRequest/${data._id}`, {
         selectedDates: { [formattedSelectedDate]: { selected: true } },
         selectedItems: formattedSelectedItems,
         user: { email: user.email },
         bookingId: generateId(),
+        userInstitute: user.institute,
+        bookingInstitute: data.institute,
       });
 
 
+
       if (response.data.message) {
-        Alert.alert('Booking Successful');
+        Alert.alert('Success', "Approval Request Sent to your Principal Successfully");
         setSelectedDates([]);
         setSelectedItems([]);
         setSelectedDate(null);

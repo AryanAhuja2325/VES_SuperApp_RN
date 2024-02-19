@@ -1,33 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, FlatList, Text, TouchableOpacity, Linking, Image, ScrollView } from 'react-native';
 import styles from './styles';
 import add from './addContact';
 import firestore from '@react-native-firebase/firestore';
 import { useAppSelector } from '../../../store/hook';
+import axios from 'axios';
+import { ip } from '../../utils/constant';
 
 const CampusContact = ({ navigation }) => {
   const user = useAppSelector(state => state.profile.data);
-  const contacts = [
-    {
-      "_id": "659957e8ccb8c5d06518c4d0",
-      "name": "Sanjay Wankhade",
-      "phoneNo": "1234567890",
-      "title": "I/C HOD",
-      "branch": "CO",
-      "institute": "VESP",
-      "mail": "sanjay-wankhade@gmail.com",
-      "photo": 'https://firebasestorage.googleapis.com/v0/b/vesapp-e6a7d.appspot.com/o/images%2F1704947782594_2519.jpg?alt=media&token=1a6e90b2-31c1-4ca3-9170-903e5da06ddd"',
-    },
-    {
-      "_id": "659959d0ccb8c5d06518c4d1",
-      "name": "Vikrant Joshi",
-      "phoneNo": "0987654321",
-      "title": "Principal",
-      "institute": "VESP",
-      "mail": "vikrant-joshi@gmail.com",
-      "photo": 'https://firebasestorage.googleapis.com/v0/b/vesapp-e6a7d.appspot.com/o/images%2F1704947782594_2519.jpg?alt=media&token=1a6e90b2-31c1-4ca3-9170-903e5da06ddd"',
-    }
-  ];
+  const [contacts, setContacts] = useState([]);
+
+  const getData = async () => {
+    const data = await axios.get("http://" + ip + ":3000/api/campusContacts");
+    setContacts(data.data);
+  }
+
+  useEffect(() => {
+    getData();
+  }, [])
 
   const handleContactPress = (contactInfo) => {
     if (contactInfo.type === 'phone') {
@@ -43,7 +34,7 @@ const CampusContact = ({ navigation }) => {
       <Text style={styles.name}>{item.name}</Text>
       <Text style={styles.details}>Phone: {item.phoneNo}</Text>
       <Text style={styles.details}>Title: {item.title}</Text>
-      <Text style={styles.details}>Branch: {item.branch}</Text>
+      {item.branch == null ? null : <Text style={styles.details}>Branch: {item.branch}</Text>}
       <Text style={styles.details}>Institute: {item.institute}</Text>
       <TouchableOpacity onPress={() => handleContactPress({ type: 'phone', value: item.phoneNo })}>
         <Text style={[styles.details, { color: '#2ec2ff', textDecorationLine: 'underline' }]}>

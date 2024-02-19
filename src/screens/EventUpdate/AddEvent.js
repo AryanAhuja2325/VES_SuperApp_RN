@@ -5,6 +5,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
 import axios from 'axios';
 import DatePicker from 'react-native-date-picker';
+import { ip } from '../../utils/constant';
 
 const AddEvent = () => {
     const [Title, setTitle] = useState('');
@@ -46,7 +47,7 @@ const AddEvent = () => {
             }
 
             // Add the event data to the server
-            const response = await axios.post('http://192.168.56.1:3000/api/eventUpdate/addEvent', {
+            const response = await axios.post('http://' + ip + ':3000/api/eventUpdate/addEvent', {
                 Title,
                 Desc,
                 Image: imageUrl,  // Use the imageUrl variable

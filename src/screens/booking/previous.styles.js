@@ -57,7 +57,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'row',
-
+        justifyContent: 'space-between',
+        paddingRight: 30
     },
 
     searchInput: {
@@ -67,6 +68,13 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         paddingLeft: 10,
         margin: 10,
+    },
+
+    noBookingsText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginVertical: 20,
     },
 
 });

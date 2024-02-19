@@ -4,6 +4,7 @@ import firestore from '@react-native-firebase/firestore';
 import Style from "./EventUpdate.styles";
 import { useAppSelector } from "../../../store/hook";
 import axios from "axios";
+import { ip } from "../../utils/constant";
 
 const EventUpdate = ({ navigation }) => {
     const [mydata, setmydata] = useState([]);
@@ -17,7 +18,7 @@ const EventUpdate = ({ navigation }) => {
 
     const getEventData = async () => {
         try {
-            const response = await axios.get('http://192.168.56.1:3000/api/eventUpdate');
+            const response = await axios.get('http://' + ip + ':3000/api/eventUpdate');
             setmydata(response.data);
         } catch (error) {
             console.log('Error getting data:', error);

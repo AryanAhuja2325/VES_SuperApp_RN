@@ -5,6 +5,7 @@ import { Table, Row } from 'react-native-table-component';
 import firestore from '@react-native-firebase/firestore';
 import styles from './Facultyload.style';
 import axios from 'axios';
+import { ip } from '../../utils/constant';
 
 const Facultyload = () => {
   const user = useAppSelector(state => state.profile.data);
@@ -13,8 +14,8 @@ const Facultyload = () => {
   useEffect(() => {
     const fetchFacultyloadData = async () => {
       try {
-        const response = await axios.get(`http://192.168.56.1:3000/api/facultyLoad/?firstName=${user.firstName}`);
-        const data = response.data[0]; // Access the first element of the array
+        const response = await axios.get(`http://${ip}:3000/api/facultyLoad/?firstName=${user.firstName}`);
+        const data = response.data[0];
         setFacultyloadData(data);
       } catch (error) {
         console.log(error);

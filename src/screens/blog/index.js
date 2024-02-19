@@ -18,6 +18,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import NewIcon from 'react-native-vector-icons/Feather';
 import AnotherIcon from 'react-native-vector-icons/FontAwesome';
 import * as COLORS from '../../utils/color';
+import { ip } from '../../utils/constant';
 
 const Blog = ({ navigation }) => {
     const user = useAppSelector((state) => state.profile.data);
@@ -55,7 +56,7 @@ const Blog = ({ navigation }) => {
             };
 
             const response = await axios.post(
-                'http://192.168.56.1:3000/api/blog/addComment',
+                `http://${ip}:3000/api/blog/addComment`,
                 commentObject
             );
 
@@ -86,11 +87,11 @@ const Blog = ({ navigation }) => {
                     text: 'Delete',
                     onPress: async () => {
                         try {
-                            const response = await axios.delete(`http://192.168.56.1:3000/api/blog/deletePost/${postId}`);
+                            const response = await axios.delete(`http://${ip}:3000/api/blog/deletePost/${postId}`);
 
                             if (response.data.message === 'Post deleted') {
                                 Alert.alert('Success', 'Post deleted successfully');
-                                getData(); // Refresh the data after deletion
+                                getData();
                             } else {
                                 Alert.alert('Error', 'Failed to delete post');
                             }
@@ -109,7 +110,7 @@ const Blog = ({ navigation }) => {
     const getData = async () => {
         try {
             console.log("In func")
-            const response = await axios.get('http://192.168.56.1:3000/api/blog');
+            const response = await axios.get(`http://${ip}:3000/api/blog`);
             console.log(response.data)
             const sortedDocuments = response.data.sort(
                 (a, b) => new Date(b.postedOn) - new Date(a.postedOn)
@@ -130,7 +131,7 @@ const Blog = ({ navigation }) => {
             };
 
             const response = await axios.post(
-                'http://192.168.56.1:3000/api/blog/likePost',
+                `http://${ip}:3000/api/blog/likePost`,
                 likeObject
             );
 
@@ -149,7 +150,7 @@ const Blog = ({ navigation }) => {
     const openModal = async (id) => {
         try {
             const response = await axios.get(
-                `http://192.168.56.1:3000/api/blog/postDetails/${id}`
+                `http://${ip}:3000/api/blog/postDetails/${id}`
             );
 
             const postData = response.data.post;

@@ -4,6 +4,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import styles from "./Notifications.style";
 import { useAppSelector } from '../../../../store/hook';
+import { ip } from "../../../utils/constant";
 
 const Notifications = () => {
     const [notifications, setNotifications] = useState([]);
@@ -11,7 +12,7 @@ const Notifications = () => {
 
     const getData = async () => {
         try {
-            const data = await axios.get("http://192.168.56.1:3000/api/notifications");
+            const data = await axios.get("http://" + ip + ":3000/api/notifications");
             setNotifications(data.data);
         } catch (error) {
             console.log(error)

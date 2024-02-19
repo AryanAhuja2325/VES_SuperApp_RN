@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, SectionList, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Image, FlatList, ScrollView } from 'react-native';
 import styles from './booking.styles';
 import axios from 'axios';
 import { useAppSelector } from '../../../store/hook';
+import { ip } from '../../utils/constant';
 
 const Booking = ({ navigation }) => {
     const user = useAppSelector(state => state.profile.data);
-    const [sections, setSections] = useState([]);
+    const [data, setData] = useState([]);
 
     const getData = async () => {
         try {
-            const response = await axios.get('http://192.168.56.1:3000/api/booking');
+            const response = await axios.get('http://' + ip + ':3000/api/booking');
             const fetchedDocuments = response.data;
-
             const categorizedVenues = categorizeVenues(fetchedDocuments);
-            setSections(categorizedVenues);
+            setData(categorizedVenues);
         } catch (error) {
             console.error('Error fetching documents:', error);
         }
@@ -46,7 +46,6 @@ const Booking = ({ navigation }) => {
         <TouchableOpacity
             style={[
                 styles.productContainer,
-                item.prodID % 2 === 0 ? styles.fullWidthItem : styles.halfWidthItem,
             ]}
             onPress={() => navigation.navigate('Information', { data: item })}
         >
@@ -61,16 +60,29 @@ const Booking = ({ navigation }) => {
         </View>
     );
 
-    return (
-        <View style={styles.container}>
-            <SectionList
-                sections={sections}
+    const renderData = ({ item }) => (
+        <View>
+            {renderSectionHeader({ section: { title: item.title } })}
+            <FlatList
+                data={item.data}
                 keyExtractor={(item) => item._id}
                 renderItem={renderCard}
-                renderSectionHeader={renderSectionHeader}
                 numColumns={2}
                 contentContainerStyle={styles.productList}
             />
+        </View>
+    );
+
+    return (
+        <View style={styles.container}>
+            <ScrollView>
+                <FlatList
+                    data={data}
+                    keyExtractor={(item) => item.title}
+                    renderItem={renderData}
+                    scrollEnabled={false}
+                />
+            </ScrollView>
             <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate("Previous Bookings") }}>
                 <Text style={styles.buttonText}>{user.loginType == 'Admin'
                     ? "View Bookings"

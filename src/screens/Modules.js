@@ -27,7 +27,6 @@ const guestmodule = [
         id: 7,
         title: 'Campus Contact'
     }
-
 ]
 
 const teachermodule = [
@@ -103,6 +102,10 @@ const studentmodule = [
         id: 9,
         title: 'Fitness And Health',
     },
+    {
+        id: 10,
+        title: 'Resume Generator',
+    },
 ]
 const parentmodule = [
     {
@@ -172,10 +175,6 @@ const Adminmodule = [
         title: 'Send Notification'
     },
     {
-        id: 4,
-        title: 'Venue'
-    },
-    {
         id: 5,
         title: 'Campus Contact'
     },
@@ -193,7 +192,7 @@ const Adminmodule = [
     },
     {
         id: 9,
-        title: 'AboutuS'
+        title: 'About Us'
     },
     {
         id: 10,
@@ -215,7 +214,40 @@ const Adminmodule = [
         id: 14,
         title: 'Exam Schedule'
     },
-
 ]
 
-export { guestmodule, teachermodule, studentmodule, parentmodule, TPOmodule, Adminmodule };
+const vendorModules = [
+    {
+        id: 1,
+        title: "View Orders"
+    },
+    {
+        id: 2,
+        title: "Add Products"
+    }
+]
+
+const principalModules = [
+    {
+        id: 1,
+        title: "Approve Requests"
+    },
+    {
+        id: 2,
+        title: "Confirm Requests"
+    },
+    {
+        id: 3,
+        title: "View Bookings"
+    },
+    {
+        id: 4,
+        title: "Add Venue"
+    },
+    {
+        id: 5,
+        title: "Booking"
+    },
+]
+
+export { guestmodule, teachermodule, studentmodule, parentmodule, TPOmodule, Adminmodule, vendorModules, principalModules };

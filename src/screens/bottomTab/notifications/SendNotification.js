@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import styles from './SendNotification.styles';
+import { ip } from '../../../utils/constant';
 
 const SendNotification = () => {
     const [notificationData, setNotificationData] = useState({
@@ -21,7 +22,7 @@ const SendNotification = () => {
 
             setIsLoading(true);
             const response = await axios.post(
-                'http://192.168.56.1:3000/api/notifications/add-notification',
+                'http://' + ip + ':3000/api/notifications/add-notification',
                 notificationData
             );
 

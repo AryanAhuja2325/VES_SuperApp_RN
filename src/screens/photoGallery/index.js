@@ -8,6 +8,7 @@ import Share from 'react-native-share';
 import ModalDropdown from 'react-native-modal-dropdown';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
+import { ip } from '../../utils/constant';
 
 const ImageGrid = () => {
     const [imageArrays, setImageArrays] = useState([]);
@@ -18,7 +19,7 @@ const ImageGrid = () => {
 
     const fetchImageArrays = async (selectedItem) => {
         try {
-            const response = await axios.get(`http://192.168.56.1:3000/api/photos?selectedItem=${selectedItem}`);
+            const response = await axios.get(`http://${ip}:3000/api/photos?selectedItem=${selectedItem}`);
             setImageArrays(response.data.images);
             setLikes(response.data.likesData);
             setIsLiked(false);

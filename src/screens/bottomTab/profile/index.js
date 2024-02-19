@@ -17,6 +17,7 @@ import { useAppSelector, useAppDispatch } from "../../../../store/hook";
 import * as COLORS from '../../../utils/color'
 import axios from "axios";
 import { setUserProfile } from '../../../../store/slice/profileSlice';
+import { ip } from "../../../utils/constant";
 
 const HorizontalLine = () => {
     return <View style={styles.line} />;
@@ -46,7 +47,7 @@ const Profile = () => {
         try {
             setLoading(true);
 
-            const response = await axios.post('http://192.168.56.1:3000/api/login/change-password', {
+            const response = await axios.post('http://' + ip + ':3000/api/login/change-password', {
                 email: user.email,
                 curPass: curPass,
                 newPass: newPass,

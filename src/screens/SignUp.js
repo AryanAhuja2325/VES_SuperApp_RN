@@ -28,6 +28,7 @@ import WelcomeUser from "./WelcomeUser";
 import ModalDropdown from "react-native-modal-dropdown";
 import Ionicon from 'react-native-vector-icons/Ionicons'
 import axios from 'axios';
+import { ip } from '../utils/constant';
 
 const SignUp = ({ navigation }) => {
     const [selectedItem, setSelectedItem] = useState('VESIT');
@@ -149,7 +150,7 @@ const SignUp = ({ navigation }) => {
                 console.log(user)
 
                 try {
-                    const response = await axios.post('http://192.168.56.1:3000/api/signUp', user);
+                    const response = await axios.post('http://' + ip + ':3000/api/signUp', user);
 
                     if (response.data && response.data.message === 'User Created Successfully') {
                         Alert.alert(
