@@ -54,7 +54,7 @@ import Booking from './booking';
 import Information from './booking/Information';
 import Previous from './booking/Previous';
 import Venue from './Admin/venues/Venue';
-
+import ResumeGenerator from './placement/ResumeGenerator';
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -537,6 +537,16 @@ const App = () => {
               headerShown: true,
               header: () => (
                 <CustomHeader navigation={navigation} title="Venue" />
+              ),
+            })}
+          />
+          <stack.Screen
+            name="Resume Generator"
+            component={ResumeGenerator}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Resume Generator" />
               ),
             })}
           />
