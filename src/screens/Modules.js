@@ -104,7 +104,11 @@ const studentmodule = [
         title: 'Fitness And Health',
     },
     {
-        id: 12,
+        id: 10,
+        title: 'Resume Generator',
+    },
+    {
+        id: 11,
         title: 'Assignment Dashboard',
     },
 ]
