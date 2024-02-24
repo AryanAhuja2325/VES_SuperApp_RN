@@ -15,6 +15,16 @@ const styles = StyleSheet.create({
         marginBottom: 12,
         paddingLeft: 8,
     },
+    input1: {
+        height: 100,
+        width: '100%',
+        borderColor: 'gray',
+        borderWidth: 1,
+        marginBottom: 12,
+        paddingLeft: 8,
+        alignItems: 'center',
+        textAlignVertical: 'top',
+    },
     additionalFieldContainer: {
         flexDirection: 'row',
         marginBottom: 8,
@@ -39,6 +49,15 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginHorizontal: 20,
         marginVertical: 15,
+    },
+    cancelButton: {
+        backgroundColor: COLOR.maroon,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+        marginHorizontal: 20,
+        marginVertical: 500,
+        alignItems: 'center'
     },
     button2: {
         backgroundColor: COLOR.maroon,

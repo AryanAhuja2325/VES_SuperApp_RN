@@ -13,6 +13,9 @@ import {
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import axios from 'axios';
+// import ImagePicker from 'react-native-image-crop-picker';
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 import styles from './Venue.styles';
 import ModalDropdown from 'react-native-modal-dropdown';
 import { useAppSelector } from '../../../../store/hook';
