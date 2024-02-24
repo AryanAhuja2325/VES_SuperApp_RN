@@ -153,7 +153,6 @@ const Home = ({ navigation }) => {
         case 'Add Venue':
           navigation.navigate('Venue');
           break;
-<<<<<<< HEAD
         case 'View Bookings':
           navigation.navigate('Previous Bookings');
           break;
@@ -176,19 +175,14 @@ const Home = ({ navigation }) => {
           navigation.navigate("Confirm Requests");
           break;
         case 'Resume Generator':
-          navigation.navigate("Resume Generator");
-          break;
-=======
-        case 'Resume Generator':
           navigation.navigate('Resume Generator');
           break;
-          case 'Campus Contact':
-            navigation.navigate('Campus Contact');
-            break;
-          case 'Assignment Dashboard':
-            navigation.navigate('Assignment Dashboard')
-            break;
->>>>>>> 7e48ce65d1f5c82a4bcbf9069192211c3c6615a4
+        case 'Campus Contact':
+          navigation.navigate('Campus Contact');
+          break;
+        case 'Assignment Dashboard':
+          navigation.navigate('Assignment Dashboard')
+          break;
         default:
           break;
       }

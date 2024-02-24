@@ -61,11 +61,11 @@ const teachermodule = [
     },
     {
         id: 8,
-<<<<<<< HEAD
         title: "Events Update",
-=======
+    },
+    {
+        id: 9,
         title: "Assignment Dashboard",
->>>>>>> 7e48ce65d1f5c82a4bcbf9069192211c3c6615a4
     }
 ]
 
@@ -110,13 +110,10 @@ const studentmodule = [
         id: 10,
         title: 'Resume Generator',
     },
-<<<<<<< HEAD
-=======
     {
         id: 11,
         title: 'Assignment Dashboard',
     },
->>>>>>> 7e48ce65d1f5c82a4bcbf9069192211c3c6615a4
 ]
 const parentmodule = [
     {

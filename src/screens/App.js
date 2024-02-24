@@ -51,19 +51,15 @@ import WelcomeUser from './WelcomeUser';
 import Booking from './booking';
 import Information from './booking/Information';
 import Previous from './booking/Previous';
-import ResumeGenerator from './placement/ResumeGenerator';
 import Venue from './Admin/Venue';
 import SendNotification from './bottomTab/notifications/SendNotification';
 import Contact from './campusContact';
 import AddContact from './campusContact/addContact';
-<<<<<<< HEAD
 import AddProducts from './stationarySupply/AddProducts';
 import ApproveRequest from './Admin/approvalRequests';
 import ConfirmRequest from './Admin/confirmRequests';
 import ResumeGenerator from './placement/ResumeGenerator';
-=======
 import AssignmentDashboard from './assignmentDashboard';
->>>>>>> 7e48ce65d1f5c82a4bcbf9069192211c3c6615a4
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -550,7 +546,6 @@ const App = () => {
             })}
           />
           <stack.Screen
-<<<<<<< HEAD
             name="Send Notification"
             component={SendNotification}
             options={({ navigation }) => ({
@@ -560,18 +555,6 @@ const App = () => {
               ),
             })}
           />
-=======
-            name="Resume Generator"
-            component={ResumeGenerator}
-            options={({ navigation }) => ({
-              headerShown: true,
-              header: () => (
-                <CustomHeader navigation={navigation} title="Resume Generator" />
-              )
-            })}
-          />
-
->>>>>>> 7e48ce65d1f5c82a4bcbf9069192211c3c6615a4
           <stack.Screen
             name="Campus Contact"
             component={Contact}
@@ -593,7 +576,6 @@ const App = () => {
             })}
           />
           <stack.Screen
-<<<<<<< HEAD
             name="Add Products"
             component={AddProducts}
             options={({ navigation }) => ({
@@ -630,14 +612,16 @@ const App = () => {
               headerShown: true,
               header: () => (
                 <CustomHeader navigation={navigation} title="Resume Generator" />
-=======
+              ),
+            })}
+          />
+          <stack.Screen
             name="Assignment Dashboard"
             component={AssignmentDashboard}
             options={({ navigation }) => ({
               headerShown: true,
               header: () => (
                 <CustomHeader navigation={navigation} title="Assignment Dashboard" />
->>>>>>> 7e48ce65d1f5c82a4bcbf9069192211c3c6615a4
               ),
             })}
           />
