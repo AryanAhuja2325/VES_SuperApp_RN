@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Text, View, TextInput, Button, StyleSheet, ScrollView, Alert, TouchableOpacity, Modal, Image } from 'react-native';
+import { Text, View, TextInput, ScrollView, Alert, TouchableOpacity, Modal, Image } from 'react-native';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFS from 'react-native-fs';
 import styles from './ResumeGenerator.styles';
 import ModalDropdown from "react-native-modal-dropdown";
 import ImageCropPicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
+import WheelColorPicker from 'react-native-wheel-color-picker';
 
 
 const ResumeGenerator = ({ navigation }) => {
@@ -22,7 +23,6 @@ const ResumeGenerator = ({ navigation }) => {
     const [projects, setProjects] = useState(['']);
     const [certifications, setCertifications] = useState(['']);
     const [languages, setLanguages] = useState(['']);
-    const [hobbies, setHobbies] = useState('');
     const [isModalVisible, setModalVisible] = useState(false);
     const [newEducation, setNewEducation] = useState({
         type: '',
@@ -32,6 +32,13 @@ const ResumeGenerator = ({ navigation }) => {
     });
 
     const [education, setEducation] = useState([]);
+    const [themeColor, setThemeColor] = useState('#3F84B3');
+    const [isColorPickerVisible, setColorPickerVisible] = useState(false);
+
+    const calculateBrightness = (color) => {
+        const rgb = color.substring(1).match(/.{2}/g).map((hex) => parseInt(hex, 16));
+        return (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
+    };
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
@@ -79,7 +86,6 @@ const ResumeGenerator = ({ navigation }) => {
                 cropperCircleOverlay: true,
             });
 
-            // Upload the image to Firebase Storage
             await uploadImageToFirebase(image.path);
         } catch (error) {
             console.log('ImagePicker Error: ', error);
@@ -96,7 +102,7 @@ const ResumeGenerator = ({ navigation }) => {
         try {
             await task;
             const downloadURL = await reference.getDownloadURL();
-            setImageUri(downloadURL); // Update the state with the download URL
+            setImageUri(downloadURL);
             console.log('Image uploaded and URL:', downloadURL);
         } catch (error) {
             console.error('Error uploading image:', error);
@@ -104,13 +110,21 @@ const ResumeGenerator = ({ navigation }) => {
     };
 
     const generateResumePDF = async () => {
-        console.log(imageUri);
-        const additionalFieldsToHTML = (fields) => {
-            return `
-        <ul>
-            ${fields.map((field, index) => `<li>${field}</li>`).join('')}
-        </ul>`;
-        };
+        if (
+            personalInfo.name === '' ||
+            personalInfo.phoneNumber === '' ||
+            personalInfo.email === '' ||
+            personalInfo.linkedinProfile === '' ||
+            personalInfo.summary === '' ||
+            education.length === 0 ||
+            skills === '' ||
+            projects === '' ||
+            certifications === '' ||
+            languages === ''
+        ) {
+            Alert.alert('Error', 'Please fill in all required fields.');
+            return;
+        }
 
         const htmlContent = `
       <!DOCTYPE html>
@@ -132,7 +146,7 @@ const ResumeGenerator = ({ navigation }) => {
         }
 
         h1, h2 {
-            color: #3F84B3;
+            color: ${themeColor};
             margin-bottom: 10px;
         }
 
@@ -150,7 +164,7 @@ const ResumeGenerator = ({ navigation }) => {
             flex-direction: row;
             justify-items: baseline;
             padding: 10px;
-            background-color: #3F84B3;
+            background-color: ${themeColor};
             color: white;
             border-radius: 4px;
             margin-bottom: 20px;
@@ -389,8 +403,14 @@ const ResumeGenerator = ({ navigation }) => {
 
     return (
         <ScrollView style={styles.container}>
-            {/* Personal Information Section */}
             <View>
+                <TouchableOpacity
+                    style={[styles.button, { backgroundColor: themeColor }]}
+                    onPress={() => setColorPickerVisible(true)}
+                >
+                    <Text style={styles.buttonText}>Pick Theme Color</Text>
+                </TouchableOpacity>
+
                 <Text style={styles.label}>Full Name</Text>
                 <TextInput
                     style={styles.input}
@@ -449,15 +469,15 @@ const ResumeGenerator = ({ navigation }) => {
 
                 <Text style={styles.label}>Summary</Text>
                 <TextInput
-                    style={styles.input}
+                    style={styles.input1}
                     placeholder="A brief summary about yourself..."
                     multiline
                     value={personalInfo.summary}
                     onChangeText={(text) => setPersonalInfo({ ...personalInfo, summary: text })}
+                    numberOfLines={20}
                 />
             </View>
 
-            {/* Academic Information Section */}
             <View>
                 <Text style={styles.label}>Education</Text>
                 <TouchableOpacity
@@ -466,7 +486,6 @@ const ResumeGenerator = ({ navigation }) => {
                 >
                     <Text style={styles.buttonText}>Add Education</Text>
                 </TouchableOpacity>
-                {/* Render existing education information */}
                 {education.map((edu, index) => (
                     <View style={styles.eduContainer} key={index}>
                         <Text>{edu.type}</Text>
@@ -527,6 +546,7 @@ const ResumeGenerator = ({ navigation }) => {
                 animationType="slide"
                 transparent={false}
                 visible={isModalVisible}
+                onRequestClose={() => setColorPickerVisible(false)}
             >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
@@ -584,6 +604,32 @@ const ResumeGenerator = ({ navigation }) => {
                     </View>
                 </View>
             </Modal>
+            <Modal
+                animationType="slide"
+                transparent={false}
+                visible={isColorPickerVisible}
+                onRequestClose={() => setColorPickerVisible(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalHeader}>Pick Theme Color</Text>
+                        <WheelColorPicker
+                            onColorChange={(color) => {
+                                setThemeColor(color)
+                            }}
+                            style={{ flex: 1 }}
+                        />
+
+                        <TouchableOpacity
+                            style={styles.cancelButton}
+                            onPress={() => setColorPickerVisible(false)}
+                        >
+                            <Text style={styles.buttonText}>Confrim</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
         </ScrollView>
     );
 };
