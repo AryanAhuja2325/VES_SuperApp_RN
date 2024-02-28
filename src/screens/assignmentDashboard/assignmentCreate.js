@@ -8,7 +8,6 @@ import { firebase } from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { useAppSelector } from '../../../store/hook';
 import Loading from '../../components/header/loading';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
 const AssignmentCreationScreen = () => {
   const user = useAppSelector(state => state.profile.data);
@@ -77,7 +76,7 @@ const AssignmentCreationScreen = () => {
       console.log("Error==>", error);
       Alert.alert("Assignment uploading failed...!");
     }
-    
+
     console.log("Output===>", assignmentObject);
   }
   const formattedDate = selectedDate.toDateString();

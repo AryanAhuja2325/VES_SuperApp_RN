@@ -51,12 +51,11 @@ import WelcomeUser from './WelcomeUser';
 import Booking from './booking';
 import Information from './booking/Information';
 import Previous from './booking/Previous';
-import Venue from './Admin/Venue/Venue';
+import ResumeGenerator from './placement/ResumeGenerator';
+import Venue from './Admin/Venue';
 import Contact from './campusContact';
 import AddContact from './campusContact/addContact';
 import AssignmentDashboard from './assignmentDashboard';
-import ViewBooking from './Principal/View Booking/ViewBooking';
-import AttendanceNew from './AtttendanceNew';
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -577,7 +576,7 @@ const App = () => {
           <stack.Screen
             name="Campus Contact"
             component={Contact}
-            options={({navigation}) => ({
+            options={({ navigation }) => ({
               headerShown: true,
               header: () => (
                 <CustomHeader navigation={navigation} title="Campus Contact" />
@@ -587,7 +586,7 @@ const App = () => {
           <stack.Screen
             name="Add Contact"
             component={AddContact}
-            options={({navigation}) => ({
+            options={({ navigation }) => ({
               headerShown: true,
               header: () => (
                 <CustomHeader navigation={navigation} title="Add Contact" />
@@ -597,13 +596,10 @@ const App = () => {
           <stack.Screen
             name="Assignment Dashboard"
             component={AssignmentDashboard}
-            options={({navigation}) => ({
+            options={({ navigation }) => ({
               headerShown: true,
               header: () => (
-                <CustomHeader
-                  navigation={navigation}
-                  title="Assignment Dashboard"
-                />
+                <CustomHeader navigation={navigation} title="Assignment Dashboard" />
               ),
             })}
           />
