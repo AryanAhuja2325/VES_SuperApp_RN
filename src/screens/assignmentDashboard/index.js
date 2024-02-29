@@ -5,17 +5,12 @@ import styles from './assignmentdashboard.styles'
 import AssignmentHomeScreen from "./assignmenthome";
 import AssignmentCreationScreen from "./assignmentCreate";
 import AssignmentResponseScreen from "./assignmentResponse";
-import AssignmentPending from "./assignmentpending";
-import { useAppSelector } from "../../../store/hook";
-
 
 const AssignmentDashboard = () => {
     const drawer = useRef(null);
     const [selectedOption, setSelectedOption] = useState(null);
-  const user = useAppSelector(state => state.profile.data);
 
     const navigationView = () => (
-      user.loginType === 'Teacher' ? (
         <View>
           <TouchableOpacity
             style={[
@@ -42,28 +37,7 @@ const AssignmentDashboard = () => {
             onPress={() => handleOptionSelect("Response")}>
             <Text style={[styles.optionText,selectedOption === "Response" && styles.selectedOptionText]}>Response</Text>
           </TouchableOpacity>
-          </View>
-     ):(
-        <View>
-           <TouchableOpacity
-            style={[
-              styles.optionTouchable,
-              selectedOption === "Home" && styles.selectedOption
-            ]}
-            onPress={() => handleOptionSelect("Home")}
-          >
-            <Text style={[styles.optionText,selectedOption === "Home" && styles.selectedOptionText]}>Home</Text>
-          </TouchableOpacity>
-        <TouchableOpacity
-        style={[
-          styles.optionTouchable,
-          selectedOption === "Pending" && styles.selectedOption
-        ]}
-        onPress={() => handleOptionSelect("Pending")}>
-        <Text style={[styles.optionText,selectedOption === "Pending" && styles.selectedOptionText]}>Pending</Text>
-      </TouchableOpacity>
-    </View>
-     )
+        </View>
       );
 
     const handleOptionSelect = (option) => {
@@ -79,8 +53,6 @@ const AssignmentDashboard = () => {
                 return <AssignmentCreationScreen/>;
             case "Response":
                 return <AssignmentResponseScreen/>;
-            case "Pending":
-              return <AssignmentPending/>;
             default:
                 return <AssignmentHomeScreen/>
         }

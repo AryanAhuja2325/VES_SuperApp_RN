@@ -12,19 +12,13 @@ import Loading from '../../components/header/loading';
 const AssignmentCreationScreen = () => {
   const user = useAppSelector(state => state.profile.data);
   const [open, setOpen] = useState(false);
-  const [className, setClassName] = useState(false);
+  const [className, setClassName] = useState('');
   const [title, setTitle] = useState('');
-  const [classDropdownOpen, setClassDropdownOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [submissionType, setSubmissionType] = useState(false);
+  const [submissionType, setSubmissionType] = useState('');
   const [link, setLink] = useState('');
   const [loading, setLoading] = useState(false);
-const classOptions = Array.from({ length: 21 }, (_, index) => ({
-  label: `P${index + 1}`,
-  value: `P${index + 1}`
-}));
-  
   const [items, setItems] = useState([
     {
       label: 'PDF',
@@ -48,7 +42,6 @@ const classOptions = Array.from({ length: 21 }, (_, index) => ({
   }
 
   const handleCreateAssignment = async () => {
-  
     setLoading(true);
     if (submissionType === 'link') {
       assignmentObject.link = link;
@@ -102,37 +95,20 @@ const classOptions = Array.from({ length: 21 }, (_, index) => ({
     setSubmissionType(item);
   };
 
-const handleClassChange = (itemValue) => {
-  setClassName(itemValue);
-};
-
   return (
     <View style={styles.innerContainer}>
       {!loading && (<KeyboardAvoidingView behavior="padding">
         <Text style={styles.label}>Class Name</Text>
-        {/* <TextInput
+        <TextInput
           style={styles.input}
           placeholder="Class Name"
           value={className}
           onChangeText={setClassName}
-        /> */}
-       <DropDownPicker
-  style={styles.picker}
-  textStyle={{ color: 'black' }}
-  // dropDownDirection="TOP"
-  open={classDropdownOpen}
-  value={className}
-  items={classOptions}
-  placeholder="Select Class Name"
-  setOpen={setClassDropdownOpen} 
-  onSelectItem={(item) => handleClassChange(item.value)}
-  containerStyle={styles.dropdownContainer}
-  scrollable={true}
-/>
+        />
         <Text style={styles.label}>Title</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter Title"
+          placeholder="Title"
           value={title}
           onChangeText={setTitle}
           
@@ -171,14 +147,13 @@ const handleClassChange = (itemValue) => {
         <DropDownPicker
           style={styles.picker}
           textStyle={{ color: 'black' }}
-          // dropDownDirection="TOP"
+          dropDownDirection="TOP"
           open={open}
           value={submissionType}
           items={items}
           setOpen={setOpen}
-          placeholder="Select Type Of Assignment"
           onSelectItem={(items) => handleTitleChange(items.value)}
-          containerStyle={styles.dropdownContainer}
+          containerStyle={styles.dropDownContainer}
         />
 
         {submissionType === 'link' && (
@@ -213,3 +188,9 @@ const handleClassChange = (itemValue) => {
 };
 
 export default AssignmentCreationScreen;
+
+
+
+
+
+

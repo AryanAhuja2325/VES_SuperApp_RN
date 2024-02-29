@@ -51,11 +51,11 @@ import WelcomeUser from './WelcomeUser';
 import Booking from './booking';
 import Information from './booking/Information';
 import Previous from './booking/Previous';
+import ResumeGenerator from './placement/ResumeGenerator';
 import Venue from './Admin/Venue/Venue';
 import Contact from './campusContact';
 import AddContact from './campusContact/addContact';
 import AssignmentDashboard from './assignmentDashboard';
-import ViewBooking from './Principal/View Booking/ViewBooking';
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -541,16 +541,16 @@ const App = () => {
               ),
             })}
           />
-            <stack.Screen
-            name="View Booking"
-            component={ViewBooking}
+          <stack.Screen
+            name="Resume Generator"
+            component={ResumeGenerator}
             options={({ navigation }) => ({
               headerShown: true,
               header: () => (
-                <CustomHeader navigation={navigation} title="View Bookings" />
-                ),
-              })}
-              />
+                <CustomHeader navigation={navigation} title="Resume Generator" />
+              )
+            })}
+          />
 
           <stack.Screen
             name="Campus Contact"
@@ -581,7 +581,7 @@ const App = () => {
                 <CustomHeader navigation={navigation} title="Assignment Dashboard" />
               ),
             })}
-            />
+          />
         </stack.Navigator>
       </NavigationContainer>
     </Provider>

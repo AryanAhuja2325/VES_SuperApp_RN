@@ -14,8 +14,7 @@ const Venue = ({ navigation }) => {
   const [imageUrls, setImageUrls] = useState([]);
   const [isImagePicking, setIsImagePicking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedImages, setSelectedImages] = useState([]); // State for selected images
-  
+  const [selectedImages, setSelectedImages] = useState([]); 
 
 
   const handleImagePicker = async () => {
