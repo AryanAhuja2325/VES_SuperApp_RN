@@ -47,11 +47,12 @@ import WelcomeUser from './WelcomeUser';
 import Booking from './booking';
 import Information from './booking/Information';
 import Previous from './booking/Previous';
-import ResumeGenerator from './placement/ResumeGenerator';
+import ResumeGenerator from './Placement/ResumeGenerator';
 import Venue from './Admin/Venue';
 import Contact from './campusContact';
 import AddContact from './campusContact/addContact';
 import AssignmentDashboard from './assignmentDashboard';
+import List  from './PersonalizedTimetable/List';
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -383,8 +384,6 @@ const App = () => {
               ),
             })}
           />
-        
-          
           <stack.Screen
             name="Blog"
             component={Blog}
@@ -540,15 +539,15 @@ const App = () => {
             })}
           />
           <stack.Screen
-            name="Assignment Dashboard"
-            component={AssignmentDashboard}
+            name="Personalized Timetable"
+            component={List}
             options={({ navigation }) => ({
               headerShown: true,
               header: () => (
-                <CustomHeader navigation={navigation} title="Assignment Dashboard" />
+                <CustomHeader navigation={navigation} title="Personalized Timetable" />
               ),
             })}
-          />
+          /> 
         </stack.Navigator>
       </NavigationContainer>
     </Provider>
