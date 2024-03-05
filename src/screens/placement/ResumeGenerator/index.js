@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
-import { Text, View, TextInput, ScrollView, Alert, TouchableOpacity, Modal, Image } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { Text, View, TextInput, ScrollView, Alert, TouchableOpacity, Modal, Image, PermissionsAndroid, Linking } from 'react-native';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
-import RNFS from 'react-native-fs';
+import RNFS, { stat } from 'react-native-fs';
 import styles from './ResumeGenerator.styles';
 import ModalDropdown from "react-native-modal-dropdown";
 import ImageCropPicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
 import WheelColorPicker from 'react-native-wheel-color-picker';
-
+import Pdf from 'react-native-pdf';
+import Share from 'react-native-share';
+import { useAppSelector } from '../../../../store/hook';
 
 const ResumeGenerator = ({ navigation }) => {
+    const user = useAppSelector(state => state.profile.data);
+    const [isGenerated, setGenerated] = useState(false);
+    const [pdfPath, setPdfPath] = useState("");
     const [personalInfo, setPersonalInfo] = useState({
         name: '',
         fatherName: '',
@@ -91,6 +96,34 @@ const ResumeGenerator = ({ navigation }) => {
             console.log('ImagePicker Error: ', error);
         }
     };
+
+    const sharePDF = async () => {
+        try {
+            const pdfPath = `${RNFS.DownloadDirectoryPath}/resume.pdf`;
+
+            const fileExists = await RNFS.exists(pdfPath);
+            if (!fileExists) {
+                console.error('Error: File not found');
+                Alert.alert('Error', 'Resume file not found. Generate the resume first.');
+                return;
+            }
+
+            const options = {
+                type: 'application/pdf',
+                title: 'Share Resume',
+                subject: `${user.firstName}'s Resume`,
+                message: 'Check out my resume!',
+                url: `file://${pdfPath}`,
+            };
+
+            await Share.open(options);
+
+        } catch (error) {
+            console.error('Error sharing PDF:', error);
+            Alert.alert('Error', 'Can\'t share Resume');
+        }
+    };
+
 
 
     const yearOptions = generateYears();
@@ -362,12 +395,31 @@ const ResumeGenerator = ({ navigation }) => {
             console.log('PDF generated:', outputPath);
 
             await RNFS.moveFile(filePath, outputPath);
+            setPdfPath(outputPath);
             Alert.alert('Success', 'Resume generated successfully. Check your phone storage!');
+            setGenerated(true);
         } catch (error) {
             console.error('Error generating PDF:', error);
             Alert.alert('Error', 'Can\'t generate Resume');
         }
     };
+
+    const openPdf = async () => {
+        try {
+            const supported = await Linking.canOpenURL(`file://${pdfPath}`);
+
+            if (supported) {
+                await Linking.openURL(`file://${pdfPath}`);
+            } else {
+                console.error('Cannot open PDF with the installed apps');
+                Alert.alert('Error', 'Cannot open PDF with the installed apps');
+            }
+        } catch (error) {
+            console.error('Error opening PDF:', error);
+            Alert.alert('Error', 'Cannot open PDF');
+        }
+    };
+
 
     const renderAdditionalFields = (state, setState, placeholder, title) => {
         return state.map((value, index) => (
@@ -449,6 +501,7 @@ const ResumeGenerator = ({ navigation }) => {
                     placeholder="123-456-7890"
                     value={personalInfo.phoneNumber}
                     onChangeText={(text) => setPersonalInfo({ ...personalInfo, phoneNumber: text })}
+                    keyboardType='phone-pad'
                 />
 
                 <Text style={styles.label}>Email</Text>
@@ -457,6 +510,7 @@ const ResumeGenerator = ({ navigation }) => {
                     placeholder="john.doe@example.com"
                     value={personalInfo.email}
                     onChangeText={(text) => setPersonalInfo({ ...personalInfo, email: text })}
+                    keyboardType="email-address"
                 />
 
                 <Text style={styles.label}>Linkedin Profile</Text>
@@ -536,12 +590,30 @@ const ResumeGenerator = ({ navigation }) => {
             </View>
 
             <TouchableOpacity
-                style={styles.button2}
+                style={styles.button}
                 onPress={generateResumePDF}
             >
                 <Text style={styles.buttonText}>Generate PDF</Text>
             </TouchableOpacity>
 
+            {
+                isGenerated && (
+                    <View style={styles.row}>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={openPdf}
+                        >
+                            <Text style={styles.buttonText}>Open PDF</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={sharePDF}
+                        >
+                            <Text style={styles.buttonText}>Share PDF</Text>
+                        </TouchableOpacity>
+                    </View>
+                )
+            }
             <Modal
                 animationType="slide"
                 transparent={false}
