@@ -59,15 +59,6 @@ const styles = StyleSheet.create({
         marginVertical: 500,
         alignItems: 'center'
     },
-    button2: {
-        backgroundColor: COLOR.maroon,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-        marginHorizontal: 20,
-        marginVertical: 15,
-        marginBottom: 30
-    },
     button1: {
         backgroundColor: COLOR.maroon,
         marginHorizontal: 5,
@@ -129,6 +120,12 @@ const styles = StyleSheet.create({
     eduText: {
         color: COLOR.black,
         fontSize: 18
+    },
+    row: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginBottom: 20
     }
 });
 
