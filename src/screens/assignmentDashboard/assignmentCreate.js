@@ -8,17 +8,24 @@ import { firebase } from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { useAppSelector } from '../../../store/hook';
 import Loading from '../../components/header/loading';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
 const AssignmentCreationScreen = () => {
   const user = useAppSelector(state => state.profile.data);
   const [open, setOpen] = useState(false);
-  const [className, setClassName] = useState('');
+  const [className, setClassName] = useState(false);
   const [title, setTitle] = useState('');
+  const [classDropdownOpen, setClassDropdownOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [submissionType, setSubmissionType] = useState('');
+  const [submissionType, setSubmissionType] = useState(false);
   const [link, setLink] = useState('');
   const [loading, setLoading] = useState(false);
+  const classOptions = Array.from({ length: 21 }, (_, index) => ({
+    label: `P${index + 1}`,
+    value: `P${index + 1}`
+  }));
+
   const [items, setItems] = useState([
     {
       label: 'PDF',
@@ -39,9 +46,11 @@ const AssignmentCreationScreen = () => {
     link: null,
     pdf: null,
     pdflink: null,
+    completed: {},
   }
 
   const handleCreateAssignment = async () => {
+
     setLoading(true);
     if (submissionType === 'link') {
       assignmentObject.link = link;
@@ -69,7 +78,6 @@ const AssignmentCreationScreen = () => {
       Alert.alert("Assignment uploading failed...!");
     }
 
-
     console.log("Output===>", assignmentObject);
   }
   const formattedDate = selectedDate.toDateString();
@@ -95,65 +103,76 @@ const AssignmentCreationScreen = () => {
     setSubmissionType(item);
   };
 
+  const handleClassChange = (itemValue) => {
+    setClassName(itemValue);
+  };
+
   return (
     <View style={styles.innerContainer}>
       {!loading && (<KeyboardAvoidingView behavior="padding">
         <Text style={styles.label}>Class Name</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Class Name"
+        <DropDownPicker
+          style={styles.picker}
+          textStyle={{ color: 'black' }}
+          open={classDropdownOpen}
           value={className}
-          onChangeText={setClassName}
+          items={classOptions}
+          placeholder="Select Class Name"
+          setOpen={setClassDropdownOpen}
+          onSelectItem={(item) => handleClassChange(item.value)}
+          containerStyle={styles.dropdownContainer}
+          scrollable={true}
         />
-        <Text style={styles.label}>Title</Text>
+        <Text style={styles.label}>Subject</Text>
         <TextInput
           style={styles.input}
-          placeholder="Title"
+          placeholder="Enter Subject"
           value={title}
           onChangeText={setTitle}
-          
         />
-        <Text style={styles.label}>Selected Date:</Text>
+<View>
+<Text style={styles.label}>Selected Date:</Text>
+         <TouchableOpacity onPress={() => setShowDatePicker(true)}>
         <TextInput
           style={[styles.input, styles.selectedDateText]}
           value={formattedDate}
           editable={false}
+          placeholder="Select Date of Submission"
         />
-        <View style={styles.datePicker}>
-          <TouchableOpacity
-            onPress={() => setShowDatePicker(true)}
-            style={styles.touchableOpacity}
-          >
-            <Text style={styles.buttonText}>Select Date of Submission</Text>
-          </TouchableOpacity>
-          {showDatePicker && (
-            <DateTimePicker
-              value={selectedDate}
-              mode="date"
-              display='default'
-              minimumDate={new Date()}
-              maximumDate={new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)} // Add 7 days (7 * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
-              onChange={(event, date) => {
-                setShowDatePicker(false);
-                if (date) {
-                  setSelectedDate(date);
-                }
-              }}
-            />
-          )}
-
-        </View>
+        <MaterialIcons
+          name="date-range"
+          size={30}
+          color="black"
+          style={styles.calendarIcon}
+        />
+      </TouchableOpacity>
+      {showDatePicker && (
+        <DateTimePicker
+          value={selectedDate}
+          mode="date"
+          display="default"
+          minimumDate={new Date()}
+          maximumDate={new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)}
+          onChange={(event, date) => {
+            setShowDatePicker(false);
+            if (date) {
+              setSelectedDate(date);
+            }
+          }}
+        />
+      )}
+    </View>
         <Text style={styles.label}>Assignment Type:</Text>
         <DropDownPicker
           style={styles.picker}
           textStyle={{ color: 'black' }}
-          dropDownDirection="TOP"
           open={open}
           value={submissionType}
           items={items}
           setOpen={setOpen}
+          placeholder="Select Type Of Assignment"
           onSelectItem={(items) => handleTitleChange(items.value)}
-          containerStyle={styles.dropDownContainer}
+          containerStyle={styles.dropdownContainer}
         />
 
         {submissionType === 'link' && (
@@ -181,16 +200,10 @@ const AssignmentCreationScreen = () => {
         </TouchableOpacity>
       </KeyboardAvoidingView>)}
       {loading && (
-              <Loading />
-            )}
+        <Loading />
+      )}
     </View>
   );
 };
 
 export default AssignmentCreationScreen;
-
-
-
-
-
-

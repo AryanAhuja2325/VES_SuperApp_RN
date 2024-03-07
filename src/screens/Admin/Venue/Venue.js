@@ -110,8 +110,8 @@ const Venue = ({ navigation }) => {
           {
             text: 'OK',
           }, {
-            // text: 'Next',
-            // onPress: () => navigation.navigate('Booking'),
+            text: 'Next',
+            onPress: () => navigation.navigate('Booking'),
             //uncomment this line when it is useful
           }
         ],
@@ -162,7 +162,7 @@ const Venue = ({ navigation }) => {
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
       </ScrollView>
-      {isLoading && (
+      {isLoading && ( 
         <View style={styles.overlay}>
           <View style={styles.loaderContainer}>
             <ActivityIndicator size="large" color="#E5E4E2" />

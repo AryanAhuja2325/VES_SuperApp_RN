@@ -35,6 +35,19 @@ const styles = StyleSheet.create({
       linktext: {
         color: COLORS.blue,
       },
+      submitButton: {
+        backgroundColor: 'green',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+      },
+      submitButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+      },
 });
 
 export default styles;

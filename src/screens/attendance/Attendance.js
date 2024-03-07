@@ -2,11 +2,7 @@ import React from 'react';
 import {
     View,
     Text,
-    StyleSheet,
     TouchableOpacity,
-    Image,
-    ImageBackground,
-    Alert
 } from 'react-native';
 import styles from './Attendance.styles';
 
@@ -17,10 +13,10 @@ const Attendance = ({ navigation }) => {
             <View style={styles.container}>
                 <TouchableOpacity
                     onPress={() => {
-                        navigation.navigate('DailyAttendance')
+                        navigation.navigate('AttendanceNew')
                     }}
                     style={styles.clickable}
-                >
+                    >
                     <View>
                         <View style={{ padding: 10 }}>
                             <Text style={styles.cardTitle}>Daily Attendance</Text>
@@ -42,7 +38,6 @@ const Attendance = ({ navigation }) => {
                     </View>
                 </TouchableOpacity >
             </View >
-
         </View>
     );
 };

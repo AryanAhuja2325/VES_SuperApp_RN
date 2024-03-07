@@ -15,11 +15,19 @@ const styles = StyleSheet.create({
     },
     input:{
         borderWidth: 1,
+        borderRadius: 10,
         width:300,
+        marginTop: 10,
     },
     datePicker:{
         marginTop:10,
     },
+      dropdownContainer: {
+        width: '100%', // Width of the dropdown container
+        alignItems: 'center', // Align dropdown to the center
+        justifyContent: 'center', // Center items vertically
+        marginTop: 10, // Add space between dropdown and other elements
+      },
     dropdownText: {
         fontSize: 20,
         color: COLORS.black,
@@ -28,7 +36,6 @@ const styles = StyleSheet.create({
         width: responsiveWidth(85),
         height: responsiveHeight(5),
         paddingHorizontal: responsiveWidth(2),
-        // alignContent: 'flex-end',
         alignSelf: 'center',
         textAlign: 'left',
         verticalAlign: 'middle'
@@ -47,6 +54,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 14,
     },
+    
     touchableOpacity:{
     marginTop:10,
     backgroundColor:COLORS.maroon,
@@ -61,7 +69,18 @@ const styles = StyleSheet.create({
     },
     picker:{
         width:'10',
-    }
+    },
+    selectedDateText: {
+      color: COLORS.black
+      },
+    calendarIcon: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        right:1,
+        marginVertical: 20,
+        marginHorizontal: 10,
+      },
 });
 
 export default styles;
