@@ -25,7 +25,7 @@ import Splash from './splash';
 import AddJob from './placement/AddJob';
 import JobDetails from './placement/JobDetails';
 import Chat from './groupchat/chat';
-
+import ViewBooking from './Principal/View Booking/ViewBooking';
 import FAQ from './FAQs/faqs';
 import Profile from './bottomTab/profile';
 import Notifications from './bottomTab/notifications';
@@ -38,6 +38,7 @@ import DigitalAcademy from './digitalAcademy/DigitalAcademy';
 import DigitalAcademyDetail from './digitalAcademy/DigitalAcademyDetail';
 import Placement from './placement/Placement';
 import ImageGrid from './photoGallery';
+import AttendanceNew from './AtttendanceNew';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {white} from '../utils/color';
 import Calendar from './holidayCalendar/HolidayCalendar';
@@ -52,7 +53,7 @@ import Booking from './booking';
 import Information from './booking/Information';
 import Previous from './booking/Previous';
 import ResumeGenerator from './placement/ResumeGenerator';
-import Venue from './Admin/Venue';
+import Venue from './Admin/Venue/Venue';
 import Contact from './campusContact';
 import AddContact from './campusContact/addContact';
 import AssignmentDashboard from './assignmentDashboard';
@@ -590,6 +591,16 @@ const App = () => {
               headerShown: true,
               header: () => (
                 <CustomHeader navigation={navigation} title="Add Contact" />
+              ),
+            })}
+          />
+          <stack.Screen
+            name="Resume Generator"
+            component={ResumeGenerator}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Resume Generator" />
               ),
             })}
           />
