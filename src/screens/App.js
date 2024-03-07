@@ -52,7 +52,7 @@ import Booking from './booking';
 import Information from './booking/Information';
 import Previous from './booking/Previous';
 import ResumeGenerator from './placement/ResumeGenerator';
-import Venue from './Admin/Venue/Venue';
+import Venue from './Admin/Venue';
 import Contact from './campusContact';
 import AddContact from './campusContact/addContact';
 import AssignmentDashboard from './assignmentDashboard';
