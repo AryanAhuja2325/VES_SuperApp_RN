@@ -115,6 +115,9 @@ const Home = ({ navigation }) => {
           case 'Assignment Dashboard':
             navigation.navigate('Assignment Dashboard')
             break;
+            case 'Personalized Timetable':
+              navigation.navigate('Personalized Timetable')
+              break;
         default:
           break;
       }

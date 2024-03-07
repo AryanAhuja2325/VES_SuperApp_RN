@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
-import * as COLORS from '../../utils/color';
+import * as COLORS from "../../utils/color";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 
 const styles = StyleSheet.create({
@@ -16,7 +17,8 @@ const styles = StyleSheet.create({
       card: {
         backgroundColor: '#ffffff',
         borderRadius: 8,
-        padding: 16,
+        padding: 46,
+        marginLeft:10,
         marginBottom: 16,
         elevation: 3,
       },
@@ -24,6 +26,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 8,
+        color:Colors.black,
       },
       subtitle: {
         fontSize: 16,
@@ -35,6 +38,27 @@ const styles = StyleSheet.create({
       linktext: {
         color: COLORS.blue,
       },
+      submitButton: {
+        backgroundColor: 'green',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+      },
+      submitButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+      },
+      deleteButton:{
+        backgroundColor: 'red',
+        fontSize: 16,
+        fontWeight: 'bold',
+      },
+      deleteText:{
+        color:'black'
+      }
 });
 
 export default styles;

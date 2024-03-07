@@ -1,195 +1,170 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect} from 'react';
 import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Alert, Platform } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import DocumentPicker from 'react-native-document-picker';
 import DropDownPicker from 'react-native-dropdown-picker';
-import styles from "./assignmentCreate.styles";
+import styles from './assignmentCreate.styles';
 import { firebase } from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
-import { useAppSelector } from '../../../store/hook';
 import Loading from '../../components/header/loading';
-
+import { useAppSelector } from "../../../store/hook";
+import {
+    Provider,
+  } from 'react-native-paper';
 const AssignmentCreationScreen = () => {
-  const user = useAppSelector(state => state.profile.data);
-  const [open, setOpen] = useState(false);
-  const [className, setClassName] = useState('');
-  const [title, setTitle] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [submissionType, setSubmissionType] = useState('');
-  const [link, setLink] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [items, setItems] = useState([
-    {
-      label: 'PDF',
-      value: 'pdf'
-    },
-    {
-      label: 'Link',
-      value: 'link'
-    },
-  ]);
-  const [selectedFile, setSelectedFile] = useState(null);
-  let url = null;
-  const assignmentObject = {
-    postedBy: user.email,
-    className: className,
-    title: title,
-    DOS: selectedDate.toISOString(),
-    link: null,
-    pdf: null,
-    pdflink: null,
-  }
+    const [open, setOpen] = useState(false);
+    const [className, setClassName] = useState(false);
+    const [title, setTitle] = useState('');
+    const [classDropdownOpen, setClassDropdownOpen] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [subject, setSubject] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const classOptions = Array.from({ length: 21 }, (_, index) => ({
+        label: `P${index + 1}`,
+        value: `P${index + 1}`
+    }));
+    const [items, setItems] = useState([]);
+    const user = useAppSelector(state => state.profile.data);
+    useEffect(() => {
+        fetchSubjects(); // Fetch subjects when component mounts
+    }, []);
+    const fetchSubjects = async () => {
+        try {
+            const snapshot = await firebase.firestore().collection('Subjects').get(); // Assuming subjects are stored in a 'Subjects' collection
+            const subjects = snapshot.docs.map(doc => ({ label: doc.data().Subject, value: doc.data().Subject }));
+            setItems(subjects);
+        } catch (error) {
+            console.error('Error fetching subjects:', error);
+        }
+    };
 
-  const handleCreateAssignment = async () => {
-    setLoading(true);
-    if (submissionType === 'link') {
-      assignmentObject.link = link;
-    }
-    else if (submissionType === 'pdf') {
-      try {
-        assignmentObject.pdf = selectedFile[0].name;
-        const response = await storage().ref(`/Assignments/${selectedFile[0].name}`).putFile(selectedFile[0].fileCopyUri);
-        url = await storage().ref(`/Assignments/${selectedFile[0].name}`).getDownloadURL();
-        assignmentObject.pdf = selectedFile[0].name;
-        assignmentObject.pdflink = url;
-      } catch (error) {
-        Alert.alert("Assignment Posting Falied...!!");
-        return;
-      }
-    }
-    try {
-      const docRef = await firebase.firestore().collection('Assignments').add(assignmentObject);
-      console.log('Assignment added with ID: ', docRef.id);
-      setLoading(false);
-      Alert.alert("Assignment created successfully!!!");
-    }
-    catch (error) {
-      console.log("Error==>", error);
-      Alert.alert("Assignment uploading failed...!");
+    const [selectedFile, setSelectedFile] = useState(null);
+    let url = null;
+    const assignmentObject = {
+        postedBy: user.email,
+        className: className,
+        title: title,
+        link: null,
+        pdf: null,
+        pdflink: null,
     }
 
+    const handleCreateAssignment = async () => {
 
-    console.log("Output===>", assignmentObject);
-  }
-  const formattedDate = selectedDate.toDateString();
+        setLoading(true);
+            try {
+                assignmentObject.pdf = selectedFile.name;
+                const response = await storage().ref(`/${subject}/${selectedFile.name}`).putFile(selectedFile.fileCopyUri);
+                url = await storage().ref(`/${subject}/${selectedFile.name}`).getDownloadURL();
+                assignmentObject.pdf = selectedFile.name;
+                assignmentObject.pdflink = url;
+            } catch (error) {
+                console.log("Error posting==>",error)
+                Alert.alert("Notes Posting Falied...!!");
+                return;
+            }
+        try {
+            const docRef = await firebase.firestore().collection('Assignments').add(assignmentObject);
+            console.log('Assignment added with ID: ', docRef.id);
+            setLoading(false);
+            Alert.alert("Notes created successfully!!!");
+        }
+        catch (error) {
+            console.log("Error==>", error);
+            Alert.alert("Notes uploading failed...!");
+        }
 
-  const selectFile = async () => {
-    try {
-      const res = await DocumentPicker.pick({
-        type: [DocumentPicker.types.pdf],
-        copyTo: 'cachesDirectory',
-      });
-      setSelectedFile(res);
-    } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        console.log('User cancelled the document picker.');
-      } else {
-        console.log('Error while picking the file:', err);
-      }
+
+        console.log("Output===>", assignmentObject);
     }
-  };
+    const formattedDate = selectedDate.toDateString();
 
-  const handleTitleChange = (item) => {
-    console.log("Item received:", item);
-    setSubmissionType(item);
-  };
+    const selectFile = async () => {
+        try {
+            const res = await DocumentPicker.pick({
+                type: [DocumentPicker.types.pdf],
+                copyTo: 'cachesDirectory',
+            });
+            setSelectedFile(res[0]);
+            console.log("File==>",res[0])
+        } catch (err) {
+            if (DocumentPicker.isCancel(err)) {
+                console.log('User cancelled the document picker.');
+            } else {
+                console.log('Error while picking the file:', err);
+            }
+        }
+    };
 
-  return (
-    <View style={styles.innerContainer}>
-      {!loading && (<KeyboardAvoidingView behavior="padding">
-        <Text style={styles.label}>Class Name</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Class Name"
-          value={className}
-          onChangeText={setClassName}
-        />
-        <Text style={styles.label}>Title</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Title"
-          value={title}
-          onChangeText={setTitle}
-          
-        />
-        <Text style={styles.label}>Selected Date:</Text>
-        <TextInput
-          style={[styles.input, styles.selectedDateText]}
-          value={formattedDate}
-          editable={false}
-        />
-        <View style={styles.datePicker}>
-          <TouchableOpacity
-            onPress={() => setShowDatePicker(true)}
-            style={styles.touchableOpacity}
-          >
-            <Text style={styles.buttonText}>Select Date of Submission</Text>
-          </TouchableOpacity>
-          {showDatePicker && (
-            <DateTimePicker
-              value={selectedDate}
-              mode="date"
-              display='default'
-              minimumDate={new Date()}
-              maximumDate={new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)} // Add 7 days (7 * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
-              onChange={(event, date) => {
-                setShowDatePicker(false);
-                if (date) {
-                  setSelectedDate(date);
-                }
-              }}
-            />
-          )}
 
-        </View>
-        <Text style={styles.label}>Assignment Type:</Text>
-        <DropDownPicker
-          style={styles.picker}
-          textStyle={{ color: 'black' }}
-          dropDownDirection="TOP"
-          open={open}
-          value={submissionType}
-          items={items}
-          setOpen={setOpen}
-          onSelectItem={(items) => handleTitleChange(items.value)}
-          containerStyle={styles.dropDownContainer}
-        />
+    const handleClassChange = (itemValue) => {
+        setClassName(itemValue);
+    };
+    const handleTitleChange = (itemValue) => {
+        setSubject(itemValue);
+    };
 
-        {submissionType === 'link' && (
-          <TextInput
-            style={[styles.input, styles.linkInput]}
-            placeholder="Link"
-            value={link}
-            onChangeText={setLink}
-          />
-        )}
-        {submissionType === 'pdf' && (
-          <TouchableOpacity
-            onPress={selectFile}
-            style={[styles.touchableOpacity, styles.button]}
-          >
-            <Text style={styles.buttonText}>Select PDF File</Text>
-          </TouchableOpacity>
-        )}
-        {selectedFile && (<Text style={styles.label}>Selected Document: {selectedFile[0].name}</Text>)}
-        <TouchableOpacity
-          onPress={handleCreateAssignment}
-          style={[styles.touchableOpacity, styles.button]}
-        >
-          <Text style={styles.buttonText}>Post Assignment</Text>
-        </TouchableOpacity>
-      </KeyboardAvoidingView>)}
-      {loading && (
-              <Loading />
+    return (
+        <Provider>
+        <View style={styles.innerContainer}>
+            {!loading && (<KeyboardAvoidingView behavior="padding">
+                <Text style={styles.label}>Class Name</Text>
+                <DropDownPicker
+                    style={styles.picker}
+                    textStyle={{ color: 'black' }}
+                    open={classDropdownOpen}
+                    value={className}
+                    items={classOptions}
+                    placeholder="Select Class Name"
+                    setOpen={setClassDropdownOpen}
+                    onSelectItem={(item) => handleClassChange(item.value)}
+                    containerStyle={styles.dropdownContainer}
+                    scrollable={true}
+                    zIndex={9999.}
+                />
+                <Text style={styles.label}>Select subject:</Text>
+                <DropDownPicker
+                    style={styles.picker}
+                    textStyle={{ color: 'black' }}
+                    open={open}
+                    value={subject}
+                    items={items}
+                    setOpen={setOpen}
+                    placeholder="Select Subject"
+                    onSelectItem={(items) => handleTitleChange(items.value)}
+                    containerStyle={styles.dropdownContainer}
+                />
+                                <Text style={styles.label}>Title</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Enter Title"
+                    value={title}
+                    onChangeText={setTitle}
+
+                />
+
+                    <TouchableOpacity
+                        onPress={selectFile}
+                        style={[styles.touchableOpacity, styles.button]}
+                    >
+                        <Text style={styles.buttonText}>Select PDF File</Text>
+                    </TouchableOpacity>
+                {selectedFile && (<Text style={styles.label}>Selected Document: {selectedFile.name}</Text>)}
+                <TouchableOpacity
+                    onPress={handleCreateAssignment}
+                    style={[styles.touchableOpacity, styles.button]}
+                >
+                    <Text style={styles.buttonText}>Upload Notes</Text>
+                </TouchableOpacity>
+            </KeyboardAvoidingView>)}
+            {loading && (
+                <Loading />
             )}
-    </View>
-  );
+        </View>
+        </Provider>
+    );
 };
 
 export default AssignmentCreationScreen;
-
-
 
 
 

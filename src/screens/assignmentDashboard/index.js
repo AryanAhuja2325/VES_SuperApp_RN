@@ -1,16 +1,19 @@
+
 import React, { useRef, useState } from "react";
 import { DrawerLayoutAndroid, View, Text, TouchableOpacity } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import styles from './assignmentdashboard.styles'
-import AssignmentHomeScreen from "./assignmenthome";
-import AssignmentCreationScreen from "./assignmentCreate";
-import AssignmentResponseScreen from "./assignmentResponse";
-
+import styles from './assignmentdashboard.styles.js'
+import AssignmentCreationScreen from "./assignmentCreate.js";
+import AssignmentHomeScreen from "./assignmenthome.js";
+import { useAppSelector } from "../../../store/hook";
 const AssignmentDashboard = () => {
     const drawer = useRef(null);
     const [selectedOption, setSelectedOption] = useState(null);
+    const user = useAppSelector(state => state.profile.data);
+
 
     const navigationView = () => (
+      user.loginType === 'teacher' ? (
         <View>
           <TouchableOpacity
             style={[
@@ -24,20 +27,25 @@ const AssignmentDashboard = () => {
           <TouchableOpacity
             style={[
               styles.optionTouchable,
-              selectedOption === "Active Assignments" && styles.selectedOption
+              selectedOption === "Upload Notes" && styles.selectedOption
             ]}
-            onPress={() => handleOptionSelect("Active Assignments")}>
-            <Text style={[styles.optionText,selectedOption === "Active Assignments" && styles.selectedOptionText]}>Active Assignments</Text>
+            onPress={() => handleOptionSelect("Upload Notes")}>
+            <Text style={[styles.optionText,selectedOption === "Upload Notes" && styles.selectedOptionText]}>Upload Notes</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+          </View>
+     ):(
+        <View>
+           <TouchableOpacity
             style={[
               styles.optionTouchable,
-              selectedOption === "Response" && styles.selectedOption
+              selectedOption === "Home" && styles.selectedOption
             ]}
-            onPress={() => handleOptionSelect("Response")}>
-            <Text style={[styles.optionText,selectedOption === "Response" && styles.selectedOptionText]}>Response</Text>
+            onPress={() => handleOptionSelect("Home")}
+          >
+            <Text style={[styles.optionText,selectedOption === "Home" && styles.selectedOptionText]}>Home</Text>
           </TouchableOpacity>
-        </View>
+    </View>
+     )
       );
 
     const handleOptionSelect = (option) => {
@@ -49,10 +57,8 @@ const AssignmentDashboard = () => {
         switch (selectedOption) {
             case "Home":
                 return <AssignmentHomeScreen/>;
-            case "Active Assignments":
+            case "Upload Notes":
                 return <AssignmentCreationScreen/>;
-            case "Response":
-                return <AssignmentResponseScreen/>;
             default:
                 return <AssignmentHomeScreen/>
         }

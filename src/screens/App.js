@@ -22,10 +22,7 @@ import Details from './stationarySupply/Details';
 import Cart from './stationarySupply/Cart';
 import Fees from './fees/Fees';
 import Splash from './splash';
-import AddJob from './placement/AddJob';
-import JobDetails from './placement/JobDetails';
 import Chat from './groupchat/chat';
-
 import FAQ from './FAQs/faqs';
 import Profile from './bottomTab/profile';
 import Notifications from './bottomTab/notifications';
@@ -36,7 +33,6 @@ import CustomHeader from '../components/header';
 import FitnessAndHealth from './fitnessandhealth/FitnessAndHealth';
 import DigitalAcademy from './digitalAcademy/DigitalAcademy';
 import DigitalAcademyDetail from './digitalAcademy/DigitalAcademyDetail';
-import Placement from './placement/Placement';
 import ImageGrid from './photoGallery';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { white } from '../utils/color';
@@ -52,10 +48,11 @@ import Booking from './booking';
 import Information from './booking/Information';
 import Previous from './booking/Previous';
 import ResumeGenerator from './placement/ResumeGenerator';
-import Venue from './Admin/Venue';
+import Venue from './Admin/Venue/Venue';
 import Contact from './campusContact';
 import AddContact from './campusContact/addContact';
 import AssignmentDashboard from './assignmentDashboard';
+import List  from './PersonalizedTimetable/List';
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -388,37 +385,6 @@ const App = () => {
             })}
           />
           <stack.Screen
-            name="Placement"
-            component={Placement}
-            options={({ navigation }) => ({
-              headerShown: true,
-              header: () => (
-                <CustomHeader navigation={navigation} title="Placement" />
-              ),
-            })}
-          />
-          <stack.Screen
-            name="JobDetails"
-            component={JobDetails}
-            options={({ navigation }) => ({
-              headerShown: true,
-              header: () => (
-                <CustomHeader navigation={navigation} title="JobDetails" />
-              ),
-            })}
-          />
-          <stack.Screen
-            name="AddJob"
-            component={AddJob}
-            options={({ navigation }) => ({
-              headerShown: true,
-              header: () => (
-                <CustomHeader navigation={navigation} title="AddJob" />
-              ),
-            })}
-          />
-
-          <stack.Screen
             name="Blog"
             component={Blog}
             options={({ navigation }) => ({
@@ -573,15 +539,15 @@ const App = () => {
             })}
           />
           <stack.Screen
-            name="Assignment Dashboard"
-            component={AssignmentDashboard}
+            name="Personalized Timetable"
+            component={List}
             options={({ navigation }) => ({
               headerShown: true,
               header: () => (
-                <CustomHeader navigation={navigation} title="Assignment Dashboard" />
+                <CustomHeader navigation={navigation} title="Personalized Timetable" />
               ),
             })}
-          />
+          /> 
         </stack.Navigator>
       </NavigationContainer>
     </Provider>

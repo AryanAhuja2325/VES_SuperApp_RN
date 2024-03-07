@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
-import * as COLORS from '../../utils/color';
+import * as COLORS from "../../utils/color";
 
 
 const styles = StyleSheet.create({
@@ -20,6 +20,12 @@ const styles = StyleSheet.create({
     datePicker:{
         marginTop:10,
     },
+      dropdownContainer: {
+        width: '100%', // Width of the dropdown container
+        alignItems: 'center', // Align dropdown to the center
+        justifyContent: 'center', // Center items vertically
+        marginTop: 10, // Add space between dropdown and other elements
+      },
     dropdownText: {
         fontSize: 20,
         color: COLORS.black,
@@ -47,6 +53,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 14,
     },
+    
     touchableOpacity:{
     marginTop:10,
     backgroundColor:COLORS.maroon,
