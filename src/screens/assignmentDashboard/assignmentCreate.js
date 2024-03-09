@@ -102,36 +102,84 @@ const selectFile = async () => {
   }
 };
 
-const handleClassChange = (itemValue) => {
-  setClassName(itemValue);
-};
+  const handleTitleChange = (item) => {
+    console.log("Item received:", item);
+    setSubmissionType(item);
+  };
 
-return (
-  <View style={styles.innerContainer}>
-    {!loading && (<KeyboardAvoidingView behavior="padding">
-      <Text style={styles.label}>Class Name</Text>
-      <DropDownPicker
-        style={styles.picker}
-        textStyle={{ color: 'black' }}
-        open={classDropdownOpen}
-        value={className}
-        items={classOptions}
-        placeholder="Select Class Name"
-        setOpen={setClassDropdownOpen}
-        onSelectItem={(item) => handleClassChange(item.value)}
-        containerStyle={styles.dropdownContainer}
-        scrollable={true}
-      />
-      <Text style={styles.label}>Subject</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Subject"
-        value={title}
-        onChangeText={setTitle}
-      />
-      <View>
-        <Text style={styles.label}>Selected Date:</Text>
-        <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+  const handleClassChange = (itemValue) => {
+    setClassName(itemValue);
+  };
+
+  return (
+    <View style={styles.innerContainer}>
+      {!loading && (<KeyboardAvoidingView behavior="padding">
+        <Text style={styles.label}>Class Name</Text>
+        <DropDownPicker
+          style={styles.picker}
+          textStyle={{ color: 'black' }}
+          open={classDropdownOpen}
+          value={className}
+          items={classOptions}
+          placeholder="Select Class Name"
+          setOpen={setClassDropdownOpen}
+          onSelectItem={(item) => handleClassChange(item.value)}
+          containerStyle={styles.dropdownContainer}
+          scrollable={true}
+        />
+        <Text style={styles.label}>Subject</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Subject"
+          value={title}
+          onChangeText={setTitle}
+        />
+<View>
+<Text style={styles.label}>Selected Date:</Text>
+         <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+        <TextInput
+          style={[styles.input, styles.selectedDateText]}
+          value={formattedDate}
+          editable={false}
+          placeholder="Select Date of Submission"
+        />
+        <MaterialIcons
+          name="date-range"
+          size={30}
+          color="black"
+          style={styles.calendarIcon}
+        />
+      </TouchableOpacity>
+      {showDatePicker && (
+        <DateTimePicker
+          value={selectedDate}
+          mode="date"
+          display="default"
+          minimumDate={new Date()}
+          maximumDate={new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)}
+          onChange={(event, date) => {
+            setShowDatePicker(false);
+            if (date) {
+              setSelectedDate(date);
+            }
+          }}
+        />
+      )}
+    </View>
+        <Text style={styles.label}>Assignment Type:</Text>
+        <DropDownPicker
+          style={styles.picker}
+          textStyle={{ color: 'black' }}
+          open={open}
+          value={submissionType}
+          items={items}
+          setOpen={setOpen}
+          placeholder="Select Type Of Assignment"
+          onSelectItem={(items) => handleTitleChange(items.value)}
+          containerStyle={styles.dropdownContainer}
+        />
+
+        {submissionType === 'link' && (
           <TextInput
             style={[styles.input, styles.selectedDateText]}
             value={formattedDate}
@@ -189,20 +237,12 @@ return (
         >
           <Text style={styles.buttonText}>Select PDF File</Text>
         </TouchableOpacity>
+      </KeyboardAvoidingView>)}
+      {loading && (
+        <Loading />
       )}
-      {selectedFile && (<Text style={styles.label}>Selected Document: {selectedFile[0].name}</Text>)}
-      <TouchableOpacity
-        onPress={handleCreateAssignment}
-        style={[styles.touchableOpacity, styles.button]}
-      >
-        <Text style={styles.buttonText}>Post Assignment</Text>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>)}
-    {loading && (
-      <Loading />
-    )}
-  </View>
-);
-
+    </View>
+  );
+};
 
 export default AssignmentCreationScreen;
