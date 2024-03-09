@@ -2,18 +2,19 @@
 import React, { useRef, useState } from "react";
 import { DrawerLayoutAndroid, View, Text, TouchableOpacity } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import styles from './assignmentdashboard.styles.js'
-import AssignmentCreationScreen from "./assignmentCreate.js";
-import AssignmentHomeScreen from "./assignmenthome.js";
+import styles from './assignmentdashboard.styles'
+import AssignmentHomeScreen from "./assignmenthome";
+import AssignmentCreationScreen from "./assignmentCreate";
+import AssignmentResponseScreen from "./assignmentResponse";
+import AssignmentPending from "./assignmentpending";
 import { useAppSelector } from "../../../store/hook";
 const AssignmentDashboard = () => {
     const drawer = useRef(null);
     const [selectedOption, setSelectedOption] = useState(null);
-    const user = useAppSelector(state => state.profile.data);
-
+  const user = useAppSelector(state => state.profile.data);
 
     const navigationView = () => (
-      user.loginType === 'teacher' ? (
+      user.loginType === 'Teacher' ? (
         <View>
           <TouchableOpacity
             style={[
@@ -31,6 +32,14 @@ const AssignmentDashboard = () => {
             ]}
             onPress={() => handleOptionSelect("Upload Notes")}>
             <Text style={[styles.optionText,selectedOption === "Upload Notes" && styles.selectedOptionText]}>Upload Notes</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.optionTouchable,
+              selectedOption === "Response" && styles.selectedOption
+            ]}
+            onPress={() => handleOptionSelect("Response")}>
+            <Text style={[styles.optionText,selectedOption === "Response" && styles.selectedOptionText]}>Response</Text>
           </TouchableOpacity>
           </View>
      ):(
@@ -59,6 +68,10 @@ const AssignmentDashboard = () => {
                 return <AssignmentHomeScreen/>;
             case "Upload Notes":
                 return <AssignmentCreationScreen/>;
+            case "Response":
+                return <AssignmentResponseScreen/>;
+            case "Pending":
+              return <AssignmentPending/>;
             default:
                 return <AssignmentHomeScreen/>
         }

@@ -15,7 +15,9 @@ const styles = StyleSheet.create({
     },
     input:{
         borderWidth: 1,
+        borderRadius: 10,
         width:300,
+        marginTop: 10,
     },
     datePicker:{
         marginTop:10,
@@ -34,7 +36,6 @@ const styles = StyleSheet.create({
         width: responsiveWidth(85),
         height: responsiveHeight(5),
         paddingHorizontal: responsiveWidth(2),
-        // alignContent: 'flex-end',
         alignSelf: 'center',
         textAlign: 'left',
         verticalAlign: 'middle'
@@ -68,7 +69,18 @@ const styles = StyleSheet.create({
     },
     picker:{
         width:'10',
-    }
+    },
+    selectedDateText: {
+      color: COLORS.black
+      },
+    calendarIcon: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        right:1,
+        marginVertical: 20,
+        marginHorizontal: 10,
+      },
 });
 
 export default styles;

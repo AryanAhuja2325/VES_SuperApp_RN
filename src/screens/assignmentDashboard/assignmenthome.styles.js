@@ -51,14 +51,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
       },
-      deleteButton:{
-        backgroundColor: 'red',
-        fontSize: 16,
-        fontWeight: 'bold',
-      },
-      deleteText:{
-        color:'black'
-      }
 });
 
 export default styles;
