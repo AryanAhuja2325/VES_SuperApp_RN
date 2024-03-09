@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ScrollView,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import styles from './AttendanceNew.styles';
@@ -91,7 +92,8 @@ const AttendanceNew = () => {
   };
 
   return (
-       <View style={styles.innerContainer}>
+      <ScrollView>
+               <View style={styles.innerContainer}>
         <Text style={styles.label}>Class Name</Text>
         <DropDownPicker
           style={styles.picker}
@@ -154,6 +156,7 @@ const AttendanceNew = () => {
           <Text style={styles.buttonText}>Submit Attendance</Text>
         </TouchableOpacity>
       </View>
+      </ScrollView>
   );
 };
 

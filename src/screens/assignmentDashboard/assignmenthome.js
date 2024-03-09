@@ -22,7 +22,6 @@ const AssignmentHomeScreen = () => {
   useEffect(() => {
     fetchAssignments();
   }, []);
-  const user = useAppSelector(state => state.profile.data);
   const fetchAssignments = async () => {
     try {
       const snapshot = await firestore().collection('Assignments')
@@ -58,9 +57,8 @@ const AssignmentHomeScreen = () => {
       <Text style={styles.selectedAssignment}>Selected Assignment: {selectedFile.pdf}</Text>
     )}
     </TouchableOpacity>
-  )}
+  )
 
-  );
 
 
   const handleAssignmentPress = (item) => {

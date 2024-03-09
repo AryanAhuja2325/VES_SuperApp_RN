@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from './assignmentdashboard.styles'
 import AssignmentHomeScreen from "./assignmenthome";
 import AssignmentCreationScreen from "./assignmentCreate";
-import AssignmentResponseScreen from "./assignmentResponse";
+// import AssignmentResponseScreen from "./assignmentResponse";
 import AssignmentPending from "./assignmentpending";
 import { useAppSelector } from "../../../store/hook";
 const AssignmentDashboard = () => {
@@ -69,7 +69,7 @@ const AssignmentDashboard = () => {
             case "Upload Notes":
                 return <AssignmentCreationScreen/>;
             case "Response":
-                return <AssignmentResponseScreen/>;
+                // return <AssignmentResponseScreen/>;
             case "Pending":
               return <AssignmentPending/>;
             default:

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
+import firestore, { firebase } from '@react-native-firebase/firestore';
 import { useAppSelector } from '../../../store/hook';
 import styles from './ViewAttendance.styles';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -13,35 +13,56 @@ const ViewAttendance = () => {
     const [fetchedAttendance, setFetchedAttendance] = useState([]);
     const [expandedIndex, setExpandedIndex] = useState(null);
 
-    const fetchData = async (selectedDate) => {
+    // const fetchData = async (selectedDate) => {
+    //     try {
+    //         const startDate = new Date(
+    //             selectedDate.getFullYear(),
+    //             selectedDate.getMonth(),
+    //             selectedDate.getDate(),
+    //             0, 0, 0
+    //         );
+    //         const endDate = new Date(
+    //             selectedDate.getFullYear(),
+    //             selectedDate.getMonth(),
+    //             selectedDate.getDate(),
+    //             23, 59, 59
+    //         );
+
+    //         const snapshot = await firestore()
+    //             .collection('Classroom')
+    //             .where('facultyId', '==', user.email)
+    //             .where('date', '>=', startDate)
+    //             // .where('date', '<=', endDate)
+    //             .get();
+
+    //         const data = snapshot.docs.map((doc) => doc.data());
+    //         data.sort((a, b) => a.sessionCount - b.sessionCount);
+    //         setFetchedAttendance(data);
+    //     } catch (error) {
+    //         console.error('Error fetching data:', error);
+    //     }
+    // };
+    const fetchData = async () => {
         try {
-            const startDate = new Date(
-                selectedDate.getFullYear(),
-                selectedDate.getMonth(),
-                selectedDate.getDate(),
-                0, 0, 0
-            );
-            const endDate = new Date(
-                selectedDate.getFullYear(),
-                selectedDate.getMonth(),
-                selectedDate.getDate(),
-                23, 59, 59
-            );
-
-            const snapshot = await firestore()
-                .collection('Attendance')
-                .where('facultyId', '==', user.email)
-                .where('date', '>=', startDate)
-                .where('date', '<=', endDate)
-                .get();
-
-            const data = snapshot.docs.map((doc) => doc.data());
-            data.sort((a, b) => a.sessionCount - b.sessionCount);
-            setFetchedAttendance(data);
+            // Assuming you have already initialized Firebase and Firestore
+            const snapshot = await firebase.firestore().collection('Classroom').get();
+            
+            // Transform the array of document snapshots into an array of document data
+            const dataArr = snapshot.docs.map(doc => {
+                // Access the document data and return it
+                return {
+                    id: doc.id,
+                    data: doc.data()
+                };
+            });
+            
+            // Log the array of document data
+            console.log("Document Data:", dataArr);
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error("Error fetching data:", error);
         }
     };
+    
 
     useEffect(() => {
         fetchData(date);
@@ -65,13 +86,13 @@ const ViewAttendance = () => {
         console.log(fetchedAttendance);
     };
 
-    const toggleExpand = (index) => {
-        if (index === expandedIndex) {
-            setExpandedIndex(null);
-        } else {
-            setExpandedIndex(index);
-        }
-    };
+    // const toggleExpand = (index) => {
+    //     if (index === expandedIndex) {
+    //         setExpandedIndex(null);
+    //     } else {
+    //         setExpandedIndex(index);
+    //     }
+    // };
 
     return (
         <ScrollView style={styles.container}>
