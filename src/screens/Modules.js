@@ -114,6 +114,10 @@ const studentmodule = [
         id: 11,
         title: 'Assignment Dashboard',
     },
+    {
+        id: 12,
+        title: 'Personalized Timetable',
+    },
 ]
 const parentmodule = [
     {
@@ -181,6 +185,10 @@ const Adminmodule = [
     {
         id: 3,
         title: 'Send Notification'
+    },
+    {
+        id: 4,
+        title: 'Venue'
     },
     {
         id: 5,

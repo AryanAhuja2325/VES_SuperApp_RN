@@ -8,7 +8,7 @@ const windowWidth = Dimensions.get("window").width;
 const windowheight = Dimensions.get("window").height;
 
 const styles = StyleSheet.create({
-
+ 
     view: {
         flex: 1,
     },

@@ -196,8 +196,6 @@ const Venue = () => {
     }
   };
 
-
-
   const confirmTimetable = () => {
     if (timetable.length > 0) {
       const isTimetableComplete = timetable.every((day) => day.slots.length > 0);

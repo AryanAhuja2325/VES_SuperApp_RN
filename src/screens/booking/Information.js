@@ -24,6 +24,7 @@ import 'react-native-get-random-values';
 import Loading from '../../components/header/loading';
 import axios from 'axios';
 import { ip } from '../../utils/constant';
+import PushNotification from 'react-native-push-notification';
 
 const Information = ({ route }) => {
   const user = useAppSelector((state) => state.profile.data);
@@ -293,6 +294,8 @@ const Information = ({ route }) => {
       setSelectedItems([...selectedItems, item]);
     }
   };
+
+
 
   const bookRequest = async () => {
     try {

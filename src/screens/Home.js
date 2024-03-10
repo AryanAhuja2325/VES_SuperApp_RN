@@ -3,16 +3,13 @@ import {
   View,
   Text,
   SectionList,
-  Alert,
-  ImageBackground,
   TouchableOpacity,
   Image,
-  ScrollView
+  ScrollView,
 } from 'react-native';
 import { useAppSelector } from '../../store/hook';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './Home.styles';
-import { red, white, black, gray, maroon } from '../utils/color';
+import { white, maroon } from '../utils/color';
 import {
   responsiveHeight,
   responsiveWidth,
@@ -182,6 +179,9 @@ const Home = ({ navigation }) => {
           break;
         case 'Assignment Dashboard':
           navigation.navigate('Assignment Dashboard')
+          break;
+        case 'Personalized Timetable':
+          navigation.navigate('Personalized Timetable')
           break;
         default:
           break;
