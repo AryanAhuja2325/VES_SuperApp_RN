@@ -22,8 +22,6 @@ import Details from './stationarySupply/Details';
 import Cart from './stationarySupply/Cart';
 import Fees from './fees/Fees';
 import Splash from './splash';
-import AddJob from './placement/AddJob';
-import JobDetails from './placement/JobDetails';
 import Chat from './groupchat/chat';
 import ViewBooking from './Principal/View Booking/ViewBooking';
 import FAQ from './FAQs/faqs';
@@ -36,7 +34,6 @@ import CustomHeader from '../components/header';
 import FitnessAndHealth from './fitnessandhealth/FitnessAndHealth';
 import DigitalAcademy from './digitalAcademy/DigitalAcademy';
 import DigitalAcademyDetail from './digitalAcademy/DigitalAcademyDetail';
-import Placement from './placement/Placement';
 import ImageGrid from './photoGallery';
 import AttendanceNew from './AtttendanceNew';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -53,6 +50,9 @@ import Booking from './booking';
 import Information from './booking/Information';
 import Previous from './booking/Previous';
 import ResumeGenerator from './placement/ResumeGenerator';
+import Placement from './placement/Placement';
+import AddJob from './placement/AddJob';
+import JobDetails from './placement/JobDetails';
 import Venue from './Admin/Venue/Venue';
 import Contact from './campusContact';
 import AddContact from './campusContact/addContact';
@@ -610,7 +610,7 @@ const App = () => {
             options={({ navigation }) => ({
               headerShown: true,
               header: () => (
-                <CustomHeader navigation={navigation} title="Assignment Dashboard" />
+                <CustomHeader navigation={navigation} title="Personalized Timetable" />
               ),
             })}
           />
