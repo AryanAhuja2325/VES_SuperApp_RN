@@ -10,6 +10,7 @@ import {
 import DropDownPicker from 'react-native-dropdown-picker';
 import styles from './AttendanceNew.styles';
 import firestore from '@react-native-firebase/firestore';
+import { useAppSelector } from '../../store/hook';
 
 const AttendanceNew = () => {
   const [Classroom, setClassroom] = useState(null);
@@ -20,8 +21,7 @@ const AttendanceNew = () => {
   const [roomNo, setRoomNo] = useState('');
   const [absentRollNo, setAbsentRollNo] = useState('');
   const currentDate = new Date().toLocaleDateString();
-  const currentTime = new Date().toLocaleTimeString();
-  
+  const user = useAppSelector((state) => state.profile.data);
   const classOptions = Array.from({length: 21}, (_, index) => ({
     label: `P${index + 1}`,
     value: `P${index + 1}`,
@@ -33,8 +33,9 @@ const AttendanceNew = () => {
     roomNo: roomNo,
     classStrength: classStrength,
     sessionCount: sessionCount,
-    timestamp: new Date().toISOString(),
+    currentTime : firestore.Timestamp.now(),
     attendance: [],
+    email:user.email,
   };
 
   const handleSubmit = async () => {
@@ -73,7 +74,7 @@ const AttendanceNew = () => {
         .then(() => {
           Alert.alert(
             'Success',
-            `Attendance data added successfully on..\n\nDate: ${currentDate}\nTime: ${currentTime}`,
+            `Attendance data added successfully on..\n\nDate: ${currentDate}`,
           );
           setClassroom(null);
           setSelectedSubject(null);
@@ -89,10 +90,10 @@ const AttendanceNew = () => {
 
   const handleClassroom = itemValue => {
     setClassroom(itemValue);
-  };
+  }; 
 
   return (
-      <ScrollView>
+      // <ScrollView>
                <View style={styles.innerContainer}>
         <Text style={styles.label}>Class Name</Text>
         <DropDownPicker
@@ -156,7 +157,7 @@ const AttendanceNew = () => {
           <Text style={styles.buttonText}>Submit Attendance</Text>
         </TouchableOpacity>
       </View>
-      </ScrollView>
+      // </ScrollView>
   );
 };
 
