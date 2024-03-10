@@ -473,7 +473,6 @@ const Information = ({ route }) => {
                     <Calendar
                       onDayPress={onDayPress}
                       minDate={minDate}
-                      maxDate={new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)}
                       disableAllTouchEventsForDisabledDays={true}
                       markedDates={selectedDate ? { [selectedDate]: { selected: true } } : {}}
                     />
