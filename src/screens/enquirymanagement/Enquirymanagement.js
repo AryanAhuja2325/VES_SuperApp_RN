@@ -36,7 +36,7 @@ export const Query = () => {
   const [type, setType] = useState('');
   const [description, setDescription] = useState('');
   const [showQueryType, setShowQueryType] = useState(false);
-  const [selectedQueryType, setSelectedQueryType] = useState('');
+  const [selectedQueryType, setSelectedQueryType] = useState('Query Type'); // Initialize with default text
 
   const queryTypes = ['Fee related Query', 'Admission related Query', 'Syllabus Related Query', 'Another Query Type'];
   const user = useAppSelector(state => state.profile.data);
@@ -47,7 +47,7 @@ export const Query = () => {
 
   const handleQueryTypeSelection = (selectedType) => {
     setType(selectedType);
-    setSelectedQueryType(selectedType);
+    setSelectedQueryType(selectedType); // Update selected query type
     setShowQueryType(false);
   };
 
@@ -83,7 +83,7 @@ export const Query = () => {
           <View style={styles.sectionHeader}>
             <TouchableOpacity onPress={toggleQueryType}>
               <Text style={styles.heading}>
-                Query Type
+                {selectedQueryType} {/* Display selected query type */}
                 {showQueryType ? <Text style={styles.arrowIcon}>▲</Text> : <Text style={styles.arrowIcon}>▼</Text>}
               </Text>
             </TouchableOpacity>

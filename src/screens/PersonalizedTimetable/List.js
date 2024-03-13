@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, Alert} from 'react-native';
+import { View, Text, TextInput, Button, FlatList, Alert } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import styles from './List.styles';
-import firestore from '@react-native-firebase/firestore'; // Make sure this import is correct
 import { useAppSelector } from '../../../store/hook';
 
 const List = ({ navigation }) => {
@@ -15,16 +15,16 @@ const List = ({ navigation }) => {
 
   // UseEffect for removing expired tasks
   useEffect(() => {
-    const removeExpiredTasks = () => {
+    const removeExpiredTasks = async () => {
       const now = new Date();
       const updatedTasks = tasks.filter(item => !item.dueDate || new Date(item.dueDate) > now);
       setTasks(updatedTasks);
-      //saveTasks(); // Save the updated tasks after removing expired ones
+      await saveTasks(updatedTasks); // Save the updated tasks after removing expired ones
     };
 
     const timer = setInterval(removeExpiredTasks, 60000); // Check every minute for expired tasks
 
-    return () => clearInterval(timer);
+    // return () => clearInterval(timer);
   }, [tasks]);
 
   // Function to show date picker
@@ -47,37 +47,53 @@ const List = ({ navigation }) => {
   const addTask = async () => {
     if (task.trim() !== '') {
       // Update local state first
-      setTasks([...tasks, { task, dueDate }]);
+      const newTask = { task, dueDate };
+      setTasks([...tasks, newTask]);
       setTask('');
       setDueDate(null);
-  
-      // Prepare data for Firestore
-      const submitData = {
-        Email: user.email,
-        Task: task,
-        DueDate: dueDate,
-      };
-  
-      // Save task to Firebase Firestore
-      try {
-        await firestore().collection("Personalized Timetable").add(submitData);
-        Alert.alert("Task Added");
-      } catch (error) {
-        console.error("Error adding task to Firestore:", error);
-        Alert.alert("Failed to add task. Please try again.");
-      }
+
+      // Save tasks to AsyncStorage
+      const updatedTasks = [...tasks, newTask];
+      await saveTasks(updatedTasks);
+      Alert.alert("Task Added");
     } else {
       Alert.alert("Task cannot be blank");
     }
   };
-  
 
   // Function to remove a task
-  const removeTask = (index) => {
+  const removeTask = async (index) => {
     const updatedTasks = [...tasks];
     updatedTasks.splice(index, 1);
     setTasks(updatedTasks);
+    await saveTasks(updatedTasks);
   };
+
+  // Function to save tasks to AsyncStorage
+  const saveTasks = async (updatedTasks) => {
+    try {
+      await AsyncStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    } catch (error) {
+      console.error("Error saving tasks to AsyncStorage:", error);
+    }
+  };
+
+  // Function to load tasks from AsyncStorage
+  const loadTasks = async () => {
+    try {
+      const storedTasks = await AsyncStorage.getItem('tasks');
+      if (storedTasks !== null) {
+        setTasks(JSON.parse(storedTasks));
+      }
+    } catch (error) {
+      console.error("Error loading tasks from AsyncStorage:", error);
+    }
+  };
+
+  // Load tasks when component mounts
+  useEffect(() => {
+    loadTasks();
+  }, []);
 
   return (
     <View style={styles.container}>
