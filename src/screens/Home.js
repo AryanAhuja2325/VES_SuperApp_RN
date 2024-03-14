@@ -106,6 +106,15 @@ const Home = ({ navigation }) => {
         case 'Venue':
           navigation.navigate('Venue');
           break;
+        case 'Career Path':
+          navigation.navigate('Career Path');
+          break;
+        case 'Campus Contact':
+          navigation.navigate('Campus Contact');
+          break;
+        case 'Assignment Dashboard':
+          navigation.navigate('Assignment Dashboard')
+          break;
         case 'Resume Generator':
           navigation.navigate('Resume Generator');
           break;

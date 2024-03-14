@@ -49,6 +49,7 @@ const AssignmentCreationScreen = () => {
 
   const handleCreateAssignment = async () => {
 
+
     setLoading(true);
     if (submissionType === 'link') {
       assignmentObject.link = link;
@@ -84,124 +85,129 @@ const AssignmentCreationScreen = () => {
   console.log("Output===>", assignmentObject);
 
 
-const selectFile = async () => {
-  try {
-    const res = await DocumentPicker.pick({
-      type: [DocumentPicker.types.pdf],
-      copyTo: 'cachesDirectory',
-    });
-    setSelectedFile(res[0]);
-    console.log("File==>", res[0])
-  } catch (err) {
-    if (DocumentPicker.isCancel(err)) {
-      console.log('User cancelled the document picker.');
-    } else {
-      console.log('Error while picking the file:', err);
+  const selectFile = async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.pdf],
+        copyTo: 'cachesDirectory',
+      });
+      setSelectedFile(res[0]);
+      console.log("File==>", res[0])
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        console.log('User cancelled the document picker.');
+      } else {
+        console.log('Error while picking the file:', err);
+      }
     }
-  }
-};
+  };
 
-const handleClassChange = (itemValue) => {
-  setClassName(itemValue);
-};
+  const handleTitleChange = (item) => {
+    console.log("Item received:", item);
+    setSubmissionType(item);
+  };
 
-return (
-  <View style={styles.innerContainer}>
-    {!loading && (<KeyboardAvoidingView behavior="padding">
-      <Text style={styles.label}>Class Name</Text>
-      <DropDownPicker
-        style={styles.picker}
-        textStyle={{ color: 'black' }}
-        open={classDropdownOpen}
-        value={className}
-        items={classOptions}
-        placeholder="Select Class Name"
-        setOpen={setClassDropdownOpen}
-        onSelectItem={(item) => handleClassChange(item.value)}
-        containerStyle={styles.dropdownContainer}
-        scrollable={true}
-      />
-      <Text style={styles.label}>Subject</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Subject"
-        value={title}
-        onChangeText={setTitle}
-      />
-      <View>
-        <Text style={styles.label}>Selected Date:</Text>
-        <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+  const handleClassChange = (itemValue) => {
+    setClassName(itemValue);
+  };
+
+  return (
+    <View style={styles.innerContainer}>
+      {!loading && (<KeyboardAvoidingView behavior="padding">
+        <Text style={styles.label}>Class Name</Text>
+        <DropDownPicker
+          style={styles.picker}
+          textStyle={{ color: 'black' }}
+          open={classDropdownOpen}
+          value={className}
+          items={classOptions}
+          placeholder="Select Class Name"
+          setOpen={setClassDropdownOpen}
+          onSelectItem={(item) => handleClassChange(item.value)}
+          containerStyle={styles.dropdownContainer}
+          scrollable={true}
+        />
+        <Text style={styles.label}>Subject</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Subject"
+          value={title}
+          onChangeText={setTitle}
+        />
+        <View>
+          <Text style={styles.label}>Selected Date:</Text>
+          <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+            <TextInput
+              style={[styles.input, styles.selectedDateText]}
+              value={formattedDate}
+              editable={false}
+              placeholder="Select Date of Submission"
+            />
+            <MaterialIcons
+              name="date-range"
+              size={30}
+              color="black"
+              style={styles.calendarIcon}
+            />
+          </TouchableOpacity>
+          {showDatePicker && (
+            <DateTimePicker
+              value={selectedDate}
+              mode="date"
+              display="default"
+              minimumDate={new Date()}
+              maximumDate={new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)}
+              onChange={(event, date) => {
+                setShowDatePicker(false);
+                if (date) {
+                  setSelectedDate(date);
+                }
+              }}
+            />
+          )}
+        </View>
+        <Text style={styles.label}>Assignment Type:</Text>
+        <DropDownPicker
+          style={styles.picker}
+          textStyle={{ color: 'black' }}
+          open={open}
+          value={submissionType}
+          items={items}
+          setOpen={setOpen}
+          placeholder="Select Type Of Assignment"
+          onSelectItem={(items) => handleTitleChange(items.value)}
+          containerStyle={styles.dropdownContainer}
+        />
+
+        {submissionType === 'link' && (
           <TextInput
-            style={[styles.input, styles.selectedDateText]}
-            value={formattedDate}
-            editable={false}
-            placeholder="Select Date of Submission"
-          />
-          <MaterialIcons
-            name="date-range"
-            size={30}
-            color="black"
-            style={styles.calendarIcon}
-          />
-        </TouchableOpacity>
-        {showDatePicker && (
-          <DateTimePicker
-            value={selectedDate}
-            mode="date"
-            display="default"
-            minimumDate={new Date()}
-            maximumDate={new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)}
-            onChange={(event, date) => {
-              setShowDatePicker(false);
-              if (date) {
-                setSelectedDate(date);
-              }
-            }}
+            style={[styles.input, styles.linkInput]}
+            placeholder="Link"
+            value={link}
+            onChangeText={setLink}
           />
         )}
-      </View>
-      <Text style={styles.label}>Assignment Type:</Text>
-      <DropDownPicker
-        style={styles.picker}
-        textStyle={{ color: 'black' }}
-        open={open}
-        value={submissionType}
-        items={items}
-        setOpen={setOpen}
-        placeholder="Select Type Of Assignment"
-        onSelectItem={(items) => handleTitleChange(items.value)}
-        containerStyle={styles.dropdownContainer}
-      />
-
-      {submissionType === 'link' && (
-        <TextInput
-          style={[styles.input, styles.linkInput]}
-          placeholder="Link"
-          value={link}
-          onChangeText={setLink}
-        />
-      )}
-      {submissionType === 'pdf' && (
+        {submissionType === 'pdf' && (
+          <TouchableOpacity
+            onPress={selectFile}
+            style={[styles.touchableOpacity, styles.button]}
+          >
+            <Text style={styles.buttonText}>Select PDF File</Text>
+          </TouchableOpacity>
+        )}
+        {selectedFile && (<Text style={styles.label}>Selected Document: {selectedFile[0].name}</Text>)}
         <TouchableOpacity
-          onPress={selectFile}
+          onPress={handleCreateAssignment}
           style={[styles.touchableOpacity, styles.button]}
         >
-          <Text style={styles.buttonText}>Select PDF File</Text>
+          <Text style={styles.buttonText}>Post Assignment</Text>
         </TouchableOpacity>
+      </KeyboardAvoidingView>)}
+      {loading && (
+        <Loading />
       )}
-      {selectedFile && (<Text style={styles.label}>Selected Document: {selectedFile[0].name}</Text>)}
-      <TouchableOpacity
-        onPress={handleCreateAssignment}
-        style={[styles.touchableOpacity, styles.button]}
-      >
-        <Text style={styles.buttonText}>Post Assignment</Text>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>)}
-    {loading && (
-      <Loading />
-    )}
-  </View>
-);
+    </View>
+  );
 
 };
 export default AssignmentCreationScreen;

@@ -57,6 +57,9 @@ import Venue from './Admin/Venue/Venue';
 import Contact from './campusContact';
 import AddContact from './campusContact/addContact';
 import AssignmentDashboard from './assignmentDashboard';
+import ViewBooking from './Principal/View Booking/ViewBooking';
+import JobLinker from './jobLinker/JobLinker';
+import Jobs from './jobLinker/Jobs';
 import List from './PersonalizedTimetable/List';
 
 const stack = createNativeStackNavigator();
@@ -574,6 +577,26 @@ const App = () => {
               ),
             })}
           />
+          <stack.Screen
+            name="Job Linker"
+            component={JobLinker}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Job Linker" />
+              ),
+            })}
+          />
+          <stack.Screen
+            name="Jobs"
+            component={Jobs}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Jobs" />
+              ),
+            })}
+          />
 
           <stack.Screen
             name="Campus Contact"
@@ -624,11 +647,11 @@ const App = () => {
                 <CustomHeader navigation={navigation} title="Personalized Timetable" />
               ),
             })}
+          />
           /> */}
         </stack.Navigator>
       </NavigationContainer>
     </Provider>
   );
 };
-
 export default App;

@@ -116,6 +116,7 @@ const studentmodule = [
         title: 'Personalized Timetable',
     },
 ]
+
 const parentmodule = [
     {
         id: 1,
