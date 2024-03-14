@@ -13,9 +13,9 @@ const Orders = () => {
         try {
             let response;
             if (user.loginType == 'Vendor') {
-                response = await axios.get(`http://${ip}:3000/api/stationary/allOrders`);
+                response = await axios.get(`https://${ip}/api/stationary/allOrders`);
             } else {
-                response = await axios.get(`http://${ip}:3000/api/stationary/orders/${user.email}`);
+                response = await axios.get(`https://${ip}/api/stationary/orders/${user.email}`);
             }
             setOrders(response.data);
         } catch (error) {

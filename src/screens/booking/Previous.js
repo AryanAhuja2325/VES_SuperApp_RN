@@ -34,11 +34,11 @@ const Previous = ({ route }) => {
     try {
       let response;
       if (user.loginType == 'Admin') {
-        response = await axios.get(`http://${ip}:3000/api/booking/allBookings`);
+        response = await axios.get(`https://${ip}/api/booking/allBookings`);
       } else if (user.loginType == 'Principal') {
-        response = await axios.get(`http://${ip}:3000/api/booking/instituteBookings/${user.institute}`)
+        response = await axios.get(`https://${ip}/api/booking/instituteBookings/${user.institute}`)
       } else {
-        response = await axios.get(`http://${ip}:3000/api/booking/userBookings/${user.email}`);
+        response = await axios.get(`https://${ip}/api/booking/userBookings/${user.email}`);
       }
       const fetchedUserBookings = response.data;
 
@@ -500,7 +500,7 @@ const Previous = ({ route }) => {
 
   const getUser = async (email) => {
     try {
-      const response = await axios.post(`http://${ip}:3000/api/login/getUserByEmail`, { email });
+      const response = await axios.post(`https://${ip}/api/login/getUserByEmail`, { email });
       const user = response.data.user;
 
       if (user && user.firstName && user.lastName) {
@@ -549,7 +549,7 @@ const Previous = ({ route }) => {
           {
             text: 'OK',
             onPress: async () => {
-              const response = await axios.post(`http://${ip}:3000/api/booking/cancelBooking/${documentId}`, bookingToDelete);
+              const response = await axios.post(`https://${ip}/api/booking/cancelBooking/${documentId}`, bookingToDelete);
               if (response.status == 200) {
                 Alert.alert("Success", "Booking cancelled successfully");
                 fetchUserBookings();

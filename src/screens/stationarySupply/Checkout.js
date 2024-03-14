@@ -36,7 +36,7 @@ const Checkout = ({ navigation, route }) => {
                 date: new Date() // Create a Date object
             };
 
-            const response = await axios.post('http://' + ip + ':3000/api/stationary/placeOrder', order);
+            const response = await axios.post('https://' + ip + '/api/stationary/placeOrder', order);
 
             if (response.data.message === 'Order placed successfully') {
                 Alert.alert("Success", "Order Placed Successfully", [

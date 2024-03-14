@@ -104,7 +104,7 @@ const Venue = () => {
 
       formData.append('timetable', JSON.stringify(Array.isArray(timetable) ? timetable : []));
 
-      const response = await axios.post('http://' + ip + ':3000/api/venue/upload-data', formData, {
+      const response = await axios.post('https://' + ip + '/api/venue/upload-data', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

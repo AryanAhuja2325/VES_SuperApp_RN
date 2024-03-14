@@ -18,7 +18,7 @@ const EventUpdate = ({ navigation }) => {
 
     const getEventData = async () => {
         try {
-            const response = await axios.get('http://' + ip + ':3000/api/eventUpdate');
+            const response = await axios.get('https://' + ip + '/api/eventUpdate');
             setmydata(response.data);
         } catch (error) {
             console.log('Error getting data:', error);

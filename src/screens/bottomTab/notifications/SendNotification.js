@@ -22,7 +22,7 @@ const SendNotification = () => {
 
             setIsLoading(true);
             const response = await axios.post(
-                'http://' + ip + ':3000/api/notifications/add-notification',
+                'https://' + ip + '/api/notifications/add-notification',
                 notificationData
             );
 

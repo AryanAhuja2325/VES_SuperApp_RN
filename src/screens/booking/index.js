@@ -11,7 +11,7 @@ const Booking = ({ navigation }) => {
 
     const getData = async () => {
         try {
-            const response = await axios.get('http://' + ip + ':3000/api/booking');
+            const response = await axios.get('https://' + ip + '/api/booking');
             const fetchedDocuments = response.data;
             const categorizedVenues = categorizeVenues(fetchedDocuments);
             setData(categorizedVenues);

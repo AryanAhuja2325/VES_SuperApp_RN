@@ -54,7 +54,7 @@ const Login = ({ navigation }) => {
             try {
                 setIsLoading(true);
 
-                const response = await axios.post(`http://${ip}:3000/api/login`, { email, password });
+                const response = await axios.post(`https://${ip}/api/login`, { email, password });
 
                 if (response.status === 200) {
                     const user = response.data.user;
@@ -127,7 +127,7 @@ const Login = ({ navigation }) => {
 
     const sendOtp = async () => {
         try {
-            const response = await axios.post(`http://${ip}:3000/api/login/getUserByEmail`, { email });
+            const response = await axios.post(`https://${ip}/api/login/getUserByEmail`, { email });
 
             if (response.status === 200) {
                 const user = response.data.user;
@@ -151,7 +151,7 @@ const Login = ({ navigation }) => {
             const confirmation = await verificationId.confirm(otp);
 
             if (confirmation) {
-                const response = await axios.post(`http://${ip}:3000/api/login/getUserByEmail`, { email });
+                const response = await axios.post(`https://${ip}/api/login/getUserByEmail`, { email });
 
                 if (response.status === 200) {
                     const user = response.data.user;

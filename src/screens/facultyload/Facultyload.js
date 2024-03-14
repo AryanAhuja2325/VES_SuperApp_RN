@@ -14,7 +14,7 @@ const Facultyload = () => {
   useEffect(() => {
     const fetchFacultyloadData = async () => {
       try {
-        const response = await axios.get(`http://${ip}:3000/api/facultyLoad/?firstName=${user.firstName}`);
+        const response = await axios.get(`https://${ip}/api/facultyLoad/?firstName=${user.firstName}`);
         const data = response.data[0];
         setFacultyloadData(data);
       } catch (error) {

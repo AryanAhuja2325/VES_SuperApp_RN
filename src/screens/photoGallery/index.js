@@ -19,7 +19,7 @@ const ImageGrid = () => {
 
     const fetchImageArrays = async (selectedItem) => {
         try {
-            const response = await axios.get(`http://${ip}:3000/api/photos?selectedItem=${selectedItem}`);
+            const response = await axios.get(`https://${ip}/api/photos?selectedItem=${selectedItem}`);
             setImageArrays(response.data.images);
             setLikes(response.data.likesData);
             setIsLiked(false);
@@ -56,7 +56,7 @@ const ImageGrid = () => {
 
     const handleLike = async (docId) => {
         try {
-            await axios.post('http:192.168.56.1:3000/api/photos/likePost', { docId, user });
+            await axios.post('https://' + { ip } + '/api/photos/likePost', { docId, user });
             fetchImageArrays(selectedItem);
             setIsLiked(!isLiked);
         } catch (error) {

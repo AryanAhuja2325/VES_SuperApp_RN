@@ -49,7 +49,6 @@ import WelcomeUser from './WelcomeUser';
 import Booking from './booking';
 import Information from './booking/Information';
 import Previous from './booking/Previous';
-import Venue from './Admin/Venue';
 import SendNotification from './bottomTab/notifications/SendNotification';
 import ResumeGenerator from './placement/ResumeGenerator';
 import Placement from './placement/Placement';
@@ -61,7 +60,6 @@ import AddContact from './campusContact/addContact';
 import AddProducts from './stationarySupply/AddProducts';
 import ApproveRequest from './Admin/approvalRequests';
 import ConfirmRequest from './Admin/confirmRequests';
-import ResumeGenerator from './placement/ResumeGenerator';
 import AssignmentDashboard from './assignmentDashboard';
 
 const stack = createNativeStackNavigator();

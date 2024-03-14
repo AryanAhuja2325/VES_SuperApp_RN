@@ -11,7 +11,7 @@ const Alumni = () => {
         useEffect(() => {
                 const fetchAlumniData = async () => {
                         try {
-                                const data = await axios.get('http://' + ip + ':3000/api/alumni');
+                                const data = await axios.get('https://' + ip + '/api/alumni');
                                 console.log(data)
                                 setAlumniData(data.data);
                         } catch (error) {

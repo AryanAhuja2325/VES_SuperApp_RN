@@ -90,7 +90,7 @@ const Information = ({ route }) => {
         end: '23:00:00',
       };
 
-      const response = await axios.post(`http://${ip}:3000/api/booking/bookRequest/${data._id}`, {
+      const response = await axios.post(`https://${ip}/api/booking/bookRequest/${data._id}`, {
         selectedDates: { [formattedSelectedDate]: { selected: true } },
         selectedItems: [fullDayTimeSlot],
         user: { email: user.email },
@@ -126,7 +126,7 @@ const Information = ({ route }) => {
   const fetchBookingsForDate = async (date) => {
     try {
       const formattedDate = moment(date).format('YYYY-MM-DD');
-      const response = await axios.get(`http://${ip}:3000/api/booking/bookingsForDate/${data._id}/${formattedDate}`);
+      const response = await axios.get(`https://${ip}/api/booking/bookingsForDate/${data._id}/${formattedDate}`);
       const fetchedBookings = response.data;
       return fetchedBookings;
     } catch (error) {
@@ -308,7 +308,7 @@ const Information = ({ route }) => {
       }));
 
 
-      const response = await axios.post(`http://${ip}:3000/api/booking/bookRequest/${data._id}`, {
+      const response = await axios.post(`https://${ip}/api/booking/bookRequest/${data._id}`, {
         selectedDates: { [formattedSelectedDate]: { selected: true } },
         selectedItems: formattedSelectedItems,
         user: { email: user.email },

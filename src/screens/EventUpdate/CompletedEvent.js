@@ -12,7 +12,7 @@ const CompletedEvent = ({ navigation }) => {
 
     const getDatabase = async () => {
         try {
-            const response = await axios.get('http://' + ip + ':3000/api/eventUpdate/completed');
+            const response = await axios.get('https://' + ip + '/api/eventUpdate/completed');
             setmydata(response.data);
         } catch (error) {
             console.log('Error getting data:', error);

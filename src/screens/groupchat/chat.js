@@ -18,7 +18,7 @@ const Chat = ({ navigation }) => {
 
     const groupChat = async () => {
         try {
-            const response = await axios.get(`http://${ip}:3000/api/groupChat`);
+            const response = await axios.get(`https://${ip}/api/groupChat`);
 
             // Group messages by date
             const groupedMessages = response.data.reduce((result, message) => {
@@ -49,7 +49,7 @@ const Chat = ({ navigation }) => {
         }
 
         try {
-            const response = await axios.post(`http://${ip}:3000/api/groupChat/sendMessage`, {
+            const response = await axios.post(`https://${ip}/api/groupChat/sendMessage`, {
                 user: u1,
                 text: text.trim(),
                 uname: uname,

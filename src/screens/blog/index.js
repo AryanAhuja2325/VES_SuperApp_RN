@@ -56,7 +56,7 @@ const Blog = ({ navigation }) => {
             };
 
             const response = await axios.post(
-                `http://${ip}:3000/api/blog/addComment`,
+                `https://${ip}/api/blog/addComment`,
                 commentObject
             );
 
@@ -87,7 +87,7 @@ const Blog = ({ navigation }) => {
                     text: 'Delete',
                     onPress: async () => {
                         try {
-                            const response = await axios.delete(`http://${ip}:3000/api/blog/deletePost/${postId}`);
+                            const response = await axios.delete(`https://${ip}/api/blog/deletePost/${postId}`);
 
                             if (response.data.message === 'Post deleted') {
                                 Alert.alert('Success', 'Post deleted successfully');
@@ -110,7 +110,7 @@ const Blog = ({ navigation }) => {
     const getData = async () => {
         try {
             console.log("In func")
-            const response = await axios.get(`http://${ip}:3000/api/blog`);
+            const response = await axios.get(`https://${ip}/api/blog`);
             console.log(response.data)
             const sortedDocuments = response.data.sort(
                 (a, b) => new Date(b.postedOn) - new Date(a.postedOn)
@@ -131,7 +131,7 @@ const Blog = ({ navigation }) => {
             };
 
             const response = await axios.post(
-                `http://${ip}:3000/api/blog/likePost`,
+                `https://${ip}/api/blog/likePost`,
                 likeObject
             );
 

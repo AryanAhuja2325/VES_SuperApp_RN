@@ -47,12 +47,13 @@ const Home = ({ navigation }) => {
   useEffect(() => {
     getEvent();
     fetchBookingRequests();
+    console.log(user)
   }, []);
 
   const fetchBookingRequests = async () => {
     try {
-      const responseConfirm = await axios.get(`http://${ip}:3000/api/booking/confirmationRequests/${user.institute}`);
-      const responseApprove = await axios.get(`http://${ip}:3000/api/booking/approvalRequests/${user.institute}`);
+      const responseConfirm = await axios.get(`https://${ip}/api/booking/confirmationRequests/${user.institute}`);
+      const responseApprove = await axios.get(`https://${ip}/api/booking/approvalRequests/${user.institute}`);
 
       const confirmRequests = responseConfirm.data.filter((item) => item.bookings.some((booking) => booking.status === 'Approved'));
       const approveRequests = responseApprove.data.filter((item) => item.bookings.some((booking) => booking.status === 'Pending'));
@@ -197,7 +198,7 @@ const Home = ({ navigation }) => {
 
   const getEvent = async () => {
     try {
-      const response = await axios.get('http://' + ip + ':3000/api/eventupdate');
+      const response = await axios.get('https://' + ip + '/api/eventupdate');
 
       const events = response.data;
 

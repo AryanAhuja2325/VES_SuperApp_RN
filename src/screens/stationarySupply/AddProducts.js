@@ -61,7 +61,7 @@ const AddProducts = () => {
                 mrp,
             };
 
-            const response = await axios.post("http://" + ip + ":3000/api/stationary/addProduct", formData)
+            const response = await axios.post("https://" + ip + "/api/stationary/addProduct", formData)
 
             if (response.status === 201) {
                 Alert.alert("Success", "Data Added successfully");

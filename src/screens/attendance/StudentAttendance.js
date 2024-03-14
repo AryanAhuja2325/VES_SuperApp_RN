@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
-import { useAppSelector } from '../../../store/hook';
+import axios from 'axios';
 import styles from './ViewAttendance.styles';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { ip } from '../../utils/constant';
+import { useAppSelector } from '../../../store/hook';
 
 const StudentAttendance = () => {
     const user = useAppSelector((state) => state.profile.data);
@@ -13,40 +14,24 @@ const StudentAttendance = () => {
     const [fetchedAttendance, setFetchedAttendance] = useState([]);
     const [expandedIndex, setExpandedIndex] = useState(null);
 
-
     const fetchData = async (selectedDate) => {
         try {
-            const startDate = new Date(
-                selectedDate.getFullYear(),
-                selectedDate.getMonth(),
-                selectedDate.getDate(),
-                0, 0, 0
-            );
-            const endDate = new Date(
-                selectedDate.getFullYear(),
-                selectedDate.getMonth(),
-                selectedDate.getDate(),
-                23, 59, 59
-            );
+            const formattedDate = selectedDate.toISOString().split('T')[0];
+            const response = await axios.get(`http://${ip}:3000/api/attendance/P16/${formattedDate}`);
+            const dataArr = response.data;
 
-            const snapshot = await firestore()
-                .collection('Classroom')
-                .where('classroom', '==', 'P16')
-                .where('currentTime', '>=', startDate)
-                .where('currentTime', '<=', endDate)
-                .get();
-
-            const data = snapshot.docs.map(doc => ({
-                id: doc.id,
-                data: doc.data()
-            }));
-            
-            const sortedAttendance = data.sort((a, b) => a.sessionCount - b.sessionCount);
-            setFetchedAttendance(sortedAttendance);
+            if (Array.isArray(dataArr) && dataArr.length > 0) {
+                const sortedAttendance = dataArr.sort((a, b) => a.sessionCount - b.sessionCount);
+                setFetchedAttendance(sortedAttendance);
+            } else {
+                console.log("No data available for the selected date.");
+                setFetchedAttendance([]);
+            }
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
+
     const toggleExpand = (index) => {
         if (index === expandedIndex) {
             setExpandedIndex(null);
@@ -54,6 +39,7 @@ const StudentAttendance = () => {
             setExpandedIndex(index);
         }
     };
+
     useEffect(() => {
         fetchData(date);
         setExpandedIndex(null);
@@ -74,9 +60,10 @@ const StudentAttendance = () => {
         setIsDateSelected(true);
         fetchData(currentDate);
     };
+
     return (
         <ScrollView style={styles.container}>
-            <Text style={styles.title}>Welocme {user.firstName}!</Text>
+            <Text style={styles.title}>Welcome {user.firstName}!</Text>
             <View style={styles.row}>
                 <Text style={styles.label}>Select a date: </Text>
                 <TouchableOpacity style={styles.button} onPress={showDateTimePicker}>
@@ -98,30 +85,31 @@ const StudentAttendance = () => {
                         <View key={index}>
                             <TouchableOpacity style={styles.header} onPress={() => toggleExpand(index)}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <Text style={styles.headerText}>Lecture No: {attendance.data.sessionCount}</Text>
+                                    <Text style={styles.headerText}>Lecture No: {attendance.sessionCount}</Text>
                                     <Text style={styles.headerText}>{index === expandedIndex ? '-' : '+'}</Text>
                                 </View>
-                                <Text style={styles.headerText}>{attendance.data.subject}</Text>
+                                <Text style={styles.headerText}>{attendance.subject}</Text>
                             </TouchableOpacity>
                             {index === expandedIndex && (
                                 <View>
-                                    {attendance.data.attendance.map((attendenceData, index) => (
-                                        <View key={index} style={[styles.childAttendanceContainer, attendenceData.rollNo == user.rollNo && { backgroundColor: 'yellow' }]}>
-                                            <Text style={styles.childName}>{attendenceData.rollNo}</Text>
-                                            <Text style={styles.childStatus}>{attendenceData.status}</Text>
-                                        </View>
-                                    ))}
+                                    {Array.isArray(attendance.attendance) && attendance.attendance.length > 0 ? (
+                                        attendance.attendance.map((attendanceData, innerIndex) => (
+                                            <View key={innerIndex} style={[styles.childAttendanceContainer, attendanceData.rollNo === user.rollNo && { backgroundColor: 'yellow' }]}>
+                                                <Text style={styles.childName}>{attendanceData.rollNo}</Text>
+                                                <Text style={styles.childStatus}>{attendanceData.status}</Text>
+                                            </View>
+                                        ))
+                                    ) : (
+                                        <Text>No attendance data available for the selected lecture.</Text>
+                                    )}
                                 </View>
-
                             )}
-
                         </View>
                     ))}
                 </View>
             )}
         </ScrollView>
     );
-
 };
 
 export default StudentAttendance;

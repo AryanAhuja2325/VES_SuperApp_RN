@@ -17,7 +17,7 @@ const ConfirmRequest = () => {
 
     const fetchBookingRequests = async () => {
         try {
-            const response = await axios.get(`http://${ip}:3000/api/booking/confirmationRequests/${user.institute}`);
+            const response = await axios.get(`http://${ip}/api/booking/confirmationRequests/${user.institute}`);
             const allRequests = response.data;
 
             const current = [];
@@ -43,7 +43,7 @@ const ConfirmRequest = () => {
 
     const confirmBookingRequest = async (bookingId, targetBookingId) => {
         try {
-            const response = await axios.post(`http://${ip}:3000/api/booking/confirmBooking/${bookingId}`, {
+            const response = await axios.post(`https://${ip}/api/booking/confirmBooking/${bookingId}`, {
                 bookingId: targetBookingId,
             });
             Alert.alert('Success', response.data.message);
@@ -55,7 +55,7 @@ const ConfirmRequest = () => {
 
     const rejectBookingRequest = async (bookingId, targetBookingId) => {
         try {
-            const response = await axios.post(`http://${ip}:3000/api/booking/rejectBooking/${bookingId}`, {
+            const response = await axios.post(`https://${ip}/api/booking/rejectBooking/${bookingId}`, {
                 bookingId: targetBookingId,
             });
             Alert.alert('Success', response.data.message);
@@ -76,7 +76,7 @@ const ConfirmRequest = () => {
 
     const getUser = async (email) => {
         try {
-            const response = await axios.post(`http://${ip}:3000/api/login/getUserByEmail`, { email });
+            const response = await axios.post(`https://${ip}/api/login/getUserByEmail`, { email });
             const user = response.data.user;
 
             if (user && user.firstName && user.lastName) {

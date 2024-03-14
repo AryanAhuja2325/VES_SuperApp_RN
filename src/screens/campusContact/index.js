@@ -12,7 +12,7 @@ const CampusContact = ({ navigation }) => {
   const [contacts, setContacts] = useState([]);
 
   const getData = async () => {
-    const data = await axios.get("http://" + ip + ":3000/api/campusContacts");
+    const data = await axios.get("https://" + ip + "/api/campusContacts");
     setContacts(data.data);
   }
 

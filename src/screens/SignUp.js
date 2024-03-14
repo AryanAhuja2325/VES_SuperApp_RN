@@ -150,7 +150,7 @@ const SignUp = ({ navigation }) => {
                 console.log(user)
 
                 try {
-                    const response = await axios.post('http://' + ip + ':3000/api/signUp', user);
+                    const response = await axios.post('https://' + ip + '/api/signUp', user);
 
                     if (response.data && response.data.message === 'User Created Successfully') {
                         Alert.alert(

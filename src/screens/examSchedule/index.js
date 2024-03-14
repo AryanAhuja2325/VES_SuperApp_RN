@@ -67,7 +67,7 @@ const Exam = () => {
                 type: 'application/pdf',
             });
 
-            await axios.post('http://' + ip + ':3000/api/examSchedule/upload-pdf', formData, {
+            await axios.post('https://' + ip + '/api/examSchedule/upload-pdf', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -88,7 +88,7 @@ const Exam = () => {
             const userType = user.loginType;
             const institute = user.institute;
 
-            const response = await axios.get(`http://${ip}:3000/api/examSchedule/getData?loginType=${userType}&institute=${institute}`);
+            const response = await axios.get(`https://${ip}/api/examSchedule/getData?loginType=${userType}&institute=${institute}`);
             console.log(response.data)
             setExams(response.data);
         } catch (error) {
@@ -110,7 +110,7 @@ const Exam = () => {
                     text: "Yes, I'm sure",
                     onPress: async () => {
                         try {
-                            await axios.delete(`http://${ip}:3000/api/examSchedule/deleteDoc/${id}`);
+                            await axios.delete(`https://${ip}/api/examSchedule/deleteDoc/${id}`);
                             Alert.alert("Success", "Document deleted successfully");
                             getData(); // Refresh the data after deletion
                         } catch (error) {

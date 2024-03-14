@@ -114,7 +114,7 @@ const AddContact = () => {
         };
         console.log("Data to be sent:", data);
 
-        const apiUrl = 'http://' + ip + ':3000/api/campusContacts/addContact';
+        const apiUrl = 'https://' + ip + '/api/campusContacts/addContact';
 
         const response = await axios.post(apiUrl, data);
 

@@ -47,7 +47,7 @@ const Profile = () => {
         try {
             setLoading(true);
 
-            const response = await axios.post('http://' + ip + ':3000/api/login/change-password', {
+            const response = await axios.post('https://' + ip + '/api/login/change-password', {
                 email: user.email,
                 curPass: curPass,
                 newPass: newPass,

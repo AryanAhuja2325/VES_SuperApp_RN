@@ -12,7 +12,7 @@ const Notifications = () => {
 
     const getData = async () => {
         try {
-            const data = await axios.get("http://" + ip + ":3000/api/notifications");
+            const data = await axios.get("https://" + ip + "/api/notifications");
             setNotifications(data.data);
         } catch (error) {
             console.log(error)

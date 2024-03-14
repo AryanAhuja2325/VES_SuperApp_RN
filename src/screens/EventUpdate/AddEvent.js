@@ -47,7 +47,7 @@ const AddEvent = () => {
             }
 
             // Add the event data to the server
-            const response = await axios.post('http://' + ip + ':3000/api/eventUpdate/addEvent', {
+            const response = await axios.post('https://' + ip + '/api/eventUpdate/addEvent', {
                 Title,
                 Desc,
                 Image: imageUrl,  // Use the imageUrl variable

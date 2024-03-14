@@ -23,7 +23,7 @@ const StationarySupply = ({ navigation }) => {
 
     const getData = async () => {
         try {
-            const data = await axios.get('http://' + ip + ':3000/api/stationary/products');
+            const data = await axios.get('https://' + ip + '/api/stationary/products');
             console.log(data)
             setDocuments(data.data);
         } catch (error) {
