@@ -61,6 +61,7 @@ import AddProducts from './stationarySupply/AddProducts';
 import ApproveRequest from './Admin/approvalRequests';
 import ConfirmRequest from './Admin/confirmRequests';
 import AssignmentDashboard from './assignmentDashboard';
+import List from './PersonalizedTimetable/List';
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -649,6 +650,16 @@ const App = () => {
             })}
           />
           <stack.Screen
+            name="Personalized Timetable"
+            component={List}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Personalized Timetable" />
+              ),
+            })}
+          />
+          {/* <stack.Screen
             name="Assignment Dashboard"
             component={AssignmentDashboard}
             options={({ navigation }) => ({
@@ -657,7 +668,7 @@ const App = () => {
                 <CustomHeader navigation={navigation} title="Personalized Timetable" />
               ),
             })}
-          />
+          /> */}
         </stack.Navigator>
       </NavigationContainer>
     </Provider>
