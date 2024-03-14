@@ -116,7 +116,7 @@ const studentmodule = [
     },
     {
         id: 12,
-        title: 'Personalized Timetable',
+        title: 'To-Do List',
     },
 ]
 const parentmodule = [

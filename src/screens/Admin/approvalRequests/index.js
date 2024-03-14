@@ -15,9 +15,13 @@ const ApproveRequest = () => {
     const [userNames, setUserNames] = useState({});
     const user = useAppSelector((state) => state.profile.data);
 
+    useEffect(() => {
+        console.log(user)
+    }, [])
+
     const fetchBookingRequests = async () => {
         try {
-            const response = await axios.get(`http://${ip}/api/booking/approvalRequests/${user.institute}`);
+            const response = await axios.get(`https://${ip}/api/booking/approvalRequests/${user.institute}`);
             const allRequests = response.data;
 
             const current = [];

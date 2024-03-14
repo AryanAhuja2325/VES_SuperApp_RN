@@ -46,7 +46,8 @@ const Home = ({ navigation }) => {
 
   useEffect(() => {
     getEvent();
-    fetchBookingRequests();
+    if (user.loginType == "Principal")
+      fetchBookingRequests();
     console.log(user)
   }, []);
 
@@ -181,7 +182,7 @@ const Home = ({ navigation }) => {
         case 'Assignment Dashboard':
           navigation.navigate('Assignment Dashboard')
           break;
-        case 'Personalized Timetable':
+        case 'To-Do List':
           navigation.navigate('Personalized Timetable')
           break;
         default:

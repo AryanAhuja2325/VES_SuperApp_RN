@@ -15,11 +15,12 @@ const ConfirmRequest = () => {
     const [userNames, setUserNames] = useState({});
     const user = useAppSelector((state) => state.profile.data);
 
+
     const fetchBookingRequests = async () => {
         try {
-            const response = await axios.get(`http://${ip}/api/booking/confirmationRequests/${user.institute}`);
+            const response = await axios.get(`https://${ip}/api/booking/confirmationRequests/${user.institute}`);
             const allRequests = response.data;
-
+            console.log(allRequests)
             const current = [];
             const previous = [];
 

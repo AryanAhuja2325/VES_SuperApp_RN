@@ -655,7 +655,7 @@ const App = () => {
             options={({ navigation }) => ({
               headerShown: true,
               header: () => (
-                <CustomHeader navigation={navigation} title="Personalized Timetable" />
+                <CustomHeader navigation={navigation} title="To-Do List" />
               ),
             })}
           />
