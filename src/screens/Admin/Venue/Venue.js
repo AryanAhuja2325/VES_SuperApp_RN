@@ -40,6 +40,7 @@ const Venue = () => {
   const [newActivity, setNewActivity] = useState('');
   const user = useAppSelector(state => state.profile.data);
 
+
   useEffect(() => {
     if (user.loginType === 'Principal') {
       setInstitute(user.institute);

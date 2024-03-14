@@ -172,6 +172,14 @@ const Home = ({ navigation }) => {
           break;
         case 'Confirm Requests':
           navigation.navigate("Confirm Requests");
+        case 'Job Linker':
+          navigation.navigate('Job Linker');
+          break;
+        case 'Campus Contact':
+          navigation.navigate('Campus Contact');
+          break;
+        case 'Assignment Dashboard':
+          navigation.navigate('Assignment Dashboard')
           break;
         case 'Resume Generator':
           navigation.navigate('Resume Generator');
