@@ -22,10 +22,8 @@ import Details from './stationarySupply/Details';
 import Cart from './stationarySupply/Cart';
 import Fees from './fees/Fees';
 import Splash from './splash';
-import AddJob from './placement/AddJob';
-import JobDetails from './placement/JobDetails';
 import Chat from './groupchat/chat';
-
+import ViewBooking from './Principal/View Booking/ViewBooking';
 import FAQ from './FAQs/faqs';
 import Profile from './bottomTab/profile';
 import Notifications from './bottomTab/notifications';
@@ -36,8 +34,8 @@ import CustomHeader from '../components/header';
 import FitnessAndHealth from './fitnessandhealth/FitnessAndHealth';
 import DigitalAcademy from './digitalAcademy/DigitalAcademy';
 import DigitalAcademyDetail from './digitalAcademy/DigitalAcademyDetail';
-import Placement from './placement/Placement';
 import ImageGrid from './photoGallery';
+import AttendanceNew from './AtttendanceNew';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { white } from '../utils/color';
 import Calendar from './holidayCalendar/HolidayCalendar';
@@ -51,6 +49,10 @@ import WelcomeUser from './WelcomeUser';
 import Booking from './booking';
 import Information from './booking/Information';
 import Previous from './booking/Previous';
+import ResumeGenerator from './placement/ResumeGenerator';
+import Placement from './placement/Placement';
+import AddJob from './placement/AddJob';
+import JobDetails from './placement/JobDetails';
 import Venue from './Admin/Venue/Venue';
 import Contact from './campusContact';
 import AddContact from './campusContact/addContact';
@@ -58,6 +60,7 @@ import AssignmentDashboard from './assignmentDashboard';
 import ViewBooking from './Principal/View Booking/ViewBooking';
 import JobLinker from './jobLinker/JobLinker';
 import Jobs from './jobLinker/Jobs';
+import List from './PersonalizedTimetable/List';
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -125,22 +128,27 @@ const MyHome = () => {
   );
 };
 
-
 const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+  }, []);
+
   return (
-    <Provider store={store}>
+    <Provider store={store} initialRouteName="splash">
       <NavigationContainer>
         <stack.Navigator>
-          <stack.Screen
-            name="splash"
-            component={Splash}
-            options={{ headerShown: false }}
-          />
-          <stack.Screen
-            name="Login"
-            component={Login}
-            options={{ headerShown: false }}
-          />
+          {isLoading ? (
+            <stack.Screen
+              name="splash"
+              component={Splash}
+              options={{ headerShown: false }}
+            />
+          ) : null}
+
           <stack.Screen
             name="HomeScreen"
             component={MyHome}
@@ -150,6 +158,12 @@ const App = () => {
                 <CustomHeader navigation={navigation} title="Home" />
               ),
             })}
+          />
+
+          <stack.Screen
+            name="Login"
+            component={Login}
+            options={{ headerShown: false }}
           />
           <stack.Screen
             name="SignUp"
@@ -204,6 +218,16 @@ const App = () => {
                   navigation={navigation}
                   title="Daily Attendance"
                 />
+              ),
+            })}
+          />
+          <stack.Screen
+            name="AttendanceNew"
+            component={AttendanceNew}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Attendance" />
               ),
             })}
           />
@@ -573,6 +597,7 @@ const App = () => {
               ),
             })}
           />
+
           <stack.Screen
             name="Campus Contact"
             component={Contact}
@@ -594,15 +619,36 @@ const App = () => {
             })}
           />
           <stack.Screen
+            name="Resume Generator"
+            component={ResumeGenerator}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Resume Generator" />
+              ),
+            })}
+          />
+          <stack.Screen
+            name="Personalized Timetable"
+            component={List}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Personalized Timetable" />
+              ),
+            })}
+          />
+          {/* <stack.Screen
             name="Assignment Dashboard"
             component={AssignmentDashboard}
             options={({ navigation }) => ({
               headerShown: true,
               header: () => (
-                <CustomHeader navigation={navigation} title="Assignment Dashboard" />
+                <CustomHeader navigation={navigation} title="Personalized Timetable" />
               ),
             })}
           />
+          /> */}
         </stack.Navigator>
       </NavigationContainer>
     </Provider>

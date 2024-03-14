@@ -109,12 +109,24 @@ const Home = ({ navigation }) => {
         case 'Career Path':
           navigation.navigate('Career Path');
           break;
-          case 'Campus Contact':
-            navigation.navigate('Campus Contact');
-            break;
-          case 'Assignment Dashboard':
-            navigation.navigate('Assignment Dashboard')
-            break;
+        case 'Campus Contact':
+          navigation.navigate('Campus Contact');
+          break;
+        case 'Assignment Dashboard':
+          navigation.navigate('Assignment Dashboard')
+          break;
+        case 'Resume Generator':
+          navigation.navigate('Resume Generator');
+          break;
+        case 'Campus Contact':
+          navigation.navigate('Campus Contact');
+          break;
+        case 'Assignment Dashboard':
+          navigation.navigate('Assignment Dashboard')
+          break;
+        case 'Personalized Timetable':
+          navigation.navigate('Personalized Timetable')
+          break;
         default:
           break;
       }

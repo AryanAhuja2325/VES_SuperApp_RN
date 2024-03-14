@@ -8,33 +8,33 @@ import { useAppSelector } from '../../../store/hook';
 
 const AssignmentHomeScreen = () => {
   const [assignments, setAssignments] = useState([]);
+  const selectedDate = new Date();
   const user = useAppSelector(state => state.profile.data);
   const assignmentObject = {
+    studentName: user.firstName + " " + user.lastName,
     postedBy: user.email,
-    // className: className,
-    // title: title,
-    // DOS: selectedDate.toISOString(),
     pdf: null,
     pdflink: null,
+    uploadDateTime: null,
   }
+  const [selectedFile, setSelectedFile] = useState(null);
 
-    useEffect(() => {
+  useEffect(() => {
     fetchAssignments();
   }, []);
-
   const fetchAssignments = async () => {
     try {
       if (user.loginType === 'Teacher') {
-              const snapshot = await firestore().collection('Assignments').where('postedBy', '==', user.email).get();
-              const assignmentList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-              setAssignments(assignmentList);
-              console.log("Assignments for Teacher==>", assignmentList);
-            } else {
-              const snapshot = await firestore().collection('Assignments').where('className', '==', user.className).get();
-              const assignmentList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-              setAssignments(assignmentList);
-              console.log("Assignments for Student==>", assignmentList);
-            }
+        const snapshot = await firestore().collection('Assignments').where('postedBy', '==', user.email).get();
+        const assignmentList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setAssignments(assignmentList);
+        console.log("Assignments for Teacher==>", assignmentList);
+      } else {
+        const snapshot = await firestore().collection('Assignments').where('className', '==', user.className).get();
+        const assignmentList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setAssignments(assignmentList);
+        console.log("Assignments for Student==>", assignmentList);
+      }
     } catch (error) {
       console.error('Error fetching assignments:', error);
     }
@@ -54,16 +54,16 @@ const AssignmentHomeScreen = () => {
       {item.pdflink && <Text style={[styles.text, styles.linktext]} onPress={() => openLink(item.pdflink)}>Click to download pdf</Text>}
       {item.link && <Text style={[styles.text, styles.linktext]} onPress={() => openLink(item.link)}>Link: {item.link}</Text>}
       {user.loginType === 'Student' && (
-          <TouchableOpacity style={styles.submitButton} onPress={selectFile}>
-            <Text style={styles.submitButtonText}>Upload Assignment</Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity style={styles.submitButton} onPress={selectFile}>
+          <Text style={styles.submitButtonText}>Upload Assignment</Text>
+        </TouchableOpacity>
+      )}
     </TouchableOpacity>
-  );
+  )
+
+
 
   const handleAssignmentPress = (item) => {
-    // Handle onPress event for an assignment item
-    // You can navigate to another screen or perform any other action here
   };
 
   const selectFile = async () => {
@@ -73,6 +73,7 @@ const AssignmentHomeScreen = () => {
         copyTo: 'cachesDirectory',
       });
       setSelectedFile(res);
+      await uploadAssignmentToFirebase()
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         console.log('User cancelled the document picker.');
@@ -83,18 +84,28 @@ const AssignmentHomeScreen = () => {
   };
   const uploadAssignmentToFirebase = async () => {
     try {
+      // Check if selectedFile is null
+      if (!selectedFile) {
+        Alert.alert('Error', 'Please select a file to upload');
+        return;
+      }
+
+      const currentTime = new Date();
       assignmentObject.pdf = selectedFile[0].name;
       const response = await storage().ref(`/Assignments/${selectedFile[0].name}`).putFile(selectedFile[0].fileCopyUri);
       url = await storage().ref(`/Assignments/${selectedFile[0].name}`).getDownloadURL();
       assignmentObject.pdf = selectedFile[0].name;
       assignmentObject.pdflink = url;
-      console.log("File====>",assignmentObject)
+
+      assignmentObject.uploadDateTime = currentTime.toISOString();
+
+      Alert.alert('Success', 'File uploaded successfully!');
     } catch (error) {
-      Alert.alert("Assignment Posting Falied...!!");
+      Alert.alert('Error', 'Failed to upload file');
+      console.error('Error uploading file:', error);
       return;
     }
   };
-  
 
   return (
     <View style={styles.container}>
@@ -105,7 +116,7 @@ const AssignmentHomeScreen = () => {
           renderItem={renderAssignmentItem}
           keyExtractor={item => item.id}
         />
-     
+
       </View>
     </View>
   );
