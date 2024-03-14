@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Alert, Text, ScrollView, TextInput, TouchableOpacity, Linking, ActivityIndicator } from 'react-native';
-import ImagePicker from 'react-native-image-crop-picker';
+// import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import styles from './Venue.styles';
@@ -110,8 +110,8 @@ const Venue = ({ navigation }) => {
           {
             text: 'OK',
           }, {
-            // text: 'Next',
-            // onPress: () => navigation.navigate('Booking'),
+            text: 'Next',
+            onPress: () => navigation.navigate('Booking'),
             //uncomment this line when it is useful
           }
         ],
@@ -162,7 +162,7 @@ const Venue = ({ navigation }) => {
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
       </ScrollView>
-      {isLoading && (
+      {isLoading && ( 
         <View style={styles.overlay}>
           <View style={styles.loaderContainer}>
             <ActivityIndicator size="large" color="#E5E4E2" />

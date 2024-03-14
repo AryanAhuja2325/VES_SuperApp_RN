@@ -59,6 +59,10 @@ const teachermodule = [
     {
         id: 7,
         title: "Booking",
+    },
+    {
+        id: 8,
+        title: "Assignment Dashboard",
     }
 ]
 
@@ -98,6 +102,14 @@ const studentmodule = [
     {
         id: 9,
         title: 'Fitness And Health',
+    },
+    {
+        id: 10,
+        title: 'Resume Generator',
+    },
+    {
+        id: 11,
+        title: 'Assignment Dashboard',
     },
 ]
 const parentmodule = [
@@ -157,14 +169,6 @@ const TPOmodule = [
 const Adminmodule = [
     {
         id: 1,
-        title: 'View Bookings'
-    },
-    {
-        id: 2,
-        title: 'view'
-    },
-    {
-        id: 3,
         title: 'Venue'
     },
     {
@@ -210,4 +214,12 @@ const Adminmodule = [
     
 ]
 
-export { guestmodule, teachermodule, studentmodule, parentmodule, TPOmodule, Adminmodule };
+const Principalmodule = [
+    {
+        id: 1,
+        title: 'View Booking'
+    },
+
+]
+
+export { guestmodule, teachermodule, studentmodule, parentmodule, TPOmodule, Adminmodule, Principalmodule };

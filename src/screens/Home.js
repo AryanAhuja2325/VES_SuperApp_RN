@@ -4,23 +4,20 @@ import {
   View,
   Text,
   SectionList,
-  Alert,
-  ImageBackground,
   TouchableOpacity,
   Image,
+  ScrollView,
 } from 'react-native';
-import { useAppSelector } from '../store/hook';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppSelector } from '../../store/hook';
 import styles from './Home.styles';
-import { red, white, black, gray, maroon } from '../utils/color';
+import { white, maroon } from '../utils/color';
 import {
   responsiveHeight,
   responsiveWidth,
 } from 'react-native-responsive-dimensions';
 import firestore from '@react-native-firebase/firestore';
-// import messaging from '@react-native-firebase/messaging';
-import PushNotification from 'react-native-push-notification';
-import { request, PERMISSIONS } from '@react-native-permissions/permissions';
+
 
 const Card = ({ title }) => {
   return (
@@ -110,8 +107,15 @@ const Home = ({ navigation }) => {
         case 'Venue':
           navigation.navigate('Venue');
           break;
+        case 'Resume Generator':
+          navigation.navigate('Resume Generator');
+          break;
           case 'Campus Contact':
-            navigation.navigate('Campus Contact')
+            navigation.navigate('Campus Contact');
+            break;
+          case 'Assignment Dashboard':
+            navigation.navigate('Assignment Dashboard')
+            break;
         default:
           break;
       }
@@ -136,7 +140,7 @@ const Home = ({ navigation }) => {
   };
 
   return (
-    <View style={{ backgroundColor: '#F4F4F4' }}>
+    <View style={{ backgroundColor: '#F4F4F4', flex: 1 }}>
       <View style={styles.heading}>
         <TouchableOpacity
           onPress={() => {
@@ -157,6 +161,7 @@ const Home = ({ navigation }) => {
           <Text style={styles.mail}>{user.email}</Text>
         </View>
       </View>
+
       <View
         style={{
           height: responsiveHeight(25),
@@ -207,12 +212,14 @@ const Home = ({ navigation }) => {
         </View>
       </View>
 
-      <SectionList
-        sections={data}
-        renderItem={renderCard}
-        keyExtractor={(item, index) => item + index}
-        contentContainerStyle={styles.contentContainer}
-      />
+      <ScrollView>
+        <SectionList
+          sections={data}
+          renderItem={renderCard}
+          keyExtractor={(item, index) => item + index}
+          contentContainerStyle={styles.contentContainer}
+        />
+      </ScrollView>
     </View>
   );
 };

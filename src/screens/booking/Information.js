@@ -22,6 +22,7 @@ import firestore from '@react-native-firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 import 'react-native-get-random-values';
 import Loading from '../../components/header/loading';
+import PushNotification from 'react-native-push-notification';
 
 const Information = ({ route }) => {
   const user = useAppSelector((state) => state.profile.data);
@@ -206,6 +207,8 @@ const Information = ({ route }) => {
     }
   };
 
+
+
   const bookRequest = async () => {
     try {
       setLoading(true);
@@ -260,7 +263,24 @@ const Information = ({ route }) => {
           };
 
           await documentRef.set(updatedBookingData);
-          Alert.alert('Booking Successful');
+
+          const notificationMessage = `Thank you for booking, ${user.firstName}! You have booked ${data.name} `;
+    
+          PushNotification.localNotification({ 
+            title: 'Hello',
+            message: notificationMessage,
+          });
+          Alert.alert(
+            'Success!',
+            'Booking successfull!!',
+            [
+              {
+                text: 'OK',
+                onPress: () => {},
+              },
+            ],
+            { cancelable: false }
+          );
           setSelectedDates([]);
           setSelectedItems([]);
           setSelectedDate(null);
@@ -415,6 +435,7 @@ const Information = ({ route }) => {
                     <Calendar
                       onDayPress={onDayPress}
                       minDate={minDate}
+                      maxDate={new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)}
                       disableAllTouchEventsForDisabledDays={true}
                       markedDates={selectedDate ? { [selectedDate]: { selected: true } } : {}}
                     />
