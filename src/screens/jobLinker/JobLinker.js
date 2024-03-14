@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, TextInput, TouchableOpacity, FlatList, Text, Linking, ScrollView, KeyboardAvoidingView } from 'react-native';
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from "react-native-simple-radio-button";
-import Style from './CareerPath.style';
-const CareerPath = ({ navigation }) => {
+import Style from './JobLinker.style';
+const JobLinker = ({ navigation }) => {
   const [query, setQuery] = useState('');
   const [selectedCourse, setSelectedCourse] = useState(null)
   const [textselectedCourse, setTextSelectedCourse] = useState('');
@@ -157,4 +157,4 @@ const CareerPath = ({ navigation }) => {
     </View >
   );
 };
-export default CareerPath;
+export default JobLinker;

@@ -104,10 +104,6 @@ const studentmodule = [
         title: 'Fitness And Health',
     },
     {
-        id: 8,
-        title: "Career Path",
-    },
-    {
         id: 12,
         title: 'Assignment Dashboard',
     },

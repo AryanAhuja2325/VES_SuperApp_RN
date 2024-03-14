@@ -1,6 +1,6 @@
 import React, { useEffect,useState} from 'react';
 import {FlatList,TouchableOpacity,Text,View, ScrollView} from 'react-native';
-import Style from './CareerPath.style';
+import Style from './JobLinker.style';
 
 const Jobs = ({route}) => {
     const {query}=route.params;

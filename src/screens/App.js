@@ -56,8 +56,8 @@ import Contact from './campusContact';
 import AddContact from './campusContact/addContact';
 import AssignmentDashboard from './assignmentDashboard';
 import ViewBooking from './Principal/View Booking/ViewBooking';
-import CareerPath from './careerPath/CareerPath';
-import Jobs from './careerPath/Jobs';
+import JobLinker from './jobLinker/JobLinker';
+import Jobs from './jobLinker/Jobs';
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -554,12 +554,12 @@ const App = () => {
             })}
           />
           <stack.Screen
-            name="Career Path"
-            component={CareerPath}
+            name="Job Linker"
+            component={JobLinker}
             options={({ navigation }) => ({
               headerShown: true,
               header: () => (
-                <CustomHeader navigation={navigation} title="Career Path" />
+                <CustomHeader navigation={navigation} title="Job Linker" />
               ),
             })}
           />
@@ -608,5 +608,4 @@ const App = () => {
     </Provider>
   );
 };
-
 export default App;
