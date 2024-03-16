@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-
 import {
   View,
   Text,
@@ -17,13 +16,21 @@ import {
   responsiveWidth,
 } from 'react-native-responsive-dimensions';
 import firestore from '@react-native-firebase/firestore';
+// import messaging from '@react-native-firebase/messaging';
+import PushNotification from 'react-native-push-notification';
+import { request, PERMISSIONS } from '@react-native-permissions/permissions';
+import axios from 'axios';
+import { ip } from '../utils/constant';
 
-
-const Card = ({ title }) => {
+const Card = ({ title, showDot, count }) => {
   return (
     <View style={styles.outercard}>
       <View style={styles.card1}>
         <Text style={styles.title}>{title}</Text>
+        {showDot && (
+          <View style={styles.dot}>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -35,12 +42,50 @@ const Home = ({ navigation }) => {
   const [eventName, setEventName] = useState('');
   const [eventDesc, setEventDesc] = useState('');
   const [eventDetail, setEventDetail] = useState('');
+  const [confirmRequests, setConfirmRequests] = useState([]);
+  const [approveRequests, setApproveRequests] = useState([]);
 
   useEffect(() => {
     getEvent();
+    fetchBookingRequests();
+    console.log(user)
   }, []);
 
+  const fetchBookingRequests = async () => {
+    try {
+      const responseConfirm = await axios.get(`https://${ip}/api/booking/confirmationRequests/${user.institute}`);
+      const responseApprove = await axios.get(`https://${ip}/api/booking/approvalRequests/${user.institute}`);
+
+      const confirmRequests = responseConfirm.data.filter((item) => item.bookings.some((booking) => booking.status === 'Approved'));
+      const approveRequests = responseApprove.data.filter((item) => item.bookings.some((booking) => booking.status === 'Pending'));
+
+      console.log(confirmRequests)
+      console.log(approveRequests)
+      setConfirmRequests(confirmRequests);
+      setApproveRequests(approveRequests);
+    } catch (error) {
+      console.error('Error fetching booking requests:', error.message);
+    }
+  };
+
+
   const renderCard = ({ item }) => {
+    let showDot = false;
+    let dotCount = 0;
+
+    switch (item.title) {
+      case 'Approve Requests':
+        dotCount = approveRequests.reduce((acc, venue) => acc + venue.bookings.length, 0);
+        showDot = dotCount > 0;
+        break;
+      case 'Confirm Requests':
+        dotCount = confirmRequests.reduce((acc, venue) => acc + venue.bookings.length, 0);
+        showDot = dotCount > 0;
+        break;
+      default:
+        break;
+    }
+
     const navigateToScreen = () => {
       switch (item.title) {
         case 'Attendance':
@@ -104,18 +149,42 @@ const Home = ({ navigation }) => {
         case 'Booking':
           navigation.navigate('Booking');
           break;
-        case 'Venue':
+        case 'Add Venue':
           navigation.navigate('Venue');
+          break;
+        case 'View Bookings':
+          navigation.navigate('Previous Bookings');
+          break;
+        case 'Send Notification':
+          navigation.navigate('Send Notification');
+          break;
+        case 'Campus Contact':
+          navigation.navigate('Campus Contact')
+          break;
+        case 'View Orders':
+          navigation.navigate('Orders');
+          break;
+        case 'Add Products':
+          navigation.navigate('Add Products');
+          break;
+        case 'Approve Requests':
+          navigation.navigate("Approve Requests")
+          break;
+        case 'Confirm Requests':
+          navigation.navigate("Confirm Requests");
           break;
         case 'Resume Generator':
           navigation.navigate('Resume Generator');
           break;
-          case 'Campus Contact':
-            navigation.navigate('Campus Contact');
-            break;
-          case 'Assignment Dashboard':
-            navigation.navigate('Assignment Dashboard')
-            break;
+        case 'Campus Contact':
+          navigation.navigate('Campus Contact');
+          break;
+        case 'Assignment Dashboard':
+          navigation.navigate('Assignment Dashboard')
+          break;
+        case 'Personalized Timetable':
+          navigation.navigate('Personalized Timetable')
+          break;
         default:
           break;
       }
@@ -123,20 +192,29 @@ const Home = ({ navigation }) => {
 
     return (
       <TouchableOpacity onPress={navigateToScreen}>
-        <Card title={item.title} />
+        <Card title={item.title} showDot={showDot} />
       </TouchableOpacity>
     );
   };
 
   const getEvent = async () => {
-    const collectionRef = firestore().collection('EventUpdate');
-    const querySnapshot = await collectionRef.orderBy('Date', 'desc').get();
-    const fetchedEventDesc = querySnapshot.docs.map(doc => doc.data().Desc);
-    const fetchedEventTitle = querySnapshot.docs.map(doc => doc.data().Title);
-    const fetchedEventDetail = querySnapshot.docs.map(doc => doc.data().Detail);
-    setEventDetail(fetchedEventDetail[0]);
-    setEventName(fetchedEventTitle[0]);
-    setEventDesc(fetchedEventDesc[0]);
+    try {
+      const response = await axios.get('https://' + ip + '/api/eventupdate');
+
+      const events = response.data;
+
+      if (events.length > 0) {
+        const latestEvent = events[0];
+
+        setEventDetail(latestEvent.Detail);
+        setEventName(latestEvent.Title);
+        setEventDesc(latestEvent.Desc);
+      } else {
+        console.log('No events found');
+      }
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
   };
 
   return (
@@ -150,6 +228,7 @@ const Home = ({ navigation }) => {
             justifyContent: 'center',
             alignItems: 'center',
             margin: responsiveHeight(1),
+            height: responsiveHeight(7)
           }}>
           <Image
             source={require('../assets/imgs/user_profile.png')}
@@ -191,7 +270,6 @@ const Home = ({ navigation }) => {
               <Text style={{ color: white, fontSize: 18 }}>{eventName}</Text>
               <Text
                 style={{
-                  textDecorationLine: 'underline',
                   color: white,
                   fontSize: 12,
                   textAlign: 'justify',
@@ -200,7 +278,6 @@ const Home = ({ navigation }) => {
               </Text>
               <Text
                 style={{
-                  textDecorationLine: 'underline',
                   color: white,
                   fontSize: 12,
                   textAlign: 'justify',
@@ -212,7 +289,7 @@ const Home = ({ navigation }) => {
         </View>
       </View>
 
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.contentContainer}>
         <SectionList
           sections={data}
           renderItem={renderCard}

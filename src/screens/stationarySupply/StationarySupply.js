@@ -10,6 +10,8 @@ import styles from './StationarySupply.styles';
 import firestore from '@react-native-firebase/firestore';
 import { useAppSelector } from '../../../store/hook';
 import Icons from 'react-native-vector-icons/MaterialIcons'
+import axios from 'axios';
+import { ip } from '../../utils/constant';
 
 const StationarySupply = ({ navigation }) => {
 
@@ -21,16 +23,11 @@ const StationarySupply = ({ navigation }) => {
 
     const getData = async () => {
         try {
-            const snapshot = await firestore().collection('Products').get();
-
-            const fetchedDocuments = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-
-            setDocuments(fetchedDocuments);
+            const data = await axios.get('https://' + ip + '/api/stationary/products');
+            console.log(data)
+            setDocuments(data.data);
         } catch (error) {
-            console.error('Error fetching documents:', error);
+            console.log(error)
         }
     };
 
@@ -42,11 +39,22 @@ const StationarySupply = ({ navigation }) => {
         <TouchableOpacity
             style={[
                 styles.productContainer,
-                item.prodID % 2 === 0 ? styles.fullWidthItem : styles.halfWidthItem
+                item.prodID % 2 === 0 ? styles.fullWidthItem : styles.halfWidthItem,
+                item.availQty === 0 ? styles.outOfStock : styles.productContainer
             ]}
-            onPress={() => navigation.navigate('Details', { data: item })}
+            onPress={() => {
+                if (item.availQty > 0) {
+                    navigation.navigate('Details', { data: item });
+                }
+            }}
+            disabled={item.availQty === 0}
         >
             <Image style={styles.productImage} source={{ uri: item.prodImg }} />
+            {item.availQty === 0 && (
+                <View style={styles.outOfStockOverlay}>
+                    <Text style={styles.outOfStockText}>Out of Stock</Text>
+                </View>
+            )}
             <Text style={styles.productName}>{item.prodName}</Text>
             <View style={styles.priceContainer}>
                 {item.discount > 0 && (
@@ -59,6 +67,7 @@ const StationarySupply = ({ navigation }) => {
             </View>
         </TouchableOpacity>
     );
+
 
     return (
         <View style={styles.container}>

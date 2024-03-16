@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
-import * as COLORS from '../../utils/color';
+import * as COLORS from "../../utils/color";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 
 const styles = StyleSheet.create({
@@ -16,7 +17,8 @@ const styles = StyleSheet.create({
       card: {
         backgroundColor: '#ffffff',
         borderRadius: 8,
-        padding: 16,
+        padding: 46,
+        marginLeft:10,
         marginBottom: 16,
         elevation: 3,
       },
@@ -24,6 +26,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 8,
+        color:Colors.black,
       },
       subtitle: {
         fontSize: 16,

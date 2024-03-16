@@ -114,6 +114,25 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
 
+    outOfStock: {
+        backgroundColor: 'grey'
+    },
+    outOfStockOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.7)', // semi-transparent white background
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    outOfStockText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'red', // or any color you prefer
+    },
 })
 
 export default styles;

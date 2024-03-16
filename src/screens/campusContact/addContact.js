@@ -4,6 +4,8 @@ import styles from './styles';
 import ModalDropdown from 'react-native-modal-dropdown';
 // import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
+import axios from 'axios';
+import { ip } from '../../utils/constant';
 
 const AddContact = () => {
 
@@ -29,8 +31,6 @@ const AddContact = () => {
         minFiles: 2,
         maxFiles: 6,
       });
-
-
       console.log('Selected images:', selectedImages);
       setImage(selectedImages);
       setSelectedImages(selectedImages);
@@ -95,41 +95,42 @@ const AddContact = () => {
     setPost('');
     setImageUrls('');
     setImage('');
+    setIsSelected(false)
   }
 
-  const handleSubmit = () => {
-    if (name == '' || email == '' || institute == '' || post == '' || imageUrls == '' || phoneNo == '') {
-      Alert.alert("Error", "Please fill all details")
-    }
-    else {
-      if (branch == '') {
+  const handleSubmit = async () => {
+    try {
+      if (!name || !email || !institute || !post || !imageUrls || !phoneNo || !imageUrls) {
+        Alert.alert("Error", "Please fill all details");
+      } else {
         const data = {
           name: name,
-          email: email,
+          mail: email,
           phoneNo: phoneNo,
           title: post,
           institute: institute,
-          photo: imageUrls
-        }
-        console.log(data);
-        Alert.alert("Success", "Data Added successfully")
-      }
-      else {
-        const data = {
-          name: name,
-          email: email,
-          phoneNo: phoneNo,
-          title: post,
-          branch: branch,
           photo: imageUrls,
-          institute: institute
-        }
+          branch: branch || null
+        };
+        console.log("Data to be sent:", data);
 
-        console.log(data);
-        Alert.alert("Success", "Data Added successfully")
+        const apiUrl = 'https://' + ip + '/api/campusContacts/addContact';
+
+        const response = await axios.post(apiUrl, data);
+
+        if (response.status === 201) {
+          Alert.alert("Success", "Data Added successfully");
+          reset();
+        } else {
+          Alert.alert("Error", "Failed to add data. Please try again.");
+        }
       }
+    } catch (error) {
+      console.error("Error submitting data:", error);
+      Alert.alert("Error", "Failed to add data. Please try again.");
     }
-  }
+  };
+
 
   const handlePostChange = (id, text) => {
     setPost(text);

@@ -4,6 +4,8 @@ import { Text, View, StyleSheet, ScrollView } from 'react-native';
 import { Table, Row } from 'react-native-table-component';
 import firestore from '@react-native-firebase/firestore';
 import styles from './Facultyload.style';
+import axios from 'axios';
+import { ip } from '../../utils/constant';
 
 const Facultyload = () => {
   const user = useAppSelector(state => state.profile.data);
@@ -12,42 +14,36 @@ const Facultyload = () => {
   useEffect(() => {
     const fetchFacultyloadData = async () => {
       try {
-        const querySnapshot = await firestore()
-          .collection('FacltyLoad')
-          .where('teacherName', '==', user.firstName)
-          .get();
-
-        const data = [];
-        querySnapshot.forEach(doc => {
-          data.push({ id: doc.id, ...doc.data() });
-        });
+        const response = await axios.get(`https://${ip}/api/facultyLoad/?firstName=${user.firstName}`);
+        const data = response.data[0];
         setFacultyloadData(data);
       } catch (error) {
-        console.log('Error fetching faculty load data:', error);
+        console.log(error);
       }
     };
 
     fetchFacultyloadData();
-  }, []);
+  }, [user.firstName]);
+
 
   const renderFacultyload = () => {
     const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thrusday', 'friday', 'saturday'];
 
-    if (facultyloadData.length === 0) {
-      return null; 
+    if (!facultyloadData) {
+      return null;
     }
 
     return (
       <ScrollView>
         {daysOfWeek.map((day, index) => {
-          const dayData = facultyloadData[0][day] || [];
+          const dayData = facultyloadData[day] || [];
 
           return (
             <View key={day}>
               <Text style={styles.dayHeading}>{day.charAt(0).toUpperCase() + day.slice(1)}</Text>
               <Table borderStyle={styles.tableBorderStyle}>
                 <Row
-                  data={[ 'Class','Subject', 'Timing']}
+                  data={['Class', 'Subject', 'Timing']}
                   style={styles.tableHeader}
                   textStyle={styles.headerText}
                 />
@@ -73,6 +69,7 @@ const Facultyload = () => {
       </ScrollView>
     );
   };
+
 
   return (
     <View style={styles.container}>

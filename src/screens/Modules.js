@@ -24,10 +24,9 @@ const guestmodule = [
         title: 'Blog',
     },
     {
-        id:7,
-        title:'Campus Contact'
+        id: 7,
+        title: 'Campus Contact'
     }
-
 ]
 
 const teachermodule = [
@@ -62,6 +61,10 @@ const teachermodule = [
     },
     {
         id: 8,
+        title: "Events Update",
+    },
+    {
+        id: 9,
         title: "Assignment Dashboard",
     }
 ]
@@ -110,6 +113,10 @@ const studentmodule = [
     {
         id: 11,
         title: 'Assignment Dashboard',
+    },
+    {
+        id: 12,
+        title: 'Personalized Timetable',
     },
 ]
 const parentmodule = [
@@ -169,57 +176,94 @@ const TPOmodule = [
 const Adminmodule = [
     {
         id: 1,
+        title: 'View Bookings'
+    },
+    {
+        id: 2,
+        title: 'Add Venue'
+    },
+    {
+        id: 3,
+        title: 'Send Notification'
+    },
+    {
+        id: 4,
         title: 'Venue'
     },
     {
-        id:4,
-        title:'Campus Contact'
+        id: 5,
+        title: 'Campus Contact'
     },
     {
-        id:5,
-        title:'Photo Gallery'
+        id: 6,
+        title: 'Photo Gallery'
     },
     {
-        id:6,
-        title:'Alumni and Mentorship'
+        id: 7,
+        title: 'Alumni and Mentorship'
     },
     {
-        id:7,
-        title:'Enquiry Management'
+        id: 8,
+        title: 'Enquiry Management'
     },
     {
-        id:8,
-        title:'AboutuS'
+        id: 9,
+        title: 'About Us'
     },
     {
-        id:9,
-        title:'FAQs'
+        id: 10,
+        title: 'FAQs'
     },
     {
-        id:10,
-        title:'Blog'
+        id: 11,
+        title: 'Blog'
     },
     {
-        id:11,
-        title:'Enquiry Management'
+        id: 12,
+        title: 'Enquiry Management'
     },
     {
-        id:12,
-        title:'Holiday Calendar'
+        id: 13,
+        title: 'Holiday Calendar'
     },
     {
-        id:13,
-        title:'Exam Schedule'
+        id: 14,
+        title: 'Exam Schedule'
     },
-    
 ]
 
-const Principalmodule = [
+const vendorModules = [
     {
         id: 1,
-        title: 'View Booking'
+        title: "View Orders"
     },
-
+    {
+        id: 2,
+        title: "Add Products"
+    }
 ]
 
-export { guestmodule, teachermodule, studentmodule, parentmodule, TPOmodule, Adminmodule, Principalmodule };
+const principalModules = [
+    {
+        id: 1,
+        title: "Approve Requests"
+    },
+    {
+        id: 2,
+        title: "Confirm Requests"
+    },
+    {
+        id: 3,
+        title: "View Bookings"
+    },
+    {
+        id: 4,
+        title: "Add Venue"
+    },
+    {
+        id: 5,
+        title: "Booking"
+    },
+]
+
+export { guestmodule, teachermodule, studentmodule, parentmodule, TPOmodule, Adminmodule, vendorModules, principalModules };

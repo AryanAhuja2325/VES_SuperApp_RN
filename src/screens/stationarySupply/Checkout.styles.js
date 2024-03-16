@@ -71,6 +71,18 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: 'white'
     },
+
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black overlay
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loaderContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
 })
 
 export default styles;

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
-import { useAppSelector } from '../../../store/hook';
+import axios from 'axios';
 import styles from './ViewAttendance.styles';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { ip } from '../../utils/constant';
+import { useAppSelector } from '../../../store/hook';
 
 const StudentAttendance = () => {
     const user = useAppSelector((state) => state.profile.data);
@@ -11,43 +12,37 @@ const StudentAttendance = () => {
     const [showPicker, setShowPicker] = useState(false);
     const [isDateSelected, setIsDateSelected] = useState(false);
     const [fetchedAttendance, setFetchedAttendance] = useState([]);
+    const [expandedIndex, setExpandedIndex] = useState(null);
 
     const fetchData = async (selectedDate) => {
         try {
-            const startDate = new Date(
-                selectedDate.getFullYear(),
-                selectedDate.getMonth(),
-                selectedDate.getDate(),
-                0, 0, 0
-            );
-            const endDate = new Date(
-                selectedDate.getFullYear(),
-                selectedDate.getMonth(),
-                selectedDate.getDate(),
-                23, 59, 59
-            );
+            const formattedDate = selectedDate.toISOString().split('T')[0];
+            const response = await axios.get(`http://${ip}:3000/api/attendance/P16/${formattedDate}`);
+            const dataArr = response.data;
 
-            const snapshot = await firestore()
-                .collection('Attendance')
-                .where('date', '>=', startDate)
-                .where('date', '<=', endDate)
-                .get();
-
-            const data = snapshot.docs.map((doc) => doc.data());
-            const filteredAttendance = data.filter((attendance) =>
-                attendance.attendance.some((student) =>
-                    student.studentId === user.grNo
-                )
-            );
-            const sortedAttendance = filteredAttendance.sort((a, b) => a.sessionCount - b.sessionCount);
-            setFetchedAttendance(sortedAttendance);
+            if (Array.isArray(dataArr) && dataArr.length > 0) {
+                const sortedAttendance = dataArr.sort((a, b) => a.sessionCount - b.sessionCount);
+                setFetchedAttendance(sortedAttendance);
+            } else {
+                console.log("No data available for the selected date.");
+                setFetchedAttendance([]);
+            }
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
 
+    const toggleExpand = (index) => {
+        if (index === expandedIndex) {
+            setExpandedIndex(null);
+        } else {
+            setExpandedIndex(index);
+        }
+    };
+
     useEffect(() => {
         fetchData(date);
+        setExpandedIndex(null);
     }, []);
 
     const showDateTimePicker = () => {
@@ -88,20 +83,27 @@ const StudentAttendance = () => {
                     <Text style={styles.label1}>You selected: {date.toDateString()}</Text>
                     {fetchedAttendance.map((attendance, index) => (
                         <View key={index}>
-                            {attendance.attendance.map((studentAttendance, studentIndex) => {
-                                if (studentAttendance.studentId === user.grNo) {
-                                    return (
-                                        <View key={studentIndex} style={styles.attendanceItem}>
-                                            <View style={styles.header}>
-                                                <Text style={styles.headerText1}>Lecture No: {attendance.sessionCount}</Text>
-                                                <Text style={styles.headerText}>{attendance.subject}</Text>
-                                                <Text style={styles.headerText}>{attendance.facultyName}</Text>
-                                                <Text style={styles.headerText}>{studentAttendance.status}</Text>
+                            <TouchableOpacity style={styles.header} onPress={() => toggleExpand(index)}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <Text style={styles.headerText}>Lecture No: {attendance.sessionCount}</Text>
+                                    <Text style={styles.headerText}>{index === expandedIndex ? '-' : '+'}</Text>
+                                </View>
+                                <Text style={styles.headerText}>{attendance.subject}</Text>
+                            </TouchableOpacity>
+                            {index === expandedIndex && (
+                                <View>
+                                    {Array.isArray(attendance.attendance) && attendance.attendance.length > 0 ? (
+                                        attendance.attendance.map((attendanceData, innerIndex) => (
+                                            <View key={innerIndex} style={[styles.childAttendanceContainer, attendanceData.rollNo === user.rollNo && { backgroundColor: 'yellow' }]}>
+                                                <Text style={styles.childName}>{attendanceData.rollNo}</Text>
+                                                <Text style={styles.childStatus}>{attendanceData.status}</Text>
                                             </View>
-                                        </View>
-                                    );
-                                }
-                            })}
+                                        ))
+                                    ) : (
+                                        <Text>No attendance data available for the selected lecture.</Text>
+                                    )}
+                                </View>
+                            )}
                         </View>
                     ))}
                 </View>

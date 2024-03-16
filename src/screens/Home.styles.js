@@ -69,6 +69,25 @@ const styles = StyleSheet.create({
         color: white,
         fontSize: 25,
     },
+
+    dot: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        backgroundColor: maroon,
+        position: 'absolute',
+        top: 8,
+        right: 8,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+
+    dotText: {
+        color: white,
+        fontSize: 12,
+        fontWeight: 'bold',
+    },
+
 });
 
 export default styles;

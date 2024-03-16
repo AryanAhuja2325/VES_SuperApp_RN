@@ -27,6 +27,8 @@ import WelcomeUser from "./WelcomeUser";
 // import { useAppDispatch } from '../../store/hook';
 import ModalDropdown from "react-native-modal-dropdown";
 import Ionicon from 'react-native-vector-icons/Ionicons'
+import axios from 'axios';
+import { ip } from '../utils/constant';
 
 const SignUp = ({ navigation }) => {
     const [selectedItem, setSelectedItem] = useState('VESIT');
@@ -49,7 +51,7 @@ const SignUp = ({ navigation }) => {
         { label: 'Parent', value: 'Parent' },
         { label: 'Faculty', value: 'Faculty' },
         { label: 'TPO', value: 'TPO' },
-        {label: 'Admin', value: 'Admin'},
+        { label: 'Admin', value: 'Admin' },
     ]);
     const [child, setChild] = useState('');
 
@@ -131,76 +133,62 @@ const SignUp = ({ navigation }) => {
         } else {
             if (password !== confirmPassword) {
                 Alert.alert('Error', 'Password does not match');
-            } else if (emails.includes(email)) {
-                Alert.alert('Error', 'User already exists');
             } else {
-                const saltRounds = 5;
+                const user = {
+                    email,
+                    password,
+                    firstName,
+                    lastName,
+                    gender,
+                    phoneNo,
+                    loginType,
+                    grNo,
+                    address,
+                    child: loginType === 'Parent' ? child : null,
+                    isVerified,
+                };
+                console.log(user)
+
                 try {
-                    const hashedPassword = await new Promise((resolve, reject) => {
-                        bcrypt.hash(password, saltRounds, (error, hash) => {
-                            if (error) {
-                                reject(error);
-                            } else {
-                                resolve(hash);
-                            }
-                        });
-                    });
+                    const response = await axios.post('https://' + ip + '/api/signUp', user);
 
-                    const user = {
-                        email,
-                        password: hashedPassword,
-                        firstName,
-                        lastName,
-                        gender,
-                        phoneNo,
-                        loginType,
-                        grNo,
-                        address,
-                        child: loginType === 'Parent' ? child : null,
-                    };
-
-                    // Save the user document to the Firestore database
-                    firestore()
-                        .collection('Users')
-                        .add(user)
-                        .then(() => {
-                            Alert.alert(
-                                'Success',
-                                'User created Successfully',
-                                [
-                                    {
-                                        text: 'cancel',
-                                    },
-                                    {
-                                        text: 'Back to Login',
-                                        onPress: () => {
-                                            navigation.navigate('Login');
-                                        },
-                                    },
-                                ],
+                    if (response.data && response.data.message === 'User Created Successfully') {
+                        Alert.alert(
+                            'Success',
+                            'User created Successfully',
+                            [
                                 {
-                                    cancelable: true,
-                                    onDismiss: () => {
-                                        setEmail('');
-                                        setPassword('');
-                                        setFirstName('');
-                                        setLastName('');
-                                        setGender('');
-                                        setContactNo('');
-                                        setLoginType('');
-                                        setAddress('');
-                                        setGrNo('');
-                                        setChild('');
+                                    text: 'Cancel',
+                                },
+                                {
+                                    text: 'Back to Login',
+                                    onPress: () => {
+                                        navigation.navigate('Login');
                                     },
-                                }
-                            );
-                        })
-                        .catch((error) => {
-                            console.error('Error creating user:', error);
-                        });
+                                },
+                            ],
+                            {
+                                cancelable: true,
+                                onDismiss: () => {
+                                    setEmail('');
+                                    setPassword('');
+                                    setFirstName('');
+                                    setLastName('');
+                                    setGender('');
+                                    setContactNo('');
+                                    setLoginType('');
+                                    setAddress('');
+                                    setGrNo('');
+                                    setChild('');
+                                },
+                            }
+                        );
+                    } else {
+                        Alert.alert('Error', 'User creation failed');
+                    }
                 } catch (error) {
-                    console.error('Error hashing password:', error);
-                    // Handle error during password hashing
+                    console.error('Error creating user:', error);
+                    Alert.alert('Error', 'User creation failed');
                 }
             }
         }
@@ -416,31 +404,31 @@ const SignUp = ({ navigation }) => {
                 }
                 {
                     loginType == 'TPO' ?
-                    <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Your Institute:</Text>
-                    <View style={{ flexDirection: 'row' }}>
-                        <ModalDropdown
-                            options={[
-                                "VES College of Arts, Science & Commerce (Autonomous)",
-                                "VES Institute of Technology",
-                                "VES College of Architecture",
-                                "VES College of Pharmacy",
-                                "VES POLYTECHNIC",
-                                "VES College of Law",
-                            ]}
-                            defaultValue={selectedItem}
-                            onSelect={handleTitleChange}
-                            textStyle={styles.dropdownText}
-                            dropdownStyle={styles.dropdownStyle}
-                            dropdownTextStyle={styles.dropdownTextStyle}
-                        // customItemContainerStyle={{ justifyContent: 'center' }}
-                        // labelStyle={{ textAlign: 'center', justifyContent: 'center' }}
-                        />
-                        <Ionicon name={'chevron-down'} size={20} style={{ position: 'absolute', right: 1, padding: 10 }} />
-                    </View>
-                </View>
-                :
-                null
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.label}>Your Institute:</Text>
+                            <View style={{ flexDirection: 'row' }}>
+                                <ModalDropdown
+                                    options={[
+                                        "VES College of Arts, Science & Commerce (Autonomous)",
+                                        "VES Institute of Technology",
+                                        "VES College of Architecture",
+                                        "VES College of Pharmacy",
+                                        "VES POLYTECHNIC",
+                                        "VES College of Law",
+                                    ]}
+                                    defaultValue={selectedItem}
+                                    onSelect={handleTitleChange}
+                                    textStyle={styles.dropdownText}
+                                    dropdownStyle={styles.dropdownStyle}
+                                    dropdownTextStyle={styles.dropdownTextStyle}
+                                // customItemContainerStyle={{ justifyContent: 'center' }}
+                                // labelStyle={{ textAlign: 'center', justifyContent: 'center' }}
+                                />
+                                <Ionicon name={'chevron-down'} size={20} style={{ position: 'absolute', right: 1, padding: 10 }} />
+                            </View>
+                        </View>
+                        :
+                        null
                 }
 
                 <View style={styles.captchaContainer}>

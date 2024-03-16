@@ -6,12 +6,15 @@ import {
     TextInput,
     TouchableOpacity,
     Image,
-    Alert
+    Alert,
+    ActivityIndicator
 } from 'react-native';
 import styles from './Checkout.styles';
 import { useAppSelector, useAppDispatch } from '../../../store/hook';
 import firestore from '@react-native-firebase/firestore';
 import { clearCart } from '../../../store/slice/cartSlice';
+import axios from 'axios';
+import { ip } from '../../utils/constant';
 
 const Checkout = ({ navigation, route }) => {
     const dispatch = useAppDispatch();
@@ -19,7 +22,39 @@ const Checkout = ({ navigation, route }) => {
     const total = route.params.total;
     const items = useAppSelector(state => state.cart.items)
     const name = `${user.firstName} ${user.lastName}`
+    const [isLoading, setIsLoading] = useState(false);
 
+    const placeOrder = async () => {
+        try {
+            setIsLoading(true)
+            const order = {
+                email: user.email,
+                name: `${user.firstName} ${user.lastName}`,
+                itemCount: items.length,
+                items: items,
+                netTotal: total,
+                date: new Date() // Create a Date object
+            };
+
+            const response = await axios.post('https://' + ip + '/api/stationary/placeOrder', order);
+
+            if (response.data.message === 'Order placed successfully') {
+                Alert.alert("Success", "Order Placed Successfully", [
+                    {
+                        text: 'Ok',
+                        onPress: () => navigation.navigate('Stationary')
+                    }
+                ]);
+                dispatch(clearCart());
+            } else {
+                Alert.alert("Error", "Order placement failed");
+            }
+            setIsLoading(false)
+        } catch (error) {
+            console.error('Error placing order:', error);
+            Alert.alert("Error", "Internal Server Error");
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -72,33 +107,17 @@ const Checkout = ({ navigation, route }) => {
             </View>
 
             <TouchableOpacity style={styles.button}
-                onPress={() => {
-                    Alert.alert("Success", "Order Placed Successfully", [
-                        {
-                            text: 'Ok',
-                            onPress: () => navigation.navigate('Stationary')
-                        }
-                    ])
-                    const order = {
-                        email: user.email,
-                        name: `${user.firstName} ${user.lastName}`,
-                        itemCount: items.length,
-                        items: items,
-                        netTotal: total,
-                        date: new Date()
-                    }
-                    try {
-                        firestore()
-                            .collection('Orders')
-                            .add(order)
-                    } catch (error) {
-                        console.log(error)
-                    }
-                    dispatch(clearCart())
-                }}
+                onPress={placeOrder}
             >
                 <Text style={styles.buttonText}>Place Order</Text>
             </TouchableOpacity>
+            {isLoading && (
+                <View style={styles.overlay}>
+                    <View style={styles.loaderContainer}>
+                        <ActivityIndicator size="large" color="#E5E4E2" />
+                    </View>
+                </View>
+            )}
         </View>
     );
 };

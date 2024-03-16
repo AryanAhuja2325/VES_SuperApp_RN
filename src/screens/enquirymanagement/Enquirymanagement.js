@@ -2,10 +2,28 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Alert, SafeAreaView } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import styles from './enquiry.styles';
-import { useAppSelector} from '../../../store/hook';
+import { useAppSelector } from '../../../store/hook';
+import axios from 'axios';
 
 const Enquiry = ({ navigation }) => {
-
+  const submitData = async () => {
+    if (!Description) {
+      Alert.alert("Error", "Write your feedback");
+    } else {
+      try {
+        const response = await axios.post('http://' + ip + ':3000/api/feedback', {
+          email: user.email,
+          description: Description,
+        });
+        console.log(response.data); // Log the server response
+        setFeedbackDescription("");
+        Alert.alert("Feedback submitted");
+      } catch (error) {
+        console.error('Error submitting feedback:', error);
+        // Handle error accordingly
+      }
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -17,7 +35,7 @@ const Enquiry = ({ navigation }) => {
           <Text style={styles.buttonText}>Post a Query</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => {
-          navigation.navigate("Feedback");
+          submitData()
         }}
           style={styles.button}>
           <Text style={styles.buttonText}>Send FeedBack</Text>
@@ -36,7 +54,7 @@ export const Query = () => {
   const [type, setType] = useState('');
   const [description, setDescription] = useState('');
   const [showQueryType, setShowQueryType] = useState(false);
-  const [selectedQueryType, setSelectedQueryType] = useState('');
+  const [selectedQueryType, setSelectedQueryType] = useState('Query Type'); // Initialize with default text
 
   const queryTypes = ['Fee related Query', 'Admission related Query', 'Syllabus Related Query', 'Another Query Type'];
   const user = useAppSelector(state => state.profile.data);
@@ -47,7 +65,7 @@ export const Query = () => {
 
   const handleQueryTypeSelection = (selectedType) => {
     setType(selectedType);
-    setSelectedQueryType(selectedType);
+    setSelectedQueryType(selectedType); // Update selected query type
     setShowQueryType(false);
   };
 
@@ -63,18 +81,24 @@ export const Query = () => {
         }
         queryTypeToSend = selectedQueryType;
       }
-      
-      await firestore().collection('Query').add({
-        Email: user.email,
-        Type: queryTypeToSend,
-        Description: description,
-      });
-      setType('');
-      setDescription('');
-      setSelectedQueryType('');
-      Alert.alert('Query submitted');
+
+      try {
+        const response = await axios.post('http://' + ip + ':3000/api/query', {
+          email: user.email,
+          queryTypeToSend,
+          description,
+        });
+        console.log(response.data);
+        setType('');
+        setDescription('');
+        setSelectedQueryType('');
+        Alert.alert('Query submitted');
+      } catch (error) {
+        console.error('Error submitting query:', error);
+      }
     }
   };
+
 
   return (
     <KeyboardAvoidingView style={styles.container}>
@@ -83,7 +107,7 @@ export const Query = () => {
           <View style={styles.sectionHeader}>
             <TouchableOpacity onPress={toggleQueryType}>
               <Text style={styles.heading}>
-                Query Type
+                {selectedQueryType} {/* Display selected query type */}
                 {showQueryType ? <Text style={styles.arrowIcon}>▲</Text> : <Text style={styles.arrowIcon}>▼</Text>}
               </Text>
             </TouchableOpacity>
@@ -151,7 +175,7 @@ export const Feedback = () => {
       await firestore().collection("Feedback").add(feedbackData);
       setFeedbackDescription("");
       Alert.alert("Feedback submitted");
-}
+    }
   }
   const handleFeedbackChange = (value) => {
     setFeedbackDescription(value);

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
+import firestore, { firebase } from '@react-native-firebase/firestore';
 import { useAppSelector } from '../../../store/hook';
 import styles from './ViewAttendance.styles';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
+import axios from 'axios';
+import { ip } from '../../utils/constant';
 const ViewAttendance = () => {
     const user = useAppSelector((state) => state.profile.data);
     const [date, setDate] = useState(new Date());
@@ -13,35 +14,18 @@ const ViewAttendance = () => {
     const [fetchedAttendance, setFetchedAttendance] = useState([]);
     const [expandedIndex, setExpandedIndex] = useState(null);
 
+
     const fetchData = async (selectedDate) => {
         try {
-            const startDate = new Date(
-                selectedDate.getFullYear(),
-                selectedDate.getMonth(),
-                selectedDate.getDate(),
-                0, 0, 0
-            );
-            const endDate = new Date(
-                selectedDate.getFullYear(),
-                selectedDate.getMonth(),
-                selectedDate.getDate(),
-                23, 59, 59
-            );
-
-            const snapshot = await firestore()
-                .collection('Attendance')
-                .where('facultyId', '==', user.email)
-                .where('date', '>=', startDate)
-                .where('date', '<=', endDate)
-                .get();
-
-            const data = snapshot.docs.map((doc) => doc.data());
-            data.sort((a, b) => a.sessionCount - b.sessionCount);
-            setFetchedAttendance(data);
+            const formattedDate = selectedDate.toISOString().split('T')[0];
+            const response = await axios.get(`http://${ip}:3000/api/attendance/viewAsTeacher/${user.email}/${formattedDate}`);
+            const dataArr = response.data;
+            setFetchedAttendance(dataArr)
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error("Error fetching data:", error);
         }
     };
+
 
     useEffect(() => {
         fetchData(date);
@@ -62,7 +46,7 @@ const ViewAttendance = () => {
         hideDateTimePicker();
         setIsDateSelected(true);
         fetchData(currentDate);
-        console.log(fetchedAttendance);
+        console.log("===>", fetchedAttendance);
     };
 
     const toggleExpand = (index) => {
@@ -75,7 +59,7 @@ const ViewAttendance = () => {
 
     return (
         <ScrollView style={styles.container}>
-            <Text style={styles.title}>Welocme {user.firstName}!</Text>
+            <Text style={styles.title}>Welcome {user.firstName}!</Text>
             <View style={styles.row}>
                 <Text style={styles.label}>Select a date: </Text>
                 <TouchableOpacity style={styles.button} onPress={showDateTimePicker}>
@@ -93,31 +77,37 @@ const ViewAttendance = () => {
             {isDateSelected && (
                 <View>
                     <Text style={styles.label1}>You selected: {date.toDateString()}</Text>
-                    {fetchedAttendance.map((attendance, index) => (
+                    {fetchedAttendance.map((lecture, index) => (
                         <View key={index}>
                             <TouchableOpacity style={styles.header} onPress={() => toggleExpand(index)}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <Text style={styles.headerText}>Lecture No: {attendance.sessionCount}</Text>
+                                    <Text style={styles.headerText}>Lecture No: {lecture.sessionCount}</Text>
                                     <Text style={styles.headerText}>{index === expandedIndex ? '-' : '+'}</Text>
                                 </View>
-                                <Text style={styles.headerText}>{attendance.subject}</Text>
+                                <Text style={styles.headerText}>{lecture.subject}</Text>
                             </TouchableOpacity>
                             {index === expandedIndex && (
                                 <View>
-                                    {attendance.attendance.map((childAttendance, childIndex) => (
-                                        <View key={childIndex} style={styles.childAttendanceContainer}>
-                                            <Text style={styles.childName}>{childAttendance.studentName}</Text>
-                                            <Text style={styles.childStatus}>{childAttendance.status}</Text>
-                                        </View>
-                                    ))}
+                                    {Array.isArray(lecture.attendance) && lecture.attendance.length > 0 ? (
+                                        lecture.attendance.map((attendanceData, innerIndex) => (
+                                            <View key={innerIndex} style={styles.childAttendanceContainer}>
+                                                <Text style={styles.childName}>{attendanceData.rollNo}</Text>
+                                                <Text style={styles.childStatus}>{attendanceData.status}</Text>
+                                            </View>
+                                        ))
+                                    ) : (
+                                        <Text>No attendance data available for the selected lecture.</Text>
+                                    )}
                                 </View>
                             )}
                         </View>
                     ))}
                 </View>
             )}
+
         </ScrollView>
     );
+
 };
 
 export default ViewAttendance;

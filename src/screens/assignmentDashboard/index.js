@@ -1,10 +1,11 @@
+
 import React, { useRef, useState } from "react";
 import { DrawerLayoutAndroid, View, Text, TouchableOpacity } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from './assignmentdashboard.styles'
 import AssignmentHomeScreen from "./assignmenthome";
 import AssignmentCreationScreen from "./assignmentCreate";
-import AssignmentResponseScreen from "./assignmentResponse";
+// import AssignmentResponseScreen from "./assignmentResponse";
 import AssignmentPending from "./assignmentpending";
 import { useAppSelector } from "../../../store/hook";
 const AssignmentDashboard = () => {
@@ -27,10 +28,10 @@ const AssignmentDashboard = () => {
           <TouchableOpacity
             style={[
               styles.optionTouchable,
-              selectedOption === "Active Assignments" && styles.selectedOption
+              selectedOption === "Upload Notes" && styles.selectedOption
             ]}
-            onPress={() => handleOptionSelect("Active Assignments")}>
-            <Text style={[styles.optionText,selectedOption === "Active Assignments" && styles.selectedOptionText]}>Active Assignments</Text>
+            onPress={() => handleOptionSelect("Upload Notes")}>
+            <Text style={[styles.optionText,selectedOption === "Upload Notes" && styles.selectedOptionText]}>Upload Notes</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
@@ -52,14 +53,6 @@ const AssignmentDashboard = () => {
           >
             <Text style={[styles.optionText,selectedOption === "Home" && styles.selectedOptionText]}>Home</Text>
           </TouchableOpacity>
-        <TouchableOpacity
-        style={[
-          styles.optionTouchable,
-          selectedOption === "Pending" && styles.selectedOption
-        ]}
-        onPress={() => handleOptionSelect("Pending")}>
-        <Text style={[styles.optionText,selectedOption === "Pending" && styles.selectedOptionText]}>Pending</Text>
-      </TouchableOpacity>
     </View>
      )
       );
@@ -73,10 +66,10 @@ const AssignmentDashboard = () => {
         switch (selectedOption) {
             case "Home":
                 return <AssignmentHomeScreen/>;
-            case "Active Assignments":
+            case "Upload Notes":
                 return <AssignmentCreationScreen/>;
             case "Response":
-                return <AssignmentResponseScreen/>;
+                // return <AssignmentResponseScreen/>;
             case "Pending":
               return <AssignmentPending/>;
             default:

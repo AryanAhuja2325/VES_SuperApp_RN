@@ -1,63 +1,93 @@
 import React, { useState } from 'react';
-import { View, TextInput, Alert, TouchableOpacity, Text } from 'react-native';
+import { View, TextInput, Alert, TouchableOpacity, Text, Image, ActivityIndicator, KeyboardAvoidingView, ScrollView } from 'react-native';
 import Style from './EventUpdate.styles';
-import firestore from '@react-native-firebase/firestore';
+import ImagePicker from 'react-native-image-crop-picker';
+import storage from '@react-native-firebase/storage';
+import axios from 'axios';
+import DatePicker from 'react-native-date-picker';
+import { ip } from '../../utils/constant';
 
 const AddEvent = () => {
     const [Title, setTitle] = useState('');
     const [Desc, setDesc] = useState('');
-    const [Image, setImage] = useState('');
-    const [id, setid] = useState('');
-    const [Eventdate,setEventdata]=useState()
-    const[date,setdate]=useState()
-    const handleAdd = () => {
-        setEventdata(new Date(date).getTime())
-        const edit = {
-            Title,
-            Desc,
-            Image,
-            id,
-            Eventdate, 
-          };
-        firestore()
-            .collection('EventUpdate')
-            .add(edit)
-            .then(() => {
-                Alert.alert(
-                    "Success",
-                    "User created Successfully",
-                    [
-                        {
-                            text: 'Ok'
-                        }
-                    ],
-                    [
-                        {
-                            cancelable: true
-                        }
-                    ]
+    const [image, setImage] = useState('');
+    const [date, setdate] = useState(new Date());
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-                )
-            })
-            .catch((error) => {
-                console.error('Error adding event:', error);
+    const handleImagePick = async () => {
+        try {
+            const image = await ImagePicker.openPicker({
+                width: 300,
+                height: 400,
+                cropping: true,
             });
+
+            setSelectedImage(image);
+            setImage('');
+        } catch (error) {
+            console.error('Error picking image:', error);
+        }
     };
 
+    const handleAdd = async () => {
+        try {
+            setLoading(true);
+
+            // Upload the image to Firebase Storage
+            let imageUrl = '';  // Initialize imageUrl variable
+
+            if (selectedImage) {
+                const storageRef = storage().ref(`event_images/${Date.now()}_${selectedImage.path.split('/').pop()}`);
+                await storageRef.putFile(selectedImage.path);
+
+                // Get the download URL
+                imageUrl = await storageRef.getDownloadURL();
+                console.log(imageUrl);
+            }
+
+            // Add the event data to the server
+            const response = await axios.post('https://' + ip + '/api/eventUpdate/addEvent', {
+                Title,
+                Desc,
+                Image: imageUrl,  // Use the imageUrl variable
+                Eventdate: date.toISOString(),
+            });
+
+            if (response.status === 200) {
+                Alert.alert(
+                    'Success',
+                    'Event added successfully',
+                    [{ text: 'Ok' }],
+                    { cancelable: true }
+                );
+            } else {
+                Alert.alert('Error', 'Something went wrong');
+            }
+        } catch (error) {
+            console.error('Error adding event:', error);
+            Alert.alert(
+                'Error',
+                'Failed to add event. Please try again.',
+                [{ text: 'Ok' }],
+                { cancelable: true }
+            );
+        } finally {
+            setLoading(false);
+            setSelectedImage(null);
+            setTitle('');
+            setDesc('');
+            setdate(new Date());
+            // Clear other input fields if needed
+        }
+    };
+
+
     return (
-        <View >
-            <View style={{backgroundColor:'#A80000'}}>
-            <Text style={Style.text}>AddEvent</Text>
-            </View>
+        <ScrollView>
             <TextInput
                 style={Style.textInput}
-                placeholder="Enter id"
-                value={id}
-                onChangeText={setid}
-            />
-            <TextInput
-                style={Style.textInput}
-                placeholder="Enter title with year"
+                placeholder="Enter title"
                 value={Title}
                 onChangeText={setTitle}
             />
@@ -67,27 +97,39 @@ const AddEvent = () => {
                 value={Desc}
                 onChangeText={setDesc}
             />
-            <TextInput
-                style={Style.textInput}
-                placeholder="Enter image url"
-                value={Image}
-                onChangeText={setImage}
-            />
-             <TextInput
-                style={Style.textInput}
-                placeholder="Enter event date(yyyy-mm-dd)"
-                value={date}
-                onChangeText={setdate}
+            <TouchableOpacity
+                style={Style.button}
+                onPress={handleImagePick} // Trigger the image picker
+            >
+                <Text style={Style.text}>Pick Image</Text>
+            </TouchableOpacity>
+            {selectedImage && (
+                <Image
+                    source={{ uri: selectedImage.path }}
+                    style={{ width: 200, height: 200, marginTop: 10 }}
+                />
+            )}
+            {loading && (
+                <View style={Style.overlay}>
+                    <View style={Style.loaderContainer}>
+                        <ActivityIndicator size="large" color="#E5E4E2" />
+                    </View>
+                </View>
+            )}
+            <DatePicker
+                style={Style.datePicker}
+                date={date}
+                mode="date"
+                onDateChange={(newDate) => setdate(newDate)}
             />
             <TouchableOpacity
-            style={Style.button}
+                style={Style.button}
                 onPress={handleAdd}
             >
                 <Text style={Style.text}>Submit</Text>
             </TouchableOpacity>
-
-        </View>
+        </ScrollView>
     );
 };
-export default AddEvent
 
+export default AddEvent;

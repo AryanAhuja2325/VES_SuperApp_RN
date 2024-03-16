@@ -3,65 +3,66 @@ import { View, Text, FlatList, Image, TouchableOpacity, } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import Style from "./EventUpdate.styles";
 import { useAppSelector } from "../../../store/hook";
+import axios from "axios";
+import { ip } from "../../utils/constant";
 
 const EventUpdate = ({ navigation }) => {
-    const [mydata, setmydata] = useState([])
+    const [mydata, setmydata] = useState([]);
     const [isVisible, setIsVisible] = useState(false);
     const user = useAppSelector(state => state.profile.data);
-    useEffect(() => {
-        getDatabase()
-    }, [])
 
-    const getDatabase = async () => {
+    useEffect(() => {
+        getEventData();
+        checkUser();
+    }, []);
+
+    const getEventData = async () => {
         try {
-            const querySnapshot = await firestore().collection('EventUpdate').get();
-            const data = querySnapshot.docs.map(doc => doc.data());
-            setmydata(data);
+            const response = await axios.get('https://' + ip + '/api/eventUpdate');
+            setmydata(response.data);
         } catch (error) {
             console.log('Error getting data:', error);
         }
-        checkUser()
-    }
+    };
 
     const checkUser = () => {
-        if (user.loginType == 'Teacher') {
-            setIsVisible(true)
+        if (user.loginType === 'Teacher') {
+            setIsVisible(true);
         }
-    }
+    };
+
     const renderItems = ({ item }) => {
-        const firestoreTimestamp = item.Eventdate;
-        const firestoreDate = firestoreTimestamp && firestoreTimestamp.toDate ? firestoreTimestamp.toDate() : null;
+        const eventDate = new Date(item.Eventdate);
         const currentDate = new Date();
-        const formatted = firestoreDate.toLocaleDateString()
-        if (firestoreDate && firestoreDate.getTime() > currentDate.getTime()||item.Eventdate>currentDate.getTime()) {
+
+        if (eventDate && eventDate > currentDate) {
             return (
                 <View>
                     <View style={Style.renderView}>
-                        <Text style={Style.titleText}> {item.Title} </Text>    
-                    <Image source={{ uri: item.Image }}
-                            style={Style.image} />
+                        <Text style={Style.titleText}> {item.Title} </Text>
+                        <Image source={{ uri: item.Image }} style={Style.image} />
                         <View style={Style.descView}>
                             <Text style={Style.descText}> {item.Desc} </Text>
-                            <Text style={Style.date}>{formatted}</Text>
-                            <TouchableOpacity
-                                onPress={() => navigation.navigate('Detail', { itemTitle: item.Title })}>
+                            <Text style={Style.date}>{eventDate.toLocaleDateString()}</Text>
+                            <TouchableOpacity onPress={() => navigation.navigate('Detail', { itemTitle: item.Title })}>
                                 <Text>Detail</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </View>
-
-            )
+            );
         }
+
         return null;
-    }
+    };
+
 
     return (
         <View style={Style.mainView}>
             <FlatList
                 data={mydata}
                 renderItem={renderItems}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item._id}
             />
             {isVisible && (
                 <TouchableOpacity
@@ -71,12 +72,12 @@ const EventUpdate = ({ navigation }) => {
                 </TouchableOpacity>
             )
             }
-             <Text></Text>
+            <Text></Text>
             <TouchableOpacity
-                    style={Style.button}
-                    onPress={() => navigation.navigate('CompletedEvent')}>
-                    <Text style={Style.text}>Completed Events</Text>
-                </TouchableOpacity>
+                style={Style.button}
+                onPress={() => navigation.navigate('CompletedEvent')}>
+                <Text style={Style.text}>Completed Events</Text>
+            </TouchableOpacity>
 
         </View>
 

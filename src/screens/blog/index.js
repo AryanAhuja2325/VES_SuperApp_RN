@@ -8,19 +8,17 @@ import {
     Alert,
     Modal,
     TextInput,
-    ImageBackground,
-    Button,
     ScrollView,
     SafeAreaView,
 } from 'react-native';
 import styles from './blog.styles';
-import firestore from '@react-native-firebase/firestore';
+import axios from 'axios';
 import { useAppSelector } from '../../../store/hook';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NewIcon from 'react-native-vector-icons/Feather';
 import AnotherIcon from 'react-native-vector-icons/FontAwesome';
 import * as COLORS from '../../utils/color';
-import { connect } from 'react-redux';
+import { ip } from '../../utils/constant';
 
 const Blog = ({ navigation }) => {
     const user = useAppSelector((state) => state.profile.data);
@@ -29,7 +27,7 @@ const Blog = ({ navigation }) => {
     const [showFullContent, setShowFullContent] = useState(false);
     const [fetchedComments, setFetchedComments] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [comment, setComment] = useState(null);
+    const [comment, setComment] = useState('');
     const [textBoxVisible, setTextBoxVisible] = useState(false);
     const [buttonVisible, setButtonVisible] = useState(true);
     const [isLiked, setIsLiked] = useState(false);
@@ -41,51 +39,81 @@ const Blog = ({ navigation }) => {
     };
 
     const handleClickSend = async () => {
-        if (comment == null) {
+        if (comment.trim() === '') {
             Alert.alert('Error', 'Please enter a comment');
-            handleClick();
-        } else {
-            try {
-                const commentObject = {
-                    text: comment,
-                    commentedOn: new Date(),
-                    commentedBy: {
-                        email: user.email,
-                        name: `${user.firstName} ${user.lastName}`,
-                    },
-                };
-
-                const documentRef = firestore().collection('Blog').doc(selectedPost.id);
-                const documentSnapshot = await documentRef.get();
-
-                if (documentSnapshot.exists) {
-                    await documentRef.update({
-                        comments: firestore.FieldValue.arrayUnion(commentObject),
-                    });
-
-                    setComment('');
-                } else {
-                    console.error('Document not found');
-                }
-                getData()
-            } catch (error) {
-                console.error('Error adding comment:', error);
-            }
-
-            handleClick();
+            return;
         }
+
+        try {
+            const commentObject = {
+                postId: selectedPost._id,
+                comment: comment,
+                user: {
+                    email: user.email,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                },
+            };
+
+            const response = await axios.post(
+                `https://${ip}/api/blog/addComment`,
+                commentObject
+            );
+
+            if (response.data.message === 'Comment added successfully') {
+                setComment('');
+                await getData();
+            } else {
+                Alert.alert('Error', 'Failed to add comment');
+            }
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            Alert.alert('Error', 'Internal Server Error');
+        }
+
+        handleClick();
     };
+
+    const handleDelete = async (postId) => {
+        Alert.alert(
+            'Confirm Deletion',
+            'Are you sure you want to delete this post?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Delete',
+                    onPress: async () => {
+                        try {
+                            const response = await axios.delete(`https://${ip}/api/blog/deletePost/${postId}`);
+
+                            if (response.data.message === 'Post deleted') {
+                                Alert.alert('Success', 'Post deleted successfully');
+                                getData();
+                            } else {
+                                Alert.alert('Error', 'Failed to delete post');
+                            }
+                        } catch (error) {
+                            console.error('Error deleting post:', error);
+                            Alert.alert('Error', 'Internal Server Error');
+                        }
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
+    };
+
 
     const getData = async () => {
         try {
-            const snapshot = await firestore().collection('Blog').get();
-
-            const fetchedDocuments = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-            const sortedDocuments = fetchedDocuments.sort(
-                (a, b) => b.postedOn.toDate() - a.postedOn.toDate()
+            console.log("In func")
+            const response = await axios.get(`https://${ip}/api/blog`);
+            console.log(response.data)
+            const sortedDocuments = response.data.sort(
+                (a, b) => new Date(b.postedOn) - new Date(a.postedOn)
             );
 
             setBlogData(sortedDocuments);
@@ -96,43 +124,39 @@ const Blog = ({ navigation }) => {
 
     const handleLike = async (postId) => {
         try {
-            const postRef = firestore().collection('Blog').doc(postId);
+            const likeObject = {
+                postId: postId,
+                userEmail: user.email,
+                isLiked: !isLiked,
+            };
 
-            const likedBy = await postRef
-                .get()
-                .then((doc) => doc.data().likedBy);
+            const response = await axios.post(
+                `https://${ip}/api/blog/likePost`,
+                likeObject
+            );
 
-            if (!likedBy || !likedBy.includes(user.email)) {
-                await postRef.update({
-                    likes: firestore.FieldValue.increment(1),
-                    likedBy: firestore.FieldValue.arrayUnion(user.email),
-                });
-
-                setLikes(likes + 1);
-                setIsLiked(true);
+            if (response.data.message === 'Like action successful') {
+                setIsLiked(!isLiked);
+                getData();
             } else {
-                await postRef.update({
-                    likes: firestore.FieldValue.increment(-1),
-                    likedBy: firestore.FieldValue.arrayRemove(user.email),
-                });
-
-                setLikes(likes - 1);
-                setIsLiked(false);
+                Alert.alert('Error', 'Failed to perform like action');
             }
-
-            getData();
         } catch (error) {
             console.error('Error liking post:', error);
+            Alert.alert('Error', 'Internal Server Error');
         }
     };
 
     const openModal = async (id) => {
         try {
-            const snapshot = await firestore().collection('Blog').doc(id).get();
-            const postData = snapshot.data();
-            const commentsReceived = postData.comments || [];
+            const response = await axios.get(
+                `http://${ip}:3000/api/blog/postDetails/${id}`
+            );
+
+            const postData = response.data.post;
+            const commentsReceived = response.data.comments || [];
             const commentsData = commentsReceived.sort(
-                (a, b) => b.commentedOn - a.commentedOn
+                (a, b) => new Date(b.commentedOn) - new Date(a.commentedOn)
             );
 
             const updatedSelectedPost = { id, ...postData };
@@ -142,40 +166,6 @@ const Blog = ({ navigation }) => {
         } catch (error) {
             console.error('Error fetching comments:', error);
         }
-    };
-
-
-    const deleteItem = () => {
-        try {
-            const documentRef = firestore()
-                .collection('Blog')
-                .doc(selectedPost);
-            documentRef.delete();
-            Alert.alert('Success', 'Post deleted :(');
-            getData();
-        } catch (error) {
-            console.error('Error deleting document:', error);
-        }
-    };
-
-    const handleDelete = (postId) => {
-        setSelectedPost(postId);
-        Alert.alert(
-            'Warning',
-            'Are you sure you want to delete this AWESOME blog',
-            [
-                {
-                    text: "Yes, I'm sure",
-                    onPress: deleteItem,
-                    style: 'destructive',
-                },
-                {
-                    text: 'No, Cancel',
-                    style: 'cancel',
-                },
-            ],
-            { cancelable: false }
-        );
     };
 
     useEffect(() => {
@@ -202,7 +192,7 @@ const Blog = ({ navigation }) => {
                             <Text style={styles.title}>{item.title}</Text>
                             {user.email === item.author.email ? (
                                 <TouchableOpacity
-                                    onPress={() => handleDelete(item.id)}
+                                    onPress={() => handleDelete(item._id)}
                                 >
                                     <Icon
                                         name={'delete'}
@@ -226,14 +216,14 @@ const Blog = ({ navigation }) => {
                         )}
                         <Text style={styles.name}>@{item.author.name}</Text>
                         <Text style={styles.date}>
-                            {item.postedOn.toDate().toLocaleDateString()}
+                            {new Date(item.postedOn).toLocaleDateString()}
                         </Text>
-                        <TouchableOpacity onPress={() => openModal(item.id)}>
+                        <TouchableOpacity onPress={() => openModal(item._id)}>
                             <Text style={styles.name}>View Comments</Text>
                         </TouchableOpacity>
                         <View style={styles.likeContainer}>
                             <TouchableOpacity
-                                onPress={() => handleLike(item.id)}
+                                onPress={() => handleLike(item._id)}
                             >
                                 <AnotherIcon
                                     name={item.likedBy.includes(user.email) ? 'heart' : 'heart-o'}
@@ -278,7 +268,7 @@ const Blog = ({ navigation }) => {
                                         @{selectedPost.author.name}
                                     </Text>
                                     <Text style={styles.date}>
-                                        {selectedPost.postedOn.toDate().toLocaleDateString()}
+                                        {new Date(selectedPost.potedOn).toLocaleDateString()}
                                     </Text>
                                 </View>
                             </View>
@@ -306,7 +296,7 @@ const Blog = ({ navigation }) => {
                                         @{item.commentedBy.name}
                                     </Text>
                                     <Text style={styles.commentDate}>
-                                        {item.commentedOn.toDate().toLocaleDateString()}
+                                        {new Date(item.commentedOn).toLocaleDateString()}
                                     </Text>
                                 </View>
                             </View>

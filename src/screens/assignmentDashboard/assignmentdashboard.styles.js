@@ -1,7 +1,6 @@
 import { StyleSheet } from "react-native";
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
-import * as COLORS from '../../utils/color';
-
+import * as COLORS from "../../utils/color";
 
 const styles = StyleSheet.create({
     drawerStyles: {
