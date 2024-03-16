@@ -30,7 +30,7 @@ import Notifications from './bottomTab/notifications';
 import ContactUs from './bottomTab/contactUs';
 import Checkout from './stationarySupply/Checkout';
 import Orders from './stationarySupply/Orders';
-import CustomHeader from '../src/components/header';
+import CustomHeader from '../components/header';
 import FitnessAndHealth from './fitnessandhealth/FitnessAndHealth';
 import DigitalAcademy from './digitalAcademy/DigitalAcademy';
 import DigitalAcademyDetail from './digitalAcademy/DigitalAcademyDetail';
