@@ -56,6 +56,8 @@ const Login = ({ navigation }) => {
 
                 const response = await axios.post(`https://${ip}/api/login`, { email, password });
 
+                console.log(response.status);
+
                 if (response.status === 200) {
                     const user = response.data.user;
                     dispatch(setUserProfile(user));
@@ -98,18 +100,18 @@ const Login = ({ navigation }) => {
 
                     navigation.navigate('HomeScreen');
                     await AsyncStorage.setItem('userData', JSON.stringify(user));
-                } else {
-                    if (response.data.error === 'User Not Found') {
-                        Alert.alert('Error', 'User not found. Please check your email and try again.');
-                    } else if (response.data.error === 'Invalid email or password') {
-                        Alert.alert('Error', 'Invalid password. Please check your password and try again.');
-                    } else {
-                        Alert.alert('Error', response.data.error || 'Login failed');
-                    }
                 }
             } catch (error) {
-                console.error(error);
-                Alert.alert('Error', 'An unexpected error occurred');
+                if (error.response) {
+                    const status = error.response.status;
+                    if (status == 400) {
+                        Alert.alert('Error', 'Invalid Email or Password');
+                    } else if (status == 404) {
+                        Alert.alert('Error', 'User not found');
+                    } else {
+                        Alert.alert("Error", "An unexpected error occured");
+                    }
+                }
             } finally {
                 setIsLoading(false);
             }

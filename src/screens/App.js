@@ -63,7 +63,7 @@ import ConfirmRequest from './Admin/confirmRequests';
 import AssignmentDashboard from './assignmentDashboard';
 import Jobs from './jobLinker/Jobs';
 import List from './PersonalizedTimetable/List';
-import JobLinker from './jobLinker/JobLinker';
+import AddAlumni from './Admin/AddAlumni';
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -679,6 +679,16 @@ const App = () => {
               headerShown: true,
               header: () => (
                 <CustomHeader navigation={navigation} title="To-Do List" />
+              ),
+            })}
+          />
+          <stack.Screen
+            name="Add Alumni"
+            component={AddAlumni}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Add Alumni Data" />
               ),
             })}
           />

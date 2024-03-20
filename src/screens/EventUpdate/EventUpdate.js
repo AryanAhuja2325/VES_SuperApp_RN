@@ -26,7 +26,7 @@ const EventUpdate = ({ navigation }) => {
     };
 
     const checkUser = () => {
-        if (user.loginType === 'Teacher') {
+        if (user.loginType === 'Admin') {
             setIsVisible(true);
         }
     };

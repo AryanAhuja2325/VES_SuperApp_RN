@@ -12,10 +12,9 @@ const Alumni = () => {
                 const fetchAlumniData = async () => {
                         try {
                                 const data = await axios.get('https://' + ip + '/api/alumni');
-                                console.log(data)
                                 setAlumniData(data.data);
                         } catch (error) {
-                                console.log('Error fetching alumni Data:', error);
+
                         }
                 };
 

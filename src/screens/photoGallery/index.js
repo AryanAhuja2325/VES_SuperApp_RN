@@ -13,7 +13,6 @@ import { ip } from '../../utils/constant';
 const ImageGrid = () => {
     const [imageArrays, setImageArrays] = useState([]);
     const [likes, setLikes] = useState({});
-    const [isLiked, setIsLiked] = useState(false);
     const [selectedItem, setSelectedItem] = useState('Architecture College');
     const user = useAppSelector((state) => state.profile.data);
 
@@ -22,7 +21,6 @@ const ImageGrid = () => {
             const response = await axios.get(`https://${ip}/api/photos?selectedItem=${selectedItem}`);
             setImageArrays(response.data.images);
             setLikes(response.data.likesData);
-            setIsLiked(false);
         } catch (error) {
             console.log('Error fetching image arrays:', error);
         }
@@ -54,28 +52,27 @@ const ImageGrid = () => {
         fetchImageArrays(value);
     };
 
-    const handleLike = async (docId) => {
-        try {
-            await axios.post('https://' + { ip } + '/api/photos/likePost', { docId, user });
-            fetchImageArrays(selectedItem);
-            setIsLiked(!isLiked);
-        } catch (error) {
-            console.error('Error liking post:', error);
-        }
-    };
-
-
-    const renderLikeIcon = (like) => {
-        return isLiked ? (
-            <Icon name="heart" size={24} color={'red'} />
-        ) : (
-            <Icon name="heart-outline" size={24} color={'black'} />
-        );
-    };
-
     const renderItem = ({ item }) => {
         const maintitle = item.mainTitle;
         const like = likes[item._id] || 0;
+        const likedByUser = item.likedBy && item.likedBy.includes(user.email);
+
+        const handleLike = async () => {
+            try {
+                await axios.post(`https://${ip}/api/photos/likePost`, { docId: item._id, user });
+                fetchImageArrays(selectedItem);
+            } catch (error) {
+                console.error('Error liking post:', error);
+            }
+        };
+
+        const renderLikeIcon = () => {
+            return likedByUser ? (
+                <Icon name="heart" size={24} color={'red'} />
+            ) : (
+                <Icon name="heart-outline" size={24} color={'black'} />
+            );
+        };
 
         return (
             <View style={styles.imageContainer}>
@@ -85,8 +82,8 @@ const ImageGrid = () => {
                 </View>
                 <Image source={{ uri: item.imageURL }} style={styles.image} resizeMode="stretch" />
                 <View style={styles.bottomView}>
-                    <TouchableOpacity onPress={() => handleLike(item._id)}>
-                        {renderLikeIcon(like)}
+                    <TouchableOpacity onPress={handleLike}>
+                        {renderLikeIcon()}
                         <Text>{like} likes</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => shareImage(item.imageURL)} style={styles.share}>

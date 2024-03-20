@@ -46,9 +46,9 @@ const Home = ({ navigation }) => {
 
   useEffect(() => {
     getEvent();
-    if (user.loginType == "Principal")
+    if (user.loginType == "Principal") {
       fetchBookingRequests();
-    console.log(user)
+    }
   }, []);
 
   const fetchBookingRequests = async () => {
@@ -192,6 +192,9 @@ const Home = ({ navigation }) => {
           break;
         case 'To-Do List':
           navigation.navigate('Personalized Timetable')
+          break;
+        case 'Add Alumni Data':
+          navigation.navigate('Add Alumni')
           break;
         default:
           break;

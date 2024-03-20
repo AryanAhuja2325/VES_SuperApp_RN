@@ -235,6 +235,10 @@ const Adminmodule = [
         id: 14,
         title: 'Exam Schedule'
     },
+    {
+        id: 15,
+        title: "Add Alumni Data"
+    }
 ]
 
 const vendorModules = [
