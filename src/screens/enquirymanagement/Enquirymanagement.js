@@ -102,7 +102,7 @@ export const Query = () => {
 
   const renderItem = ({ item }) => (
     <View style={styles.queryItem}>
-      <Text style={styles.queryText}>Name: {item.Name == null ? "Unknown" : item.name}</Text>
+      <Text style={styles.queryText}>Name: {item.Name == null ? "Unknown" : item.Name}</Text>
       <Text style={styles.queryText}>Email: {item.Email}</Text>
       <Text style={styles.queryText}>Type: {item.Title}</Text>
       <Text style={styles.queryText}>Description: {item.Description}</Text>
