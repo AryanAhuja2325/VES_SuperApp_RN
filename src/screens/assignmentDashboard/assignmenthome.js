@@ -8,10 +8,10 @@ import { useAppSelector } from '../../../store/hook';
 
 const AssignmentHomeScreen = () => {
   const [assignments, setAssignments] = useState([]);
- const selectedDate = new Date();
+  const selectedDate = new Date();
   const user = useAppSelector(state => state.profile.data);
   const assignmentObject = {
-    studentName: user.firstName +" "+ user.lastName,
+    studentName: user.firstName + " " + user.lastName,
     postedBy: user.email,
     pdf: null,
     pdflink: null,
@@ -24,12 +24,17 @@ const AssignmentHomeScreen = () => {
   }, []);
   const fetchAssignments = async () => {
     try {
-      const snapshot = await firestore().collection('Assignments')
-        .where(user.loginType === 'Teacher' ? 'postedBy' : 'className', '==', user.email || user.className)
-        .get();
-      const assignmentList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setAssignments(assignmentList);
-      console.log("Assignments:", assignmentList);
+      if (user.loginType === 'Teacher') {
+        const snapshot = await firestore().collection('Assignments').where('postedBy', '==', user.email).get();
+        const assignmentList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setAssignments(assignmentList);
+        console.log("Assignments for Teacher==>", assignmentList);
+      } else {
+        const snapshot = await firestore().collection('Assignments').where('className', '==', user.className).get();
+        const assignmentList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setAssignments(assignmentList);
+        console.log("Assignments for Student==>", assignmentList);
+      }
     } catch (error) {
       console.error('Error fetching assignments:', error);
     }
@@ -49,13 +54,10 @@ const AssignmentHomeScreen = () => {
       {item.pdflink && <Text style={[styles.text, styles.linktext]} onPress={() => openLink(item.pdflink)}>Click to download pdf</Text>}
       {item.link && <Text style={[styles.text, styles.linktext]} onPress={() => openLink(item.link)}>Link: {item.link}</Text>}
       {user.loginType === 'Student' && (
-        <TouchableOpacity style={styles.submitButton} onPress={() => selectFile(item)}>
+        <TouchableOpacity style={styles.submitButton} onPress={selectFile}>
           <Text style={styles.submitButtonText}>Upload Assignment</Text>
         </TouchableOpacity>
       )}
-       {selectedFile && selectedFile.id === item.id && (
-      <Text style={styles.selectedAssignment}>Selected Assignment: {selectedFile.pdf}</Text>
-    )}
     </TouchableOpacity>
   )
 
@@ -82,12 +84,12 @@ const AssignmentHomeScreen = () => {
   };
   const uploadAssignmentToFirebase = async () => {
     try {
-        // Check if selectedFile is null
-        if (!selectedFile) {
-          Alert.alert('Error', 'Please select a file to upload');
-          return;
-        }
-    
+      // Check if selectedFile is null
+      if (!selectedFile) {
+        Alert.alert('Error', 'Please select a file to upload');
+        return;
+      }
+
       const currentTime = new Date();
       assignmentObject.pdf = selectedFile[0].name;
       const response = await storage().ref(`/Assignments/${selectedFile[0].name}`).putFile(selectedFile[0].fileCopyUri);
@@ -114,6 +116,7 @@ const AssignmentHomeScreen = () => {
           renderItem={renderAssignmentItem}
           keyExtractor={item => item.id}
         />
+
       </View>
     </View>
   );

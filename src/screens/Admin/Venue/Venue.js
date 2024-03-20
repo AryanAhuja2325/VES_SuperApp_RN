@@ -50,6 +50,12 @@ const Venue = () => {
     setModalVisible(!isModalVisible);
   };
 
+  useEffect(() => {
+    if (user.loginType === 'Principal') {
+      setInstitute(user.institute);
+    }
+  }, [])
+
   const handleImagePicker = async () => {
     try {
       setIsImagesSelected(false);

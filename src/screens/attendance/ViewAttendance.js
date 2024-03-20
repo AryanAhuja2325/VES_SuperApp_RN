@@ -18,7 +18,8 @@ const ViewAttendance = () => {
     const fetchData = async (selectedDate) => {
         try {
             const formattedDate = selectedDate.toISOString().split('T')[0];
-            const response = await axios.get(`http://${ip}:3000/api/attendance/viewAsTeacher/${user.email}/${formattedDate}`);
+            console.log(formattedDate)
+            const response = await axios.get(`https://${ip}/api/attendance/viewAsTeacher/${user.email}/${formattedDate}`);
             const dataArr = response.data;
             setFetchedAttendance(dataArr)
         } catch (error) {

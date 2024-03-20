@@ -61,7 +61,9 @@ import AddProducts from './stationarySupply/AddProducts';
 import ApproveRequest from './Admin/approvalRequests';
 import ConfirmRequest from './Admin/confirmRequests';
 import AssignmentDashboard from './assignmentDashboard';
+import Jobs from './jobLinker/Jobs';
 import List from './PersonalizedTimetable/List';
+import JobLinker from './jobLinker/JobLinker';
 
 const stack = createNativeStackNavigator();
 const tab = createBottomTabNavigator();
@@ -590,6 +592,27 @@ const App = () => {
             })}
           />
           <stack.Screen
+            name="Job Linker"
+            component={JobLinker}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Job Linker" />
+              ),
+            })}
+          />
+          <stack.Screen
+            name="Jobs"
+            component={Jobs}
+            options={({ navigation }) => ({
+              headerShown: true,
+              header: () => (
+                <CustomHeader navigation={navigation} title="Jobs" />
+              ),
+            })}
+          />
+
+          <stack.Screen
             name="Campus Contact"
             component={Contact}
             options={({ navigation }) => ({
@@ -655,7 +678,7 @@ const App = () => {
             options={({ navigation }) => ({
               headerShown: true,
               header: () => (
-                <CustomHeader navigation={navigation} title="Personalized Timetable" />
+                <CustomHeader navigation={navigation} title="To-Do List" />
               ),
             })}
           />
@@ -668,11 +691,11 @@ const App = () => {
                 <CustomHeader navigation={navigation} title="Personalized Timetable" />
               ),
             })}
+          />
           /> */}
         </stack.Navigator>
       </NavigationContainer>
     </Provider>
   );
 };
-
 export default App;

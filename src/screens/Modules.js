@@ -116,9 +116,14 @@ const studentmodule = [
     },
     {
         id: 12,
-        title: 'Personalized Timetable',
+        title: 'To-Do List',
+    },
+    {
+        id: 13,
+        title: 'Job Linker',
     },
 ]
+
 const parentmodule = [
     {
         id: 1,

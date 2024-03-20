@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         margin: 10,
         shadowColor: shadowcolor,
-        backgroundColor: white,
         elevation: 10,
     },
 

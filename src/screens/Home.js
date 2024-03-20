@@ -16,7 +16,6 @@ import {
   responsiveWidth,
 } from 'react-native-responsive-dimensions';
 import firestore from '@react-native-firebase/firestore';
-// import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
 import { request, PERMISSIONS } from '@react-native-permissions/permissions';
 import axios from 'axios';
@@ -47,7 +46,8 @@ const Home = ({ navigation }) => {
 
   useEffect(() => {
     getEvent();
-    fetchBookingRequests();
+    if (user.loginType == "Principal")
+      fetchBookingRequests();
     console.log(user)
   }, []);
 
@@ -172,6 +172,14 @@ const Home = ({ navigation }) => {
           break;
         case 'Confirm Requests':
           navigation.navigate("Confirm Requests");
+        case 'Job Linker':
+          navigation.navigate('Job Linker');
+          break;
+        case 'Campus Contact':
+          navigation.navigate('Campus Contact');
+          break;
+        case 'Assignment Dashboard':
+          navigation.navigate('Assignment Dashboard')
           break;
         case 'Resume Generator':
           navigation.navigate('Resume Generator');
@@ -182,7 +190,7 @@ const Home = ({ navigation }) => {
         case 'Assignment Dashboard':
           navigation.navigate('Assignment Dashboard')
           break;
-        case 'Personalized Timetable':
+        case 'To-Do List':
           navigation.navigate('Personalized Timetable')
           break;
         default:
