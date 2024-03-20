@@ -41,6 +41,7 @@ export const Query = () => {
   const [selectedQueryType, setSelectedQueryType] = useState('Title');
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const queryTypes = ["Fees Related Query", "Admission Related Query", "College Related Query", "Another Query"]; // Example query types
 
   useEffect(() => {
     if (user.loginType === "Admin") {

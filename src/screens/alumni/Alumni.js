@@ -1,6 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, StyleSheet, Text, View, SafeAreaView, ScrollView } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import styles from './Alumni.styles';
 import axios from 'axios';
 import { ip } from '../../utils/constant';
@@ -23,12 +23,15 @@ const Alumni = () => {
 
 
         const renderItem = ({ item }) => (
-                <View style={styles.itemContainer} >
-                        <Image source={{ uri: item.image }} style={styles.image} />
-                        <Text style={styles.Text}>{item.name}</Text>
-                        <Text style={styles.description}>{item.description}</Text>
-                        <Text style={styles.roletext}>{item.role}</Text>
-                </View>
+                <TouchableOpacity onPress={() => { Linking.openURL(`http://${item.linkedin}.com`) }} style={styles.itemContainer}>
+                        <View style={styles.itemContainer} >
+                                <Image source={{ uri: item.image }} style={styles.image} />
+                                <Text style={styles.Text}>{item.name}</Text>
+                                <Text style={styles.description}>{item.description}</Text>
+                                <Text style={styles.roletext}>{item.role}</Text>
+                                <Text style={styles.description}>{item.linkedin}</Text>
+                        </View>
+                </TouchableOpacity>
         );
 
         return (
