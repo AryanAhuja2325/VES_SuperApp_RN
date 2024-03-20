@@ -36,7 +36,7 @@ const AttendanceNew = () => {
     roomNo: roomNo,
     classStrength: classStrength,
     sessionCount: sessionCount,
-    currentTime: firestore.Timestamp.now(),
+    currentTime: new Date(),
     attendance: [],
     email: user.email,
   };

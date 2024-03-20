@@ -17,7 +17,7 @@ const StudentAttendance = () => {
     const fetchData = async (selectedDate) => {
         try {
             const formattedDate = selectedDate.toISOString().split('T')[0];
-            const response = await axios.get(`http://${ip}/api/attendance/P16/${formattedDate}`);
+            const response = await axios.get(`https://${ip}/api/attendance/${user.class}/${formattedDate}`);
             const dataArr = response.data;
 
             if (Array.isArray(dataArr) && dataArr.length > 0) {

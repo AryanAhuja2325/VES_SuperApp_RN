@@ -41,6 +41,7 @@ const Previous = ({ route }) => {
         response = await axios.get(`https://${ip}/api/booking/userBookings/${user.email}`);
       }
       const fetchedUserBookings = response.data;
+      console.log(fetchedUserBookings)
 
       fetchedUserBookings.forEach((booking) => {
         booking.bookings.sort((a, b) => a.date - b.date);
@@ -371,8 +372,8 @@ const Previous = ({ route }) => {
                         {individual.time &&
                           individual.time.startTime &&
                           individual.time.endTime ? (
-                          new Date(individual.time.startTime).toLocaleString('en-US', timeOptions) == '12:00 AM' &&
-                            new Date(individual.time.endTime).toLocaleString('en-US', timeOptions) == '11:00 PM' ? (
+                          new Date(individual.time.startTime).toLocaleString(timeOptions) == '12:00 AM' &&
+                            new Date(individual.time.endTime).toLocaleString(timeOptions) == '11:00 PM' ? (
                             'Full Day'
                           ) : (
                             <>
@@ -577,6 +578,7 @@ const Previous = ({ route }) => {
   const timeOptions = {
     hour: '2-digit',
     minute: '2-digit',
+    timeZone: "UTC"
   };
 
   const currentDate = new Date();
@@ -662,6 +664,7 @@ const Previous = ({ route }) => {
           <Text style={styles.header}>{isRejectedExpanded ? '-' : '+'}</Text>
         </View>
       </TouchableOpacity>
+      {isRejectedExpanded && renderRejectedBookings()}
 
       <HorizontalLine />
 
