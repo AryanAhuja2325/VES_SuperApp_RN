@@ -61,6 +61,7 @@ import AddProducts from './stationarySupply/AddProducts';
 import ApproveRequest from './Admin/approvalRequests';
 import ConfirmRequest from './Admin/confirmRequests';
 import AssignmentDashboard from './assignmentDashboard';
+import JobLinker from './jobLinker/JobLinker';
 import Jobs from './jobLinker/Jobs';
 import List from './PersonalizedTimetable/List';
 import AddAlumni from './Admin/AddAlumni';
